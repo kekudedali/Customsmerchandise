@@ -165,13 +165,17 @@
               <el-input
                 v-model="form.spmc"
                 placeholder="请输入商品名称"
-                style="width:200px;"
+                style="width: 200px"
               />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="公告类型" prop="noticeType">
-              <el-select v-model="form.noticeType" style="width:200px;" placeholder="请选择">
+              <el-select
+                v-model="form.noticeType"
+                style="width: 200px"
+                placeholder="请选择"
+              >
                 <el-option
                   v-for="dict in typeOptions"
                   :key="dict.dictValue"
@@ -397,8 +401,11 @@ export default {
     /** 新增按钮操作 */
     handleAdd() {
       this.reset();
-      this.open = true;
-      this.title = "添加公告";
+      //   this.open = true;
+      //   this.title = "添加公告";
+      this.$router.push({
+          path:'/commodity/edit'
+      });
     },
     /** 审核按钮操作 */
     handleApproval(row) {
@@ -423,12 +430,12 @@ export default {
       this.reset();
       this.title = "修改海关商品备案";
       this.open = true;
-    //   const noticeId = row.noticeId || this.ids;
-    //   getNotice(noticeId).then((response) => {
-    //     this.form = response.data;
-    //     this.open = true;
-    //     this.title = "修改公告";
-    //   });
+      //   const noticeId = row.noticeId || this.ids;
+      //   getNotice(noticeId).then((response) => {
+      //     this.form = response.data;
+      //     this.open = true;
+      //     this.title = "修改公告";
+      //   });
     },
     /** 提交按钮 */
     submitForm: function () {
