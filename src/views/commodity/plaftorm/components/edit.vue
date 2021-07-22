@@ -1,9 +1,7 @@
 <template>
   <div class="app-container">
     <div>
-      <el-button size="small" type="primary" @click="back"
-        >返回</el-button
-      >
+      <el-button size="small" type="primary" @click="back">返回</el-button>
       <span class="title">{{ title }}</span>
     </div>
     <el-card class="box-card">
@@ -317,18 +315,66 @@
         >
       </div>
     </el-card>
+    <el-card class="box-card">
+      <div class="card-title">商品介绍信息</div>
+      <div class="baseinfo">图文信息</div>
+      <div class="imag-box">
+        <el-form
+          :model="ruleFormtwo"
+          :rules="rulestwo"
+          ref="ruleForm"
+          label-width="120px"
+          class="demo-ruleForm"
+        >
+          <el-row>
+            <el-col :span="18" :offset="1">
+              <el-form-item label="商品封面图" prop="spfmt">
+                <ImageUpload
+                  :value="ruleFormtwo.spfmt"
+                  :limit="limit"
+                  :fileSize="fileSize"
+                  :isShowTip="isShowTip"
+                />
+              </el-form-item>
+              <el-form-item label="商品轮播图" prop="spfmt">
+                <ImageUpload
+                  :value="ruleFormtwo.spfmt"
+                  :limit="6"
+                  :fileSize="fileSize"
+                  :isShowTip="isShowTip"
+                />
+              </el-form-item>
+              <el-form-item label="商品描述" prop="spfmt">
+                <ImageUpload
+                  :value="ruleFormtwo.spfmt"
+                  :limit="9"
+                  :fileSize="fileSize"
+                  :isShowTip="isShowTip"
+                />
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
+      </div>
+    </el-card>
   </div>
 </template>
 <script>
-
-import store from '@/store'
+import store from "@/store";
+import ImageUpload from "@/components/ImageUpload/index";
 
 export default {
- 
+  components: {
+    ImageUpload,
+  },
   data() {
     return {
       title: "海关商品管理  >  海关商品备案",
       isdisabled: false,
+      limit: 5,
+      fileSize: 20,
+      isShowTip: true,
+      value: [],
       ruleForm: {
         spmc: "",
         yuanchanguo: "",
@@ -402,6 +448,14 @@ export default {
         },
       ],
       selfid: 2,
+      ruleFormtwo: {
+        spfmt: [],
+      },
+      rulestwo: {
+        spfmt: [
+          { required: true, message: "请输入商品封面图", trigger: "change" },
+        ],
+      },
     };
   },
   methods: {
@@ -481,6 +535,9 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+.imag-box {
+  margin-top: 10px;
 }
 </style>
 <style scoped>
