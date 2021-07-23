@@ -88,9 +88,9 @@
                 </el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="海关备案编号" prop="skuCode">
+            <el-form-item label="海关备案编号" prop="upc">
               <el-input
-                v-model="ruleForm.skuCode"
+                v-model="ruleForm.upc"
                 placeholder="请输入"
                 style="width: 200px"
                 :disabled="isdisabled"
@@ -99,10 +99,10 @@
             <el-form-item label="备案日期" prop="createTime">
               <el-date-picker
                 v-model="ruleForm.createTime"
-                type="date"
+                type="datetime"
                 placeholder="选择日期"
                 style="width: 200px"
-                value-format="YYYY-MM-DD"
+                value-format="yyyy-MM-dd HH:mm:ss"
                 :disabled="isdisabled"
               >
               </el-date-picker>
@@ -322,7 +322,7 @@
         <el-form
           :model="ruleFormtwo"
           :rules="rulestwo"
-          ref="ruleForm"
+          ref="ruleFormrwo"
           label-width="120px"
           class="demo-ruleForm"
         >
@@ -362,6 +362,7 @@
 <script>
 import store from "@/store";
 import ImageUpload from "@/components/ImageUpload/index";
+import selfDirective from "@/utils/selfDirective";
 import {
   listcommodity,
   getcommodity,
@@ -386,21 +387,21 @@ export default {
       isShowTip: true,
       value: [],
       ruleForm: {
-        name: "",
-        countryOfOrigin: "",
-        commodityBaseCode: "",
-        skuCode: "",
-        readConverterExp: "",
-        commodityBrand: "",
-        supplierBaseCode: "",
-        warehouseBaseCode: "",
-        skuCode: "",
-        createTime: "",
-        statutoryUnit1: "",
-        statutoryNumber1: "",
-        statutoryUnit2: "",
-        statutoryNumber2: "",
-        remark: "",
+        name: null,
+        countryOfOrigin: null,
+        commodityBaseCode: null,
+        skuCode: null,
+        readConverterExp: null,
+        commodityBrand: null,
+        supplierBaseCode: null,
+        warehouseBaseCode: null,
+        upc: null,
+        createTime: null,
+        statutoryUnit1:null,
+        statutoryNumber1: null,
+        statutoryUnit2: null,
+        statutoryNumber2: null,
+        remark: null,
       },
       rules: {
         name: [
@@ -430,7 +431,7 @@ export default {
         warehouseBaseCode: [
           { required: true, message: "请输入所属仓库", trigger: "change" },
         ],
-        skuCode: [
+        upc: [
           { required: true, message: "请输入海关备案编号", trigger: "change" },
         ],
         statutoryUnit1: [
@@ -570,17 +571,16 @@ export default {
         }
       });
     },
+    //商品状态（0：待审核，1：商品信息待补全，2：归档）',
     savedraft() {
       this.$refs["ruleForm"].validate((valid) => {
         if (valid) {
           var obj = {
             ...this.ruleForm,
+            status:1,//区分草稿还是提交审核
             specificationList: this.tableData,
           };
-          obj
-          debugger
           addcommodity(obj).then((res) => {
-            debugger
             if (res.code == 200) {
               this.$message.success("保存草稿成功！");
             } else {
@@ -593,7 +593,27 @@ export default {
         }
       });
     },
-    submit() {},
+    submit() {
+       this.$refs["ruleForm"].validate((valid) => {
+        if (valid) {
+          var obj = {
+            ...this.ruleForm,
+            status:0,//区分草稿还是提交审核
+            specificationList: this.tableData,
+          };
+          addcommodity(obj).then((res) => {
+            if (res.code == 200) {
+              this.$message.success("保存草稿成功！");
+            } else {
+              this.$message.error(res.msg);
+            }
+          });
+        } else {
+          console.log("error submit!!");
+          return false;
+        }
+      });
+    },
   },
 };
 </script>
