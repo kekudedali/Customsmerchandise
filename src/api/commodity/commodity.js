@@ -46,8 +46,8 @@ export function delcommodity(noticeId) {
 // 修改公告
 export function approvalcommodity(data) {
     return request({
-        url: '/system/notice',
-        method: 'post',
+        url: '/commodity/plaftorm/commodity/audit',
+        method: 'put',
         data: data
     })
 }

@@ -2,14 +2,14 @@
   <div class="app-container">
     <div class="radio-box">
       <el-radio-group
-        v-model="queryParams.type"
+        v-model="queryParams.state"
         @change="changeStatus"
         size="small"
       >
-        <el-radio-button :label="'0'">海关商品备案 </el-radio-button>
-        <el-radio-button :label="'1'">审核中</el-radio-button>
-        <el-radio-button :label="'2'">审核驳回</el-radio-button>
-        <el-radio-button :label="'3'">已归档</el-radio-button>
+        <el-radio-button :label="''">海关商品备案 </el-radio-button>
+        <el-radio-button :label="'0'">审核中</el-radio-button>
+        <el-radio-button :label="'1'">审核驳回</el-radio-button>
+        <el-radio-button :label="'2'">已归档</el-radio-button>
       </el-radio-group>
     </div>
     <el-form
@@ -60,8 +60,8 @@
       ></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="noticeList">
-      <el-table-column label="序号" align="center" prop="noticeId" width="100">
+    <el-table v-loading="loading" :data="commodityList">
+      <el-table-column label="序号" align="center" prop="id" width="100">
         <template slot-scope="scope">
           <div>
             {{
@@ -110,9 +110,11 @@
                 v-for="(item, index) in scope.row.specificationList"
                 :key="index"
               >
-                {{
-                  item.specificationName + item.inventoryUsable + "g" + item.inventoryTotal
-                }}
+                {{ item.specificationName }}
+                <span style="margin-left: 10px">
+                  {{ item.inventoryUsable + " g" }}</span
+                >
+                <span style="margin-left: 10px">{{ item.inventoryTotal }}</span>
               </div>
             </div>
             <div class="stock">{{ scope.row.inventoryTotal }}</div>
@@ -120,36 +122,88 @@
         </template>
       </el-table-column>
       <el-table-column
+        label="提交时间"
+        align="center"
+        prop="commodityBrand"
+        width="150"
+        v-if="queryParams.state == '0'"
+      />
+      <el-table-column
+        label="驳回原因"
+        align="center"
+        prop="commodityBrand"
+        width="150"
+        v-if="queryParams.state == '1'"
+      />
+      <el-table-column
+        label="驳回时间"
+        align="center"
+        prop="commodityBrand"
+        width="150"
+        v-if="queryParams.state == '1'"
+      />
+      <el-table-column
         label="操作"
         align="center"
         class-name="small-padding fixed-width"
         width="200"
+        v-if="queryParams.state != '0'"
       >
         <template slot-scope="scope">
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-s-check"
-            @click="handleApproval(scope.row)"
-            v-hasPermi="['commodity:plaftorm:approval']"
-            >提交审核</el-button
-          >
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-edit"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['commodity:plaftorm:edit']"
-            >修改</el-button
-          >
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-delete"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['commodity:plaftorm:del']"
-            >删除</el-button
-          >
+          <span v-if="queryParams.state == ''">
+            <el-button
+              size="mini"
+              type="text"
+              icon="el-icon-s-check"
+              @click="handleApproval(scope.row)"
+              v-hasPermi="['commodity:plaftorm:approval']"
+              >提交审核</el-button
+            >
+            <el-button
+              size="mini"
+              type="text"
+              icon="el-icon-edit"
+              @click="handleUpdate(scope.row)"
+              v-hasPermi="['commodity:plaftorm:edit']"
+              >修改</el-button
+            >
+            <el-button
+              size="mini"
+              type="text"
+              icon="el-icon-delete"
+              @click="handleDelete(scope.row)"
+              v-hasPermi="['commodity:plaftorm:del']"
+              >删除</el-button
+            >
+          </span>
+          <span v-if="queryParams.state != '1'">
+            <el-button
+              size="mini"
+              type="text"
+              icon="el-icon-edit"
+              @click="handleUpdatereject(scope.row)"
+              v-hasPermi="['commodity:plaftorm:edit']"
+              >修改</el-button
+            >
+          </span>
+          <span v-if="queryParams.state != '2'">
+            <el-button
+              size="mini"
+              type="text"
+              icon="el-icon-edit"
+              @click="handlemore(scope.row)"
+              v-hasPermi="['commodity:plaftorm:edit']"
+              >更多</el-button
+            >
+            <el-button
+              size="mini"
+              type="text"
+              icon="el-icon-edit"
+              @click="handlecopy(scope.row)"
+              v-hasPermi="['commodity:plaftorm:edit']"
+              >复制</el-button
+            >
+          </span>
         </template>
       </el-table-column>
     </el-table>
@@ -251,58 +305,7 @@ export default {
       // 总条数
       total: 0,
       // 公告表格数据
-      noticeList: [
-        {
-          id: 1,
-          name: "薰衣草睡美人沐浴露",
-          status: "已归档",
-          commodityBaseCode: "52134864316",
-          commodityBrand: "宝格丽",
-          skuCode: "BGL205",
-          kc: "200",
-          kcsp: [
-            {
-              id: "1",
-              name: "薰衣草睡美人",
-              type: "沐浴露",
-              size: "260g",
-              num: "100",
-            },
-            {
-              id: "1",
-              name: "薰衣草睡美人",
-              type: "沐浴露",
-              size: "260g",
-              num: "100",
-            },
-          ],
-        },
-        {
-          id: 1,
-          name: "薰衣草睡美人沐浴露2",
-          status: "已归档",
-          commodityBaseCode: "52134864316",
-          commodityBrand: "宝格丽2",
-          skuCode: "BGL205",
-          kc: "200",
-          kcsp: [
-            {
-              id: "1",
-              name: "薰衣草睡美人",
-              type: "沐浴露",
-              size: "260g",
-              num: "100",
-            },
-            {
-              id: "1",
-              name: "薰衣草睡美人",
-              type: "沐浴露",
-              size: "260g",
-              num: "100",
-            },
-          ],
-        },
-      ],
+      commodityList: [],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -315,10 +318,8 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        noticeTitle: undefined,
-        createBy: undefined,
-        status: undefined,
-        type: "0",
+        noticeTitle: "",
+        state: "",
       },
       // 表单参数
       form: {},
@@ -359,7 +360,20 @@ export default {
     getList() {
       this.loading = true;
       listcommodity(this.queryParams).then((response) => {
-        this.noticeList = response.rows;
+        var commodityList = response.rows;
+        commodityList.map((item) => {
+          var inventoryTotal = 0;
+          item.specificationList.map((item) => {
+            item.inventoryTotal = item.inventoryTotal ? item.inventoryTotal : 0;
+            item.inventoryUsable = item.inventoryUsable
+              ? item.inventoryUsable
+              : 0;
+
+            inventoryTotal += item.inventoryTotal;
+          });
+          item.inventoryTotal = inventoryTotal;
+        });
+        this.commodityList = commodityList;
         this.total = response.total;
         this.loading = false;
       });
@@ -380,7 +394,7 @@ export default {
     // 表单重置
     reset() {
       this.form = {
-        noticeId: undefined,
+        id: undefined,
         noticeTitle: undefined,
         noticeType: undefined,
         noticeContent: undefined,
@@ -400,30 +414,35 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      this.ids = selection.map((item) => item.noticeId);
+      this.ids = selection.map((item) => item.id);
       this.single = selection.length != 1;
       this.multiple = !selection.length;
     },
     /** 新增按钮操作 */
     handleAdd() {
       this.reset();
-      //   this.open = true;
-      //   this.title = "添加公告";
       this.$router.push({
         path: "/commodity/edit",
+        query: {
+          type: "add",
+          title: "新增海关商品备案",
+        },
       });
     },
     /** 审核按钮操作 */
     handleApproval(row) {
-      const noticeId = row.noticeId || this.ids;
-      const noticeIds = row.noticeId || this.ids;
+      const ids = row.id || this.ids;
+      var obj = {
+        id: ids,
+        status: 2,
+      };
       this.$confirm("是否确认审核该商品?", "警告", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
       })
         .then(function () {
-          return approvalcommodity(noticeIds);
+          return approvalcommodity(obj);
         })
         .then(() => {
           this.getList();
@@ -434,20 +453,57 @@ export default {
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
-      this.title = "修改海关商品备案";
-      this.open = true;
-      //   const noticeId = row.noticeId || this.ids;
-      //   getcommodity(noticeId).then((response) => {
-      //     this.form = response.data;
-      //     this.open = true;
-      //     this.title = "修改公告";
-      //   });
+      this.$router.push({
+        path: "/commodity/edit",
+        query: {
+          type: "edit",
+          title: "修改海关商品备案",
+          data: row,
+        },
+      });
+    },
+    handleUpdatereject(row) {
+      this.reset();
+      this.$router.push({
+        path: "/commodity/edit",
+        query: {
+          type: "reject",
+          title: "驳回海关商品备案",
+          data: row,
+        },
+      });
+    },
+    handlemore(row) {
+      this.reset();
+      this.$router.push({
+        path: "/commodity/edit",
+        query: {
+          type: "detail",
+          title: "海关商品备案详情",
+          data: row,
+        },
+      });
+    },
+    handlecopy(row) {
+      this.$confirm("是否确认复制该商品?", "警告", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(function () {
+          return approvalcommodity(obj);
+        })
+        .then(() => {
+          this.getList();
+          this.msgSuccess("复制成功");
+        })
+        .catch(() => {});
     },
     /** 提交按钮 */
     submitForm: function () {
       this.$refs["form"].validate((valid) => {
         if (valid) {
-          if (this.form.noticeId != undefined) {
+          if (this.form.id != undefined) {
             updatecommodity(this.form).then((response) => {
               this.msgSuccess("修改成功");
               this.open = false;
@@ -465,14 +521,14 @@ export default {
     },
     /** 删除按钮操作 */
     handleDelete(row) {
-      const noticeIds = row.noticeId || this.ids;
+      const ids = row.id || this.ids;
       this.$confirm("是否确认删除该商品?", "警告", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
       })
         .then(function () {
-          return delcommodity(noticeIds);
+          return delcommodity(ids);
         })
         .then(() => {
           this.getList();

@@ -2,10 +2,10 @@
   <div class="app-container">
     <div>
       <el-button size="small" type="primary" @click="back">返回</el-button>
-      <span class="title">{{ title }}</span>
+      <span class="title">"海关商品管理 > 海关商品备案"</span>
     </div>
     <el-card class="box-card">
-      <div class="card-title">新增海关商品备案</div>
+      <div class="card-title">{{ title }}</div>
       <div class="baseinfo">基本信息</div>
       <el-form
         :model="ruleForm"
@@ -212,7 +212,9 @@
           label="规格名称"
         >
           <template slot-scope="scope">
+            <div v-if="type == 'reject'">{{ scope.row.specificationName }}</div>
             <el-input
+              v-else
               v-model="scope.row.specificationName"
               placeholder="请输入内容"
             ></el-input>
@@ -225,7 +227,11 @@
           label="规格数量"
         >
           <template slot-scope="scope">
+            <div v-if="type == 'reject'">
+              {{ scope.row.specificationAmount }}
+            </div>
             <el-input
+              v-else
               v-model="scope.row.specificationAmount"
               placeholder="请输入内容"
               v-Int
@@ -239,7 +245,9 @@
           label="物料号"
         >
           <template slot-scope="scope">
+            <div v-if="type == 'reject'">{{ scope.row.customsNumber }}</div>
             <el-input
+              v-else
               v-model="scope.row.customsNumber"
               placeholder="请输入内容"
             ></el-input>
@@ -252,7 +260,9 @@
           label="申报重量"
         >
           <template slot-scope="scope">
+            <div v-if="type == 'reject'">{{ scope.row.weight }}</div>
             <el-input
+              v-else
               v-enterNumber
               v-model="scope.row.weight"
               placeholder="请输入内容"
@@ -266,7 +276,9 @@
           label="供货成本"
         >
           <template slot-scope="scope">
+            <div v-if="type == 'reject'">{{ scope.row.freightCost }}</div>
             <el-input
+              v-else
               v-model="scope.row.freightCost"
               placeholder="请输入内容"
             ></el-input>
@@ -279,7 +291,9 @@
           label="库存"
         >
           <template slot-scope="scope">
+            <div v-if="type == 'reject'">{{ scope.row.inventoryTotal }}</div>
             <el-input
+              v-else
               v-Int
               v-model="scope.row.inventoryTotal"
               placeholder="请输入内容"
@@ -306,12 +320,44 @@
           </template>
         </el-table-column>
       </el-table>
+      <div class="reject-result" v-if="type == 'reject'">
+        <div class="baseinfo">驳回原因</div>
+        <el-form
+          :model="ruleFormtwo"
+          ref="ruleFormrwo"
+          label-width="120px"
+          class="demo-ruleForm"
+        >
+          <el-row>
+            <el-col :span="12" :offset="6">
+              <el-form-item label="驳回原因" prop="spfmt">
+                <el-input
+                  type="textarea"
+                  placeholder="请输入"
+                  v-model="ruleFormtwo.textarea"
+                  maxlength="200"
+                  show-word-limit
+                  :autosize="autosize"
+                >
+                </el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
+      </div>
       <div class="submit-btn">
         <el-button type="primary" size="small" @click="savedraft"
           >保存草稿箱</el-button
         >
         <el-button type="primary" size="small" @click="submit"
           >提交审核</el-button
+        >
+        <el-button
+          v-if="type == 'reject'"
+          type="primary"
+          size="small"
+          @click="resubmit"
+          >重新提交审核</el-button
         >
       </div>
     </el-card>
@@ -320,9 +366,9 @@
       <div class="baseinfo">图文信息</div>
       <div class="imag-box">
         <el-form
-          :model="ruleFormtwo"
-          :rules="rulestwo"
-          ref="ruleFormrwo"
+          :model="ruleFormthree"
+          :rules="rulesthree"
+          ref="ruleFormthree"
           label-width="120px"
           class="demo-ruleForm"
         >
@@ -380,7 +426,8 @@ export default {
   },
   data() {
     return {
-      title: "海关商品管理  >  海关商品备案",
+      title: "新增海关商品备案",
+      type: "add",
       isdisabled: false,
       limit: 5,
       fileSize: 20,
@@ -397,7 +444,7 @@ export default {
         warehouseBaseCode: null,
         upc: null,
         createTime: null,
-        statutoryUnit1:null,
+        statutoryUnit1: null,
         statutoryNumber1: null,
         statutoryUnit2: null,
         statutoryNumber2: null,
@@ -525,14 +572,26 @@ export default {
       ],
       selfid: 2,
       ruleFormtwo: {
+        textarea: "",
+      },
+      ruleFormthree: {
         spfmt: [],
       },
-      rulestwo: {
+      autosize: { minRows: 2, maxRows: 6 },
+      rulesthree: {
         spfmt: [
           { required: true, message: "请输入商品封面图", trigger: "change" },
         ],
       },
     };
+  },
+  created() {
+    this.type = this.$route.query.type;
+    this.title = this.$route.query.title;
+    if (this.$route.query.type == "edit") {
+      this.ruleForm = this.$route.query.data;
+      this.tableData = this.$route.query.data.specificationList;
+    }
   },
   methods: {
     back() {
@@ -577,7 +636,7 @@ export default {
         if (valid) {
           var obj = {
             ...this.ruleForm,
-            status:1,//区分草稿还是提交审核
+            status: 1, //区分草稿还是提交审核
             specificationList: this.tableData,
           };
           addcommodity(obj).then((res) => {
@@ -595,11 +654,33 @@ export default {
       });
     },
     submit() {
-       this.$refs["ruleForm"].validate((valid) => {
+      this.$refs["ruleForm"].validate((valid) => {
         if (valid) {
           var obj = {
             ...this.ruleForm,
-            status:0,//区分草稿还是提交审核
+            status: 0, //区分草稿还是提交审核
+            specificationList: this.tableData,
+          };
+          addcommodity(obj).then((res) => {
+            if (res.code == 200) {
+              this.$message.success("提交审核成功！");
+              this.back();
+            } else {
+              this.$message.error(res.msg);
+            }
+          });
+        } else {
+          console.log("error submit!!");
+          return false;
+        }
+      });
+    },
+    resubmit() {
+      this.$refs["ruleForm"].validate((valid) => {
+        if (valid) {
+          var obj = {
+            ...this.ruleForm,
+            status: 0, //区分草稿还是提交审核
             specificationList: this.tableData,
           };
           addcommodity(obj).then((res) => {
@@ -658,6 +739,9 @@ export default {
 }
 .imag-box {
   margin-top: 10px;
+}
+.reject-result {
+  margin-top: 20px;
 }
 </style>
 <style scoped>
