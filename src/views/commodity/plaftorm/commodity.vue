@@ -72,7 +72,7 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column label="商品名称" align="center" prop="name">
+      <el-table-column label="商品名称" align="center" prop="name" >
         <template slot-scope="scope">
           {{ scope.row.name }}
           <span
@@ -124,22 +124,22 @@
       <el-table-column
         label="提交时间"
         align="center"
-        prop="commodityBrand"
-        width="150"
+        prop="createTime"
+        width="180"
         v-if="queryParams.state == '0'"
       />
       <el-table-column
         label="驳回原因"
         align="center"
-        prop="commodityBrand"
+        prop="updateBy"
         width="150"
         v-if="queryParams.state == '1'"
       />
       <el-table-column
         label="驳回时间"
         align="center"
-        prop="commodityBrand"
-        width="150"
+        prop="updateTime"
+        width="180"
         v-if="queryParams.state == '1'"
       />
       <el-table-column
@@ -150,7 +150,7 @@
         v-if="queryParams.state != '0'"
       >
         <template slot-scope="scope">
-          <span v-if="queryParams.state == ''">
+          <span v-if="queryParams.state === ''">
             <el-button
               size="mini"
               type="text"
@@ -176,7 +176,7 @@
               >删除</el-button
             >
           </span>
-          <span v-if="queryParams.state != '1'">
+          <span v-if="queryParams.state == '1'">
             <el-button
               size="mini"
               type="text"
@@ -186,11 +186,11 @@
               >修改</el-button
             >
           </span>
-          <span v-if="queryParams.state != '2'">
+          <span v-if="queryParams.state == '2'">
             <el-button
               size="mini"
               type="text"
-              icon="el-icon-edit"
+              icon="el-icon-more"
               @click="handlemore(scope.row)"
               v-hasPermi="['commodity:plaftorm:edit']"
               >更多</el-button
@@ -198,7 +198,7 @@
             <el-button
               size="mini"
               type="text"
-              icon="el-icon-edit"
+              icon="el-icon-copy-document"
               @click="handlecopy(scope.row)"
               v-hasPermi="['commodity:plaftorm:edit']"
               >复制</el-button

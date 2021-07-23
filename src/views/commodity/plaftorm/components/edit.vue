@@ -212,7 +212,9 @@
           label="规格名称"
         >
           <template slot-scope="scope">
-            <div v-if="type == 'reject'">{{ scope.row.specificationName }}</div>
+            <div v-if="type == 'reject' || type == 'detail'">
+              {{ scope.row.specificationName }}
+            </div>
             <el-input
               v-else
               v-model="scope.row.specificationName"
@@ -227,7 +229,7 @@
           label="规格数量"
         >
           <template slot-scope="scope">
-            <div v-if="type == 'reject'">
+            <div v-if="type == 'reject' || type == 'detail'">
               {{ scope.row.specificationAmount }}
             </div>
             <el-input
@@ -245,7 +247,9 @@
           label="物料号"
         >
           <template slot-scope="scope">
-            <div v-if="type == 'reject'">{{ scope.row.customsNumber }}</div>
+            <div v-if="type == 'reject' || type == 'detail'">
+              {{ scope.row.customsNumber }}
+            </div>
             <el-input
               v-else
               v-model="scope.row.customsNumber"
@@ -260,7 +264,9 @@
           label="申报重量"
         >
           <template slot-scope="scope">
-            <div v-if="type == 'reject'">{{ scope.row.weight }}</div>
+            <div v-if="type == 'reject' || type == 'detail'">
+              {{ scope.row.weight }}
+            </div>
             <el-input
               v-else
               v-enterNumber
@@ -276,7 +282,9 @@
           label="供货成本"
         >
           <template slot-scope="scope">
-            <div v-if="type == 'reject'">{{ scope.row.freightCost }}</div>
+            <div v-if="type == 'reject' || type == 'detail'">
+              {{ scope.row.freightCost }}
+            </div>
             <el-input
               v-else
               v-model="scope.row.freightCost"
@@ -291,7 +299,9 @@
           label="库存"
         >
           <template slot-scope="scope">
-            <div v-if="type == 'reject'">{{ scope.row.inventoryTotal }}</div>
+            <div v-if="type == 'reject' || type == 'detail'">
+              {{ scope.row.inventoryTotal }}
+            </div>
             <el-input
               v-else
               v-Int
@@ -306,6 +316,7 @@
           align="center"
           width="200px"
           label="操作"
+          v-if="type != 'reject' && type != 'detail'"
         >
           <template slot-scope="scope">
             <el-button type="primary" size="mini" @click="addnum"
@@ -345,15 +356,23 @@
           </el-row>
         </el-form>
       </div>
-      <div class="submit-btn">
-        <el-button type="primary" size="small" @click="savedraft"
+      <div class="submit-btn" v-if="type != 'detail'">
+        <el-button
+          type="primary"
+          v-if="type != 'reject'"
+          size="small"
+          @click="savedraft"
           >保存草稿箱</el-button
         >
-        <el-button type="primary" size="small" @click="submit"
+        <el-button
+          type="primary"
+          v-if="type != 'reject'"
+          size="small"
+          @click="submit"
           >提交审核</el-button
         >
         <el-button
-          v-if="type == 'reject'"
+          v-if="type == 'reject' || type == 'detail'"
           type="primary"
           size="small"
           @click="resubmit"
@@ -361,7 +380,7 @@
         >
       </div>
     </el-card>
-    <el-card class="box-card">
+    <el-card class="box-card" v-if="type == 'completion'">
       <div class="card-title">商品介绍信息</div>
       <div class="baseinfo">图文信息</div>
       <div class="imag-box">
@@ -587,10 +606,14 @@ export default {
   },
   created() {
     this.type = this.$route.query.type;
+    var type = this.$route.query.type;
     this.title = this.$route.query.title;
-    if (this.$route.query.type == "edit") {
+    if (type == "edit" || type == "reject" || type == "detail") {
       this.ruleForm = this.$route.query.data;
       this.tableData = this.$route.query.data.specificationList;
+      if (type == "detail") {
+        this.isdisabled = true;
+      }
     }
   },
   methods: {
@@ -654,10 +677,25 @@ export default {
       });
     },
     submit() {
+      var ruleForm = this.ruleForm;
       this.$refs["ruleForm"].validate((valid) => {
         if (valid) {
           var obj = {
-            ...this.ruleForm,
+            name: ruleForm.name,
+            countryOfOrigin: ruleForm.countryOfOrigin,
+            commodityBaseCode: ruleForm.commodityBaseCode,
+            skuCode: ruleForm.skuCode,
+            readConverterExp: ruleForm.readConverterExp,
+            commodityBrand: ruleForm.commodityBrand,
+            supplierBaseCode: ruleForm.supplierBaseCode,
+            warehouseBaseCode: ruleForm.warehouseBaseCode,
+            upc: ruleForm.upc,
+            createTime: ruleForm.createTime,
+            statutoryUnit1: ruleForm.statutoryUnit1,
+            statutoryNumber1: ruleForm.statutoryNumber1,
+            statutoryUnit2: ruleForm.statutoryUnit2,
+            statutoryNumber2: ruleForm.statutoryNumber2,
+            remark: ruleForm.remark,
             status: 0, //区分草稿还是提交审核
             specificationList: this.tableData,
           };
@@ -679,7 +717,22 @@ export default {
       this.$refs["ruleForm"].validate((valid) => {
         if (valid) {
           var obj = {
-            ...this.ruleForm,
+            id:id.name,
+            name: ruleForm.name,
+            countryOfOrigin: ruleForm.countryOfOrigin,
+            commodityBaseCode: ruleForm.commodityBaseCode,
+            skuCode: ruleForm.skuCode,
+            readConverterExp: ruleForm.readConverterExp,
+            commodityBrand: ruleForm.commodityBrand,
+            supplierBaseCode: ruleForm.supplierBaseCode,
+            warehouseBaseCode: ruleForm.warehouseBaseCode,
+            upc: ruleForm.upc,
+            createTime: ruleForm.createTime,
+            statutoryUnit1: ruleForm.statutoryUnit1,
+            statutoryNumber1: ruleForm.statutoryNumber1,
+            statutoryUnit2: ruleForm.statutoryUnit2,
+            statutoryNumber2: ruleForm.statutoryNumber2,
+            remark: ruleForm.remark,
             status: 0, //区分草稿还是提交审核
             specificationList: this.tableData,
           };
