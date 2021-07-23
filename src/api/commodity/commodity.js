@@ -1,16 +1,16 @@
 import request from '@/utils/request'
 
 // 查询公告列表
-export function listNotice(query) {
+export function listcommodity(query) {
     return request({
-        url: '/system/notice/list',
+        url: '/commodity/plaftorm/commodity/list',
         method: 'get',
         params: query
     })
 }
 
 // 查询公告详细
-export function getNotice(noticeId) {
+export function getcommodity(noticeId) {
     return request({
         url: '/system/notice/' + noticeId,
         method: 'get'
@@ -18,16 +18,16 @@ export function getNotice(noticeId) {
 }
 
 // 新增公告
-export function addNotice(data) {
+export function addcommodity(data) {
     return request({
-        url: '/system/notice',
+        url: '/commodity/plaftorm/commodity',
         method: 'post',
         data: data
     })
 }
 
 // 修改公告
-export function updateNotice(data) {
+export function updatecommodity(data) {
     return request({
         url: '/system/notice',
         method: 'put',
@@ -36,7 +36,7 @@ export function updateNotice(data) {
 }
 
 // 删除公告
-export function delNotice(noticeId) {
+export function delcommodity(noticeId) {
     return request({
         url: '/system/notice/' + noticeId,
         method: 'delete'
@@ -44,7 +44,7 @@ export function delNotice(noticeId) {
 }
 
 // 修改公告
-export function approvalNotice(data) {
+export function approvalcommodity(data) {
     return request({
         url: '/system/notice',
         method: 'post',
@@ -53,7 +53,7 @@ export function approvalNotice(data) {
 }
 
 // 复制
-export function copyNotice(data) {
+export function copycommodity(data) {
     return request({
         url: '/system/notice',
         method: 'post',

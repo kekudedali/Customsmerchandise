@@ -16,39 +16,39 @@
       >
         <el-row>
           <el-col :span="6" :offset="6">
-            <el-form-item label="商品名称" prop="spmc">
+            <el-form-item label="商品名称" prop="name">
               <el-input
-                v-model="ruleForm.spmc"
+                v-model="ruleForm.name"
                 placeholder="请输入"
                 style="width: 200px"
                 :disabled="isdisabled"
               ></el-input>
             </el-form-item>
-            <el-form-item label="平台编码" prop="pingtaibianma">
+            <el-form-item label="平台编码" prop="commodityBaseCode">
               <el-input
-                v-model="ruleForm.pingtaibianma"
+                v-model="ruleForm.commodityBaseCode"
                 placeholder="请输入"
                 style="width: 200px"
                 :disabled="isdisabled"
               ></el-input>
             </el-form-item>
-            <el-form-item label="商品条码" prop="shangpintm">
+            <el-form-item label="商品条码" prop="skuCode">
               <el-input
-                v-model="ruleForm.shangpintm"
+                v-model="ruleForm.skuCode"
                 placeholder="请输入"
                 style="width: 200px"
                 :disabled="isdisabled"
               ></el-input>
             </el-form-item>
-            <el-form-item label="商品品牌" prop="shangpinpinpai">
+            <el-form-item label="商品品牌" prop="commodityBrand">
               <el-select
-                v-model="ruleForm.shangpinpinpai"
+                v-model="ruleForm.commodityBrand"
                 placeholder="请选择"
                 style="width: 200px"
                 :disabled="isdisabled"
               >
                 <el-option
-                  v-for="item in shangpinpinpaioptions"
+                  v-for="item in commodityBrandoptions"
                   :key="item.value"
                   :label="item.label"
                   :value="item.value"
@@ -56,15 +56,15 @@
                 </el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="所属供应商" prop="gongyingshang">
+            <el-form-item label="所属供应商" prop="supplierBaseCode">
               <el-select
-                v-model="ruleForm.gongyingshang"
+                v-model="ruleForm.supplierBaseCode"
                 placeholder="请选择"
                 style="width: 200px"
                 :disabled="isdisabled"
               >
                 <el-option
-                  v-for="item in gongyingshangoptions"
+                  v-for="item in supplierBaseCodeoptions"
                   :key="item.value"
                   :label="item.label"
                   :value="item.value"
@@ -72,15 +72,15 @@
                 </el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="所属仓库" prop="cangku">
+            <el-form-item label="所属仓库" prop="warehouseBaseCode">
               <el-select
-                v-model="ruleForm.cangku"
+                v-model="ruleForm.warehouseBaseCode"
                 placeholder="请选择"
                 style="width: 200px"
                 :disabled="isdisabled"
               >
                 <el-option
-                  v-for="item in gcangkuoptions"
+                  v-for="item in gwarehouseBaseCodeoptions"
                   :key="item.value"
                   :label="item.label"
                   :value="item.value"
@@ -88,17 +88,17 @@
                 </el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="海关备案编号" prop="haiguanbeianbianhao">
+            <el-form-item label="海关备案编号" prop="skuCode">
               <el-input
-                v-model="ruleForm.haiguanbeianbianhao"
+                v-model="ruleForm.skuCode"
                 placeholder="请输入"
                 style="width: 200px"
                 :disabled="isdisabled"
               ></el-input>
             </el-form-item>
-            <el-form-item label="备案日期" prop="beianriqi">
+            <el-form-item label="备案日期" prop="createTime">
               <el-date-picker
-                v-model="ruleForm.beianriqi"
+                v-model="ruleForm.createTime"
                 type="date"
                 placeholder="选择日期"
                 style="width: 200px"
@@ -109,15 +109,15 @@
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="原产国" prop="yuanchanguo">
+            <el-form-item label="原产国" prop="countryOfOrigin">
               <el-select
-                v-model="ruleForm.yuanchanguo"
+                v-model="ruleForm.countryOfOrigin"
                 placeholder="请选择"
                 style="width: 200px"
                 :disabled="isdisabled"
               >
                 <el-option
-                  v-for="item in yuanchanguooptions"
+                  v-for="item in countryOfOriginoptions"
                   :key="item.value"
                   :label="item.label"
                   :value="item.value"
@@ -125,15 +125,15 @@
                 </el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="申报单位" prop="shengbaodanwei">
+            <el-form-item label="申报单位" prop="readConverterExp">
               <el-select
-                v-model="ruleForm.shengbaodanwei"
+                v-model="ruleForm.readConverterExp"
                 placeholder="请选择"
                 style="width: 200px"
                 :disabled="isdisabled"
               >
                 <el-option
-                  v-for="item in shengbaodanweioptions"
+                  v-for="item in readConverterExpoptions"
                   :key="item.value"
                   :label="item.label"
                   :value="item.value"
@@ -141,15 +141,15 @@
                 </el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="法定第一单位" prop="diyidanwei">
+            <el-form-item label="法定第一单位" prop="statutoryUnit1">
               <el-select
-                v-model="ruleForm.diyidanwei"
+                v-model="ruleForm.statutoryUnit1"
                 placeholder="请选择"
                 style="width: 200px"
                 :disabled="isdisabled"
               >
                 <el-option
-                  v-for="item in diyidanweioptions"
+                  v-for="item in statutoryUnit1options"
                   :key="item.value"
                   :label="item.label"
                   :value="item.value"
@@ -157,24 +157,24 @@
                 </el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="法定第一数量" prop="diyishuliang">
+            <el-form-item label="法定第一数量" prop="statutoryNumber1">
               <el-input
-                v-model="ruleForm.diyishuliang"
+                v-model="ruleForm.statutoryNumber1"
                 placeholder="请输入"
                 style="width: 200px"
                 v-Int
                 :disabled="isdisabled"
               ></el-input>
             </el-form-item>
-            <el-form-item label="法定第二单位" prop="dierdanwei">
+            <el-form-item label="法定第二单位" prop="statutoryUnit2">
               <el-select
-                v-model="ruleForm.dierdanwei"
+                v-model="ruleForm.statutoryUnit2"
                 placeholder="请选择"
                 style="width: 200px"
                 :disabled="isdisabled"
               >
                 <el-option
-                  v-for="item in dierdanweioptions"
+                  v-for="item in statutoryUnit2options"
                   :key="item.value"
                   :label="item.label"
                   :value="item.value"
@@ -182,18 +182,18 @@
                 </el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="法定第二数量" prop="diershuliang">
+            <el-form-item label="法定第二数量" prop="statutoryNumber2">
               <el-input
-                v-model="ruleForm.diershuliang"
+                v-model="ruleForm.statutoryNumber2"
                 placeholder="请输入"
                 style="width: 200px"
                 v-Int
                 :disabled="isdisabled"
               ></el-input>
             </el-form-item>
-            <el-form-item label="备注" prop="remarks">
+            <el-form-item label="备注" prop="remark">
               <el-input
-                v-model="ruleForm.remarks"
+                v-model="ruleForm.remark"
                 placeholder="请输入"
                 style="width: 200px"
                 :disabled="isdisabled"
@@ -206,47 +206,47 @@
       <div class="card-title" style="margin: 10px 0px 10px 10px">规格列表</div>
       <el-table :data="tableData" style="width: 100%" border>
         <el-table-column
-          prop="guigemingcheng"
+          prop="specificationName"
           header-align="center"
           align="center"
           label="规格名称"
         >
           <template slot-scope="scope">
             <el-input
-              v-model="scope.row.guigemingcheng"
+              v-model="scope.row.specificationName"
               placeholder="请输入内容"
             ></el-input>
           </template>
         </el-table-column>
         <el-table-column
-          prop="guigeshuliang"
+          prop="specificationAmount"
           header-align="center"
           align="center"
           label="规格数量"
         >
           <template slot-scope="scope">
             <el-input
-              v-model="scope.row.guigeshuliang"
+              v-model="scope.row.specificationAmount"
               placeholder="请输入内容"
               v-Int
             ></el-input>
           </template>
         </el-table-column>
         <el-table-column
-          prop="wuliaohao"
+          prop="customsNumber"
           header-align="center"
           align="center"
           label="物料号"
         >
           <template slot-scope="scope">
             <el-input
-              v-model="scope.row.wuliaohao"
+              v-model="scope.row.customsNumber"
               placeholder="请输入内容"
             ></el-input>
           </template>
         </el-table-column>
         <el-table-column
-          prop="shengbaozhongliang"
+          prop="weight"
           header-align="center"
           align="center"
           label="申报重量"
@@ -254,26 +254,26 @@
           <template slot-scope="scope">
             <el-input
               v-enterNumber
-              v-model="scope.row.shengbaozhongliang"
+              v-model="scope.row.weight"
               placeholder="请输入内容"
             ></el-input>
           </template>
         </el-table-column>
         <el-table-column
-          prop="gonghuochenben"
+          prop="freightCost"
           header-align="center"
           align="center"
           label="供货成本"
         >
           <template slot-scope="scope">
             <el-input
-              v-model="scope.row.gonghuochenben"
+              v-model="scope.row.freightCost"
               placeholder="请输入内容"
             ></el-input>
           </template>
         </el-table-column>
         <el-table-column
-          prop="kucun"
+          prop="inventoryTotal"
           header-align="center"
           align="center"
           label="库存"
@@ -281,7 +281,7 @@
           <template slot-scope="scope">
             <el-input
               v-Int
-              v-model="scope.row.kucun"
+              v-model="scope.row.inventoryTotal"
               placeholder="请输入内容"
             ></el-input>
           </template>
@@ -362,6 +362,16 @@
 <script>
 import store from "@/store";
 import ImageUpload from "@/components/ImageUpload/index";
+import {
+  listcommodity,
+  getcommodity,
+  delcommodity,
+  addcommodity,
+  updatecommodity,
+  exportcommodity,
+  approvalcommodity,
+  copycommodity,
+} from "@/api/commodity/commodity";
 
 export default {
   components: {
@@ -376,75 +386,140 @@ export default {
       isShowTip: true,
       value: [],
       ruleForm: {
-        spmc: "",
-        yuanchanguo: "",
-        pingtaibianma: "",
-        shangpintm: "",
-        shengbaodanwei: "",
-        shangpinpinpai: "",
-        gongyingshang: "",
-        cangku: "",
-        haiguanbeianbianhao: "",
-        beianriqi: "",
-        diyidanwei: "",
-        diyishuliang: "",
-        dierdanwei: "",
-        diershuliang: "",
-        remarks: "",
+        name: "",
+        countryOfOrigin: "",
+        commodityBaseCode: "",
+        skuCode: "",
+        readConverterExp: "",
+        commodityBrand: "",
+        supplierBaseCode: "",
+        warehouseBaseCode: "",
+        skuCode: "",
+        createTime: "",
+        statutoryUnit1: "",
+        statutoryNumber1: "",
+        statutoryUnit2: "",
+        statutoryNumber2: "",
+        remark: "",
       },
       rules: {
-        spmc: [
+        name: [
           { required: true, message: "请输入商品名称", trigger: "change" },
         ],
-        pingtaibianma: [
+        commodityBaseCode: [
           { required: true, message: "请输入平台编码", trigger: "change" },
         ],
-        yuanchanguo: [
+        countryOfOrigin: [
           { required: true, message: "请输入原产国", trigger: "change" },
         ],
-        shengbaodanwei: [
+        readConverterExp: [
           { required: true, message: "请输入申报单位", trigger: "change" },
         ],
-        shangpintm: [
+        skuCode: [
           { required: true, message: "请输入商品条码", trigger: "change" },
         ],
-        gongyingshang: [
+        supplierBaseCode: [
           { required: true, message: "请输入所属供应商", trigger: "change" },
         ],
-        shangpinpinpai: [
+        commodityBrand: [
           { required: true, message: "请输入商品品牌", trigger: "change" },
         ],
-        shangpinpinpai: [
+        commodityBrand: [
           { required: true, message: "请输入所属供应商", trigger: "change" },
         ],
-        cangku: [
+        warehouseBaseCode: [
           { required: true, message: "请输入所属仓库", trigger: "change" },
         ],
-        haiguanbeianbianhao: [
+        skuCode: [
           { required: true, message: "请输入海关备案编号", trigger: "change" },
         ],
-        diyidanwei: [
+        statutoryUnit1: [
           { required: true, message: "请输入法定第一单位", trigger: "change" },
         ],
-        diyishuliang: [
+        statutoryNumber1: [
           { required: true, message: "请输入法定第一数量", trigger: "change" },
         ],
       },
-      yuanchanguooptions: [], //原产国
-      shengbaodanweioptions: [], //申报单位
-      shangpinpinpaioptions: [], //商品品牌
-      gongyingshangoptions: [], //所属供应商
-      gcangkuoptions: [], //所属仓库
-      diyidanweioptions: [], //法定第一单位
-      dierdanweioptions: [], //法定第二单位
+      countryOfOriginoptions: [
+        {
+          label: "中国",
+          value: "1",
+        },
+        {
+          label: "美国",
+          value: "2",
+        },
+      ], //原产国
+      readConverterExpoptions: [
+        {
+          label: "测试单位1",
+          value: "1",
+        },
+        {
+          label: "测试单位2",
+          value: "2",
+        },
+      ], //申报单位
+      commodityBrandoptions: [
+        {
+          label: "测试品牌1",
+          value: "1",
+        },
+        {
+          label: "测试品牌2",
+          value: "2",
+        },
+      ], //商品品牌
+      supplierBaseCodeoptions: [
+        {
+          label: "测试所属供应商1",
+          value: "1",
+        },
+        {
+          label: "测试所属供应商2",
+          value: "2",
+        },
+      ], //所属供应商
+      gwarehouseBaseCodeoptions: [
+        {
+          label: "测试所属属仓库1",
+          value: "1",
+        },
+        {
+          label: "测试所属属仓库2",
+          value: "2",
+        },
+      ], //所属仓库
+      statutoryUnit1options: [
+        {
+          label: "个",
+          value: "1",
+        },
+        {
+          label: "枚",
+          value: "2",
+        },
+      ], //法定第一单位
+      statutoryUnit2options: [
+        {
+          label: "颗",
+          value: "1",
+        },
+        {
+          label: "粒",
+          value: "2",
+        },
+      ], //法定第二单位
       tableData: [
         {
           selfid: 1,
-          guigemingcheng: "",
-          wuliaohao: "",
-          shengbaozhongliang: "",
-          gonghuochenben: "",
-          guigemingcheng: "",
+          specificationName: "",
+          customsNumber: "",
+          specificationAmount: "",
+          weight: "",
+          freightCost: "",
+          specificationName: "",
+          inventoryTotal: "",
         },
       ],
       selfid: 2,
@@ -466,11 +541,12 @@ export default {
     addnum() {
       var value = {
         selfid: this.selfid + 1,
-        guigemingcheng: "",
-        wuliaohao: "",
-        shengbaozhongliang: "",
-        gonghuochenben: "",
-        guigemingcheng: "",
+        specificationName: "",
+        specificationAmount: "",
+        customsNumber: "",
+        weight: "",
+        freightCost: "",
+        inventoryTotal: "",
       };
       this.selfid = this.selfid + 1;
       this.tableData.push(value);
@@ -494,7 +570,29 @@ export default {
         }
       });
     },
-    savedraft() {},
+    savedraft() {
+      this.$refs["ruleForm"].validate((valid) => {
+        if (valid) {
+          var obj = {
+            ...this.ruleForm,
+            specificationList: this.tableData,
+          };
+          obj
+          debugger
+          addcommodity(obj).then((res) => {
+            debugger
+            if (res.code == 200) {
+              this.$message.success("保存草稿成功！");
+            } else {
+              this.$message.error(res.msg);
+            }
+          });
+        } else {
+          console.log("error submit!!");
+          return false;
+        }
+      });
+    },
     submit() {},
   },
 };

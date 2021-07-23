@@ -72,9 +72,9 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column label="商品名称" align="center" prop="spmc">
+      <el-table-column label="商品名称" align="center" prop="name">
         <template slot-scope="scope">
-          {{ scope.row.spmc }}
+          {{ scope.row.name }}
           <span
             class="copy"
             @click="handelcopy"
@@ -86,30 +86,36 @@
       <el-table-column
         label="平台编码"
         align="center"
-        prop="ptbm"
-        width="150"
+        prop="commodityBaseCode"
+        width="200"
+        :show-overflow-tooltip="true"
       />
       <el-table-column
         label="商品品牌"
         align="center"
-        prop="sppp"
+        prop="commodityBrand"
         width="150"
       />
       <el-table-column
         label="商品条码"
         align="center"
-        prop="sptm"
+        prop="skuCode"
         width="150"
       />
       <el-table-column label="库存" align="center" prop="kc" width="150">
         <template slot-scope="scope">
           <el-tooltip placement="bottom" effect="light">
             <div slot="content">
-              <div v-for="(item, index) in scope.row.kcsp" :key="index">
-                {{ item.name + item.type + item.size + item.num }}
+              <div
+                v-for="(item, index) in scope.row.specificationList"
+                :key="index"
+              >
+                {{
+                  item.specificationName + item.inventoryUsable + "g" + item.inventoryTotal
+                }}
               </div>
             </div>
-            <div class="stock">{{ scope.row.kc }}</div>
+            <div class="stock">{{ scope.row.inventoryTotal }}</div>
           </el-tooltip>
         </template>
       </el-table-column>
@@ -161,9 +167,9 @@
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-row>
           <el-col :span="12">
-            <el-form-item label="商品名称" prop="spmc">
+            <el-form-item label="商品名称" prop="name">
               <el-input
-                v-model="form.spmc"
+                v-model="form.name"
                 placeholder="请输入商品名称"
                 style="width: 200px"
               />
@@ -214,14 +220,14 @@
 
 <script>
 import {
-  listNotice,
-  getNotice,
-  delNotice,
-  addNotice,
-  updateNotice,
-  exportNotice,
-  approvalNotice,
-  copyNotice,
+  listcommodity,
+  getcommodity,
+  delcommodity,
+  addcommodity,
+  updatecommodity,
+  exportcommodity,
+  approvalcommodity,
+  copycommodity,
 } from "@/api/commodity/commodity";
 import Editor from "@/components/Editor";
 
@@ -248,11 +254,11 @@ export default {
       noticeList: [
         {
           id: 1,
-          spmc: "薰衣草睡美人沐浴露",
+          name: "薰衣草睡美人沐浴露",
           status: "已归档",
-          ptbm: "52134864316",
-          sppp: "宝格丽",
-          sptm: "BGL205",
+          commodityBaseCode: "52134864316",
+          commodityBrand: "宝格丽",
+          skuCode: "BGL205",
           kc: "200",
           kcsp: [
             {
@@ -273,11 +279,11 @@ export default {
         },
         {
           id: 1,
-          spmc: "薰衣草睡美人沐浴露2",
+          name: "薰衣草睡美人沐浴露2",
           status: "已归档",
-          ptbm: "52134864316",
-          sppp: "宝格丽2",
-          sptm: "BGL205",
+          commodityBaseCode: "52134864316",
+          commodityBrand: "宝格丽2",
+          skuCode: "BGL205",
           kc: "200",
           kcsp: [
             {
@@ -318,7 +324,7 @@ export default {
       form: {},
       // 表单校验
       rules: {
-        spmc: [
+        name: [
           { required: true, message: "商品名称不能为空", trigger: "blur" },
         ],
         noticeType: [
@@ -329,7 +335,7 @@ export default {
     };
   },
   created() {
-    // this.getList();
+    this.getList();
     this.getDicts("sys_notice_status").then((response) => {
       this.statusOptions = response.data;
     });
@@ -340,7 +346,7 @@ export default {
   methods: {
     /** 查询公告列表 */
     handelcopy() {
-      copyNotice().then((res) => {
+      copycommodity().then((res) => {
         this.msgSuccess("复制成功");
       });
     },
@@ -352,7 +358,7 @@ export default {
     /** 查询公告列表 */
     getList() {
       this.loading = true;
-      listNotice(this.queryParams).then((response) => {
+      listcommodity(this.queryParams).then((response) => {
         this.noticeList = response.rows;
         this.total = response.total;
         this.loading = false;
@@ -404,7 +410,7 @@ export default {
       //   this.open = true;
       //   this.title = "添加公告";
       this.$router.push({
-          path:'/commodity/edit'
+        path: "/commodity/edit",
       });
     },
     /** 审核按钮操作 */
@@ -417,7 +423,7 @@ export default {
         type: "warning",
       })
         .then(function () {
-          return approvalNotice(noticeIds);
+          return approvalcommodity(noticeIds);
         })
         .then(() => {
           this.getList();
@@ -431,7 +437,7 @@ export default {
       this.title = "修改海关商品备案";
       this.open = true;
       //   const noticeId = row.noticeId || this.ids;
-      //   getNotice(noticeId).then((response) => {
+      //   getcommodity(noticeId).then((response) => {
       //     this.form = response.data;
       //     this.open = true;
       //     this.title = "修改公告";
@@ -442,13 +448,13 @@ export default {
       this.$refs["form"].validate((valid) => {
         if (valid) {
           if (this.form.noticeId != undefined) {
-            updateNotice(this.form).then((response) => {
+            updatecommodity(this.form).then((response) => {
               this.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
-            addNotice(this.form).then((response) => {
+            addcommodity(this.form).then((response) => {
               this.msgSuccess("新增成功");
               this.open = false;
               this.getList();
@@ -466,7 +472,7 @@ export default {
         type: "warning",
       })
         .then(function () {
-          return delNotice(noticeIds);
+          return delcommodity(noticeIds);
         })
         .then(() => {
           this.getList();
