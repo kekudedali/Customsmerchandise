@@ -583,6 +583,7 @@ export default {
           addcommodity(obj).then((res) => {
             if (res.code == 200) {
               this.$message.success("保存草稿成功！");
+              this.back();
             } else {
               this.$message.error(res.msg);
             }
@@ -603,7 +604,8 @@ export default {
           };
           addcommodity(obj).then((res) => {
             if (res.code == 200) {
-              this.$message.success("保存草稿成功！");
+              this.$message.success("提交审核成功！");
+              this.back();
             } else {
               this.$message.error(res.msg);
             }
