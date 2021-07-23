@@ -212,7 +212,11 @@
           label="规格名称"
         >
           <template slot-scope="scope">
-            <div v-if="type == 'reject' || type == 'detail'">
+            <div
+              v-if="
+                type == 'reject' || type == 'detail' || type == 'completion'
+              "
+            >
               {{ scope.row.specificationName }}
             </div>
             <el-input
@@ -229,7 +233,11 @@
           label="规格数量"
         >
           <template slot-scope="scope">
-            <div v-if="type == 'reject' || type == 'detail'">
+            <div
+              v-if="
+                type == 'reject' || type == 'detail' || type == 'completion'
+              "
+            >
               {{ scope.row.specificationAmount }}
             </div>
             <el-input
@@ -245,9 +253,14 @@
           header-align="center"
           align="center"
           label="物料号"
+          v-if="type != 'completion'&&type != 'completiondetail'"
         >
           <template slot-scope="scope">
-            <div v-if="type == 'reject' || type == 'detail'">
+            <div
+              v-if="
+                type == 'reject' || type == 'detail' || type == 'completion'
+              "
+            >
               {{ scope.row.customsNumber }}
             </div>
             <el-input
@@ -262,9 +275,14 @@
           header-align="center"
           align="center"
           label="申报重量"
+          v-if="type != 'completion'&&type != 'completiondetail'"
         >
           <template slot-scope="scope">
-            <div v-if="type == 'reject' || type == 'detail'">
+            <div
+              v-if="
+                type == 'reject' || type == 'detail' || type == 'completion'
+              "
+            >
               {{ scope.row.weight }}
             </div>
             <el-input
@@ -280,9 +298,14 @@
           header-align="center"
           align="center"
           label="供货成本"
+          v-if="type != 'completion'&&type != 'completiondetail'"
         >
           <template slot-scope="scope">
-            <div v-if="type == 'reject' || type == 'detail'">
+            <div
+              v-if="
+                type == 'reject' || type == 'detail' || type == 'completion'
+              "
+            >
               {{ scope.row.freightCost }}
             </div>
             <el-input
@@ -299,7 +322,33 @@
           label="库存"
         >
           <template slot-scope="scope">
-            <div v-if="type == 'reject' || type == 'detail'">
+            <div
+              v-if="
+                type == 'reject' || type == 'detail' || type == 'completion'
+              "
+            >
+              {{ scope.row.inventoryTotal }}
+            </div>
+            <el-input
+              v-else
+              v-Int
+              v-model="scope.row.inventoryTotal"
+              placeholder="请输入内容"
+            ></el-input>
+          </template>
+        </el-table-column>
+         <el-table-column
+          prop="inventoryTotal"
+          header-align="center"
+          align="center"
+          label="库存"
+        >
+          <template slot-scope="scope">
+            <div
+              v-if="
+                type == 'reject' || type == 'detail' || type == 'completion'
+              "
+            >
               {{ scope.row.inventoryTotal }}
             </div>
             <el-input
@@ -316,7 +365,7 @@
           align="center"
           width="200px"
           label="操作"
-          v-if="type != 'reject' && type != 'detail'"
+          v-if="type != 'reject' && type != 'detail' && type != 'completion'&& type != 'completiondetail'"
         >
           <template slot-scope="scope">
             <el-button type="primary" size="mini" @click="addnum"
@@ -356,7 +405,7 @@
           </el-row>
         </el-form>
       </div>
-      <div class="submit-btn" v-if="type != 'detail'">
+      <div class="submit-btn" v-if="type != 'detail'&&type!='completion'">
         <el-button
           type="primary"
           v-if="type != 'reject'"
@@ -608,7 +657,12 @@ export default {
     this.type = this.$route.query.type;
     var type = this.$route.query.type;
     this.title = this.$route.query.title;
-    if (type == "edit" || type == "reject" || type == "detail") {
+    if (
+      type == "edit" ||
+      type == "reject" ||
+      type == "detail" ||
+      type == "completion"
+    ) {
       this.ruleForm = this.$route.query.data;
       this.tableData = this.$route.query.data.specificationList;
       if (type == "detail") {
@@ -717,7 +771,7 @@ export default {
       this.$refs["ruleForm"].validate((valid) => {
         if (valid) {
           var obj = {
-            id:id.name,
+            id: id.name,
             name: ruleForm.name,
             countryOfOrigin: ruleForm.countryOfOrigin,
             commodityBaseCode: ruleForm.commodityBaseCode,
