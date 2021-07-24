@@ -750,16 +750,17 @@ export default {
   },
   methods: {
     deltableimg(index) {
-      this.$refs["tableupload" + index].clearfile();
-      this.tableData[index].Productpicture = [];
+      // this.$refs["tableupload" + index].clearfile();
+      this.tableData.map((item,tableindex)=>{
+        if(tableindex == index){
+          this.$set(item,'Productpicture',[])
+        }
+      })
     },
     showimg(row) {
       var flag = false;
-      debugger
       if (row.Productpicture.length > 0) {
-        debugger
         if (row.Productpicture[0].url) {
-          debugger
           flag = true;
         }
       }
@@ -767,8 +768,6 @@ export default {
     },
     getsrc(row) {
       var img = "";
-      console.log('row.Productpicture')
-      console.log(row.Productpicture)
       if (row.Productpicture.length > 0) {
         if (row.Productpicture[0].url) {
           img = row.Productpicture[0].url;
@@ -970,27 +969,25 @@ export default {
     },
     completionsubmit() {
       var tableData = this.tableData;
-      console.log('tableData')
-      console.log(tableData)
       var tablearr = [];
       var flag = false;
       tableData.map((item, index) => {
         var num = Number(index) + 1;
-        var obj = {
-          specificationName: item.specificationName,
-          specificationAmount: item.specificationAmount,
-          inventoryTotal: item.inventoryTotal,
-          grossMargin: item.grossMargin,
-        };
-        tablearr.push(obj);
+        // var obj = {
+        //   specificationName: item.specificationName,
+        //   specificationAmount: item.specificationAmount,
+        //   inventoryTotal: item.inventoryTotal,
+        //   grossMargin: item.grossMargin,
+        // };
+        // tablearr.push(obj);
         if (!item.grossMargin) {
           flag = true;
           this.$message.error("请输入第" + num + "行平台毛利润");
         }
-        // if (item.Productpicture.length == 0) {
-        //   flag = true;
-        //   this.$message.error("请上传第" + num + "行图片");
-        // }
+        if (item.Productpicture.length == 0) {
+          flag = true;
+          this.$message.error("请上传第" + num + "行图片");
+        }
       });
       //获取图片数据
       var operationList = [];
@@ -1024,7 +1021,7 @@ export default {
             if (valid) {
               var obj = {
                 ...that.ruleForm,
-                specificationList: tablearr,
+                specificationList: tableData,
                 operationList: operationList,
               };
               completioncommodity(obj).then((res) => {

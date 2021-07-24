@@ -139,6 +139,12 @@ export const constantRoutes = [{
                 name: 'completiongoodsEdit',
                 meta: { title: '运营信息补全' }
             },
+            {
+                path: '/clondcommodity/chooseproduct',
+                component: (resolve) => require(['@/views/clondcommodity/components/chooseproduct'], resolve),
+                name: 'chooseproduct',
+                meta: { title: '选品' }
+            },
         ]
     },
 

@@ -96,3 +96,12 @@ export function completioncommodity(query) {
         data: query
     })
 }
+
+//选品
+export function chooseproduct(query) {
+    return request({
+        url: '/commodity/plaftorm/distributor/add',
+        method: 'post',
+        data: query
+    })
+}
