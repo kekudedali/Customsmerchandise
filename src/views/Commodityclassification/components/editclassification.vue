@@ -15,7 +15,7 @@
         class="demo-ruleForm"
       >
         <el-row>
-          <el-col :span="6" :offset="6">
+          <el-col :span="18" :offset="1">
             <el-form-item label="分类名称" prop="type">
               <el-input
                 v-model="ruleForm.type"
@@ -117,7 +117,7 @@ export default {
       this.$router.go(-1);
     },
     submit(){
-        
+
     },
   },
 };

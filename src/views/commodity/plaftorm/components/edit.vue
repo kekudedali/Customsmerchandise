@@ -364,7 +364,10 @@
             v-if="type == 'completion' || type == 'completiondetail'"
           >
             <template slot-scope="scope">
-              <div v-show="scope.row.Productpicture.length > 0" class="tableimg-box">
+              <div
+                v-show="scope.row.Productpicture.length > 0"
+                class="tableimg-box"
+              >
                 <el-image
                   style="width: 50px; height: 50px"
                   :src="getsrc(scope.row)"
@@ -380,7 +383,7 @@
                 ></el-button>
               </div>
               <ImageUpload
-                v-show="scope.row.Productpicture.length==0"
+                v-show="scope.row.Productpicture.length == 0"
                 :limit="1"
                 :fileSize="fileSize"
                 :isShowTip="isShowTip"
@@ -420,18 +423,55 @@
       <div class="reject-result" v-if="type == 'reject'">
         <div class="baseinfo">驳回原因</div>
         <el-form
+          :model="ruleForm"
+          label-width="120px"
+          class="demo-ruleForm"
+        >
+          <el-row>
+            <el-col :span="12" :offset="6">
+              <el-form-item label="驳回原因" prop="explain">
+                <el-input
+                  type="textarea"
+                  placeholder="请输入"
+                  v-model="ruleForm.explain"
+                  maxlength="200"
+                  show-word-limit
+                  :autosize="autosize"
+                  :disabled="rejectdisabled"
+                >
+                </el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
+        <div class="submit-btn">
+          <el-button type="primary" size="small" @click="rejectsubmit"
+            >重新提交审核</el-button
+          >
+        </div>
+      </div>
+      <div class="reject-result" v-if="typetwo == 'audit'">
+        <div class="baseinfo">审核</div>
+        <el-form
           :model="ruleFormtwo"
+          :rules="rulestwo"
           ref="ruleFormrwo"
           label-width="120px"
           class="demo-ruleForm"
         >
           <el-row>
             <el-col :span="12" :offset="6">
+              <el-form-item label="审核" prop="status">
+                <el-radio v-model="ruleFormtwo.status" label="2">通过</el-radio>
+                <el-radio v-model="ruleFormtwo.status" label="1"
+                  >不通过</el-radio
+                >
+              </el-form-item>
               <el-form-item label="驳回原因" prop="spfmt">
                 <el-input
                   type="textarea"
                   placeholder="请输入"
-                  v-model="ruleFormtwo.textarea"
+                  v-model="ruleFormtwo.explain"
                   maxlength="200"
                   show-word-limit
                   :autosize="autosize"
@@ -441,6 +481,11 @@
             </el-col>
           </el-row>
         </el-form>
+        <div class="submit-btn">
+          <el-button type="primary" size="small" @click="auditsubmit"
+            >提交</el-button
+          >
+        </div>
       </div>
       <div class="submit-btn" v-if="type != 'detail' && type != 'completion'">
         <el-button
@@ -458,7 +503,7 @@
           >提交审核</el-button
         >
         <el-button
-          v-if="type == 'reject' || type == 'detail' || type == 'edit'"
+          v-if=" type == 'detail' || type == 'edit'"
           type="primary"
           size="small"
           @click="resubmit"
@@ -533,7 +578,6 @@ import {
   updatecommodity,
   exportcommodity,
   approvalcommodity,
-  copycommodity,
   warehouseapi,
   supplierbase,
   completioncommodity,
@@ -548,6 +592,7 @@ export default {
     return {
       title: "新增海关商品备案",
       type: "add",
+      typetwo: "add",
       isdisabled: false,
       limit: 5,
       fileSize: 20,
@@ -630,6 +675,13 @@ export default {
       selfid: 2,
       ruleFormtwo: {
         textarea: "",
+        status: "2",
+        explain: "",
+      },
+      rulestwo: {
+        status: [
+          { required: true, message: "请选择审核状态", trigger: "change" },
+        ],
       },
       ruleFormthree: {
         spfmt: [],
@@ -664,10 +716,13 @@ export default {
         ],
       },
       fileList: [],
+      radio: "2",
+      rejectdisabled:true,
     };
   },
   created() {
     this.type = this.$route.query.type;
+    this.typetwo = this.$route.query.typetwo;
     let type = this.$route.query.type;
     this.title = this.$route.query.title;
 
@@ -751,11 +806,11 @@ export default {
   methods: {
     deltableimg(index) {
       // this.$refs["tableupload" + index].clearfile();
-      this.tableData.map((item,tableindex)=>{
-        if(tableindex == index){
-          this.$set(item,'Productpicture',[])
+      this.tableData.map((item, tableindex) => {
+        if (tableindex == index) {
+          this.$set(item, "Productpicture", []);
         }
-      })
+      });
     },
     showimg(row) {
       var flag = false;
@@ -794,7 +849,7 @@ export default {
         gwarehouseBaseCodeoptions.map((item) => {
           var obj = {
             label: item.warehouseName,
-            value: item.id.toString(),
+            value: item.warehouseBaseCode,
           };
           arr.push(obj);
         });
@@ -809,7 +864,7 @@ export default {
         supplierBaseCodeoptions.map((item) => {
           var obj = {
             label: item.supplierName,
-            value: item.id.toString(),
+            value: item.supplierBaseCode,
           };
           arr.push(obj);
         });
@@ -884,7 +939,7 @@ export default {
       });
       return flag;
     },
-    //商品状态（0：待审核，1：商品信息待补全，2：归档）',
+    //商品状态（-1:草稿箱，0：待审核，1：商品信息待补全（驳回），2：归档）',
     savedraft() {
       if (this.Validatetable()) {
         return;
@@ -898,7 +953,7 @@ export default {
         if (valid) {
           var obj = {
             ...this.ruleForm,
-            status: 1, //区分草稿还是提交审核
+            status: -1, //区分草稿还是提交审核
             specificationList: this.tableData,
           };
           addcommodity(obj).then((res) => {
@@ -945,8 +1000,8 @@ export default {
         }
       });
     },
-    resubmit() {
-      this.$refs["ruleForm"].validate((valid) => {
+    rejectsubmit(){
+       this.$refs["ruleForm"].validate((valid) => {
         if (valid) {
           var obj = {
             ...this.ruleForm,
@@ -954,6 +1009,63 @@ export default {
             specificationList: this.tableData,
           };
           editcommodity(obj).then((res) => {
+            if (res.code == 200) {
+              this.$message.success("提交审核成功！");
+              this.back();
+            } else {
+              this.$message.error(res.msg);
+            }
+          });
+        } else {
+          console.log("error submit!!");
+          return false;
+        }
+      });
+    },
+    resubmit() {
+      this.$refs["ruleForm"].validate((valid) => {
+        let { data } = this.$route.query;
+        if (valid) {
+          var obj = {
+            ...this.ruleForm,
+            status: data.status, //区分草稿还是提交审核
+            specificationList: this.tableData,
+          };
+          editcommodity(obj).then((res) => {
+            if (res.code == 200) {
+              this.$message.success("重新提交成功！");
+              this.back();
+            } else {
+              this.$message.error(res.msg);
+            }
+          });
+        } else {
+          console.log("error submit!!");
+          return false;
+        }
+      });
+    },
+    auditsubmit() {
+      if (this.ruleFormtwo.status === "1" && this.ruleFormtwo.explain == "") {
+        this.$message.error("请填写不通过的原因");
+        return;
+      }
+      this.$refs["ruleFormrwo"].validate((valid) => {
+        if (valid) {
+          if (this.type == "reject") {
+            var obj = {
+              id: this.ruleForm.id,
+              status: 1, //驳回
+              explain: this.ruleFormtwo.explain,
+            };
+          } else {
+            var obj = {
+              id: this.ruleForm.id,
+              status: this.ruleFormtwo.status, 
+              explain: this.ruleFormtwo.explain,
+            };
+          }
+          approvalcommodity(obj).then((res) => {
             if (res.code == 200) {
               this.$message.success("提交审核成功！");
               this.back();
