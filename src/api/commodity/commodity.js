@@ -87,3 +87,12 @@ export function supplierbase(query) {
         params: query
     })
 }
+
+//补全
+export function completioncommodity(query) {
+    return request({
+        url: 'i/commodity/plaftorm/commodity/details',
+        method: 'put',
+        data: query
+    })
+}

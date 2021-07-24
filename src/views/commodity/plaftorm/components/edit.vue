@@ -372,7 +372,13 @@
                   :preview-src-list="[getsrc(scope.row)]"
                 >
                 </el-image>
-                 <el-button  style="margin-left:10px;" type="danger" icon="el-icon-delete" circle @click="deltableimg(scope.$index)"></el-button>
+                <el-button
+                  style="margin-left: 10px"
+                  type="danger"
+                  icon="el-icon-delete"
+                  circle
+                  @click="deltableimg(scope.$index)"
+                ></el-button>
               </div>
               <ImageUpload
                 v-show="showupload(scope.row)"
@@ -381,7 +387,7 @@
                 :isShowTip="isShowTip"
                 uploadtype="btn"
                 :fileList.sync="scope.row.goodsimg"
-                :ref="'tableupload'+scope.$index"
+                :ref="'tableupload' + scope.$index"
               />
             </template>
           </el-table-column>
@@ -498,7 +504,7 @@
                   :fileSize="fileSize"
                   :isShowTip="isShowTip"
                   uploadtype="image"
-                   :fileList.sync="ruleFormthree.spms"
+                  :fileList.sync="ruleFormthree.spms"
                 />
               </el-form-item>
             </el-col>
@@ -531,6 +537,7 @@ import {
   copycommodity,
   warehouseapi,
   supplierbase,
+  completioncommodity,
 } from "@/api/commodity/commodity";
 
 export default {
@@ -633,7 +640,28 @@ export default {
       autosize: { minRows: 2, maxRows: 6 },
       rulesthree: {
         spfmt: [
-          { required: true, message: "请输入商品封面图", trigger: "change" },
+          {
+            required: true,
+            message: "请输入商品封面图",
+            trigger: "change",
+            type: "array",
+          },
+        ],
+        splbt: [
+          {
+            required: true,
+            message: "请输入商品轮播图",
+            trigger: "change",
+            type: "array",
+          },
+        ],
+        spms: [
+          {
+            required: true,
+            message: "请输入商品描述",
+            trigger: "change",
+            type: "array",
+          },
         ],
       },
       fileList: [],
@@ -644,16 +672,18 @@ export default {
     let type = this.$route.query.type;
     this.title = this.$route.query.title;
 
-    this.tableData = [{
-      selfid: 1,
-      specificationName: "",
-      customsNumber: "",
-      specificationAmount: "",
-      weight: "",
-      freightCost: "",
-      specificationName: "",
-      inventoryTotal: "",
-    }];
+    this.tableData = [
+      {
+        selfid: 1,
+        specificationName: "",
+        customsNumber: "",
+        specificationAmount: "",
+        weight: "",
+        freightCost: "",
+        specificationName: "",
+        inventoryTotal: "",
+      },
+    ];
     if (
       type == "edit" ||
       type == "reject" ||
@@ -681,10 +711,10 @@ export default {
         explain: data.explain,
       };
       this.ruleForm = querydata;
-      var specificationList = this.$route.query.data.specificationList
-      specificationList.map(item=>{
-          item.goodsimg = []
-      })
+      var specificationList = this.$route.query.data.specificationList;
+      specificationList.map((item) => {
+        item.goodsimg = [];
+      });
       this.tableData = specificationList || [
         {
           selfid: 1,
@@ -720,8 +750,8 @@ export default {
     });
   },
   methods: {
-    deltableimg(index){
-      this.$refs['tableupload'+index].clearfile();
+    deltableimg(index) {
+      this.$refs["tableupload" + index].clearfile();
       this.tableData[index].goodsimg = [];
     },
     showimg(row) {
@@ -935,29 +965,79 @@ export default {
       });
     },
     completionsubmit() {
-      // this.tableData;
-      console.log(this.tableData);
-      // debugger;
-      //  this.$refs["ruleForm"].validate((valid) => {
-      //   if (valid) {
-      //     var obj = {
-      //       ...this.ruleForm,
-      //       status: 0, //区分草稿还是提交审核
-      //       specificationList: this.tableData,
-      //     };
-      //     editcommodity(obj).then((res) => {
-      //       if (res.code == 200) {
-      //         this.$message.success("提交审核成功！");
-      //         this.back();
-      //       } else {
-      //         this.$message.error(res.msg);
-      //       }
-      //     });
-      //   } else {
-      //     console.log("error submit!!");
-      //     return false;
-      //   }
-      // });
+      var tableData = this.tableData;
+      var tablearr = [];
+      var flag = false;
+      tableData.map((item, index) => {
+        var num = Number(index) + 1;
+        var obj = {
+          specificationName: item.specificationName,
+          specificationAmount: item.specificationAmount,
+          inventoryTotal: item.inventoryTotal,
+          grossMargin: item.grossMargin,
+        };
+        tablearr.push(obj);
+        if (!item.grossMargin) {
+          flag = true;
+          this.$message.error("请输入第" + num + "行平台毛利润");
+        }
+        if (!item.goodsimg) {
+          flag = true;
+          this.$message.error("请上传第" + num + "行图片");
+        }
+      });
+      //获取图片数据
+      var operationList = [];
+
+      var ruleFormthree = this.ruleFormthree;
+      for (var key in ruleFormthree) {
+        var obj = {
+          commodityBaseCode: this.ruleForm.commodityBaseCode, //商品平台编码
+          type: key == "spfmt" ? 0 : key == "splbt" ? 1 : 2,
+          url: JSON.stringify(ruleFormthree[key]),
+        };
+        operationList.push(obj);
+      }
+
+      tableData.map((item) => {
+        var obj = {
+          specificationBaseCode: this.ruleForm.specificationBaseCode, //商品平台编码
+          type: 3,
+          url: JSON.stringify(item.goodsimg),
+        };
+        operationList.push(obj);
+      });
+
+      if (flag) {
+        return;
+      }
+      this.$refs["ruleForm"].validate((valid) => {
+        if (valid) {
+          this.$refs["rulesthree"].validate((valid) => {
+            if (valid) {
+              var obj = {
+                ...this.ruleForm,
+                specificationList: tablearr,
+                operationList: operationList,
+              };
+              completioncommodity(obj).then((res) => {
+                if (res.code == 200) {
+                  this.$message.success("提交审核成功！");
+                  this.back();
+                } else {
+                  this.$message.error(res.msg);
+                }
+              });
+            } else {
+              console.log("error submit!!");
+              return false;
+            }
+          });
+        } else {
+          console.log("error submit!!");
+          return false;
+        }
+      });
     },
   },
 };
@@ -1005,7 +1085,7 @@ export default {
 .reject-result {
   margin-top: 20px;
 }
-.tableimg-box{
+.tableimg-box {
   display: flex;
   align-items: center;
   justify-content: center;
