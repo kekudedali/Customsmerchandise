@@ -351,21 +351,20 @@
               </div>
               <el-input
                 v-else
-                v-Int
                 v-model="scope.row.grossMargin"
                 placeholder="请输入内容"
               ></el-input>
             </template>
           </el-table-column>
           <el-table-column
-            prop="goodsimg"
+            prop="Productpicture"
             header-align="center"
             align="center"
             label="图片"
             v-if="type == 'completion' || type == 'completiondetail'"
           >
             <template slot-scope="scope">
-              <div v-show="showimg(scope.row)" class="tableimg-box">
+              <div v-show="scope.row.Productpicture.length > 0" class="tableimg-box">
                 <el-image
                   style="width: 50px; height: 50px"
                   :src="getsrc(scope.row)"
@@ -381,12 +380,12 @@
                 ></el-button>
               </div>
               <ImageUpload
-                v-show="showupload(scope.row)"
+                v-show="scope.row.Productpicture.length==0"
                 :limit="1"
                 :fileSize="fileSize"
                 :isShowTip="isShowTip"
                 uploadtype="btn"
-                :fileList.sync="scope.row.goodsimg"
+                :fileList.sync="scope.row.Productpicture"
                 :ref="'tableupload' + scope.$index"
               />
             </template>
@@ -713,7 +712,7 @@ export default {
       this.ruleForm = querydata;
       var specificationList = this.$route.query.data.specificationList;
       specificationList.map((item) => {
-        item.goodsimg = [];
+        item.Productpicture = [];
       });
       this.tableData = specificationList || [
         {
@@ -725,7 +724,7 @@ export default {
           freightCost: "",
           specificationName: "",
           inventoryTotal: "",
-          goodsimg: [],
+          Productpicture: [],
         },
       ];
       if (type == "detail") {
@@ -752,12 +751,15 @@ export default {
   methods: {
     deltableimg(index) {
       this.$refs["tableupload" + index].clearfile();
-      this.tableData[index].goodsimg = [];
+      this.tableData[index].Productpicture = [];
     },
     showimg(row) {
       var flag = false;
-      if (row.goodsimg.length > 0) {
-        if (row.goodsimg[0].url) {
+      debugger
+      if (row.Productpicture.length > 0) {
+        debugger
+        if (row.Productpicture[0].url) {
+          debugger
           flag = true;
         }
       }
@@ -765,9 +767,11 @@ export default {
     },
     getsrc(row) {
       var img = "";
-      if (row.goodsimg.length > 0) {
-        if (row.goodsimg[0].url) {
-          img = row.goodsimg[0].url;
+      console.log('row.Productpicture')
+      console.log(row.Productpicture)
+      if (row.Productpicture.length > 0) {
+        if (row.Productpicture[0].url) {
+          img = row.Productpicture[0].url;
         }
       }
       return img;
@@ -775,8 +779,8 @@ export default {
     showupload(row) {
       var flag = true;
       if (this.type == "completion") {
-        if (row.goodsimg.length > 0) {
-          if (row.goodsimg[0].url) {
+        if (row.Productpicture.length > 0) {
+          if (row.Productpicture[0].url) {
             flag = false;
           }
         }
@@ -966,6 +970,8 @@ export default {
     },
     completionsubmit() {
       var tableData = this.tableData;
+      console.log('tableData')
+      console.log(tableData)
       var tablearr = [];
       var flag = false;
       tableData.map((item, index) => {
@@ -981,10 +987,10 @@ export default {
           flag = true;
           this.$message.error("请输入第" + num + "行平台毛利润");
         }
-        if (!item.goodsimg) {
-          flag = true;
-          this.$message.error("请上传第" + num + "行图片");
-        }
+        // if (item.Productpicture.length == 0) {
+        //   flag = true;
+        //   this.$message.error("请上传第" + num + "行图片");
+        // }
       });
       //获取图片数据
       var operationList = [];
@@ -1001,9 +1007,9 @@ export default {
 
       tableData.map((item) => {
         var obj = {
-          specificationBaseCode: this.ruleForm.specificationBaseCode, //商品平台编码
+          specificationBaseCode: item.specificationBaseCode, //商品平台编码
           type: 3,
-          url: JSON.stringify(item.goodsimg),
+          url: JSON.stringify(item.Productpicture),
         };
         operationList.push(obj);
       });
@@ -1011,21 +1017,22 @@ export default {
       if (flag) {
         return;
       }
-      this.$refs["ruleForm"].validate((valid) => {
+      var that = this;
+      that.$refs["ruleForm"].validate((valid) => {
         if (valid) {
-          this.$refs["rulesthree"].validate((valid) => {
+          that.$refs["ruleFormthree"].validate((valid) => {
             if (valid) {
               var obj = {
-                ...this.ruleForm,
+                ...that.ruleForm,
                 specificationList: tablearr,
                 operationList: operationList,
               };
               completioncommodity(obj).then((res) => {
                 if (res.code == 200) {
-                  this.$message.success("提交审核成功！");
-                  this.back();
+                  that.$message.success("提交审核成功！");
+                  that.back();
                 } else {
-                  this.$message.error(res.msg);
+                  that.$message.error(res.msg);
                 }
               });
             } else {

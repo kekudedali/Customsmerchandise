@@ -91,7 +91,7 @@ export function supplierbase(query) {
 //补全
 export function completioncommodity(query) {
     return request({
-        url: 'i/commodity/plaftorm/commodity/details',
+        url: '/commodity/plaftorm/commodity/details',
         method: 'put',
         data: query
     })
