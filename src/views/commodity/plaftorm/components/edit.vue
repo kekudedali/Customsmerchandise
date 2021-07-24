@@ -49,9 +49,9 @@
               >
                 <el-option
                   v-for="item in commodityBrandoptions"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
+                  :key="item.dictValue"
+                  :label="item.dictLabel"
+                  :value="item.dictValue"
                 >
                 </el-option>
               </el-select>
@@ -88,9 +88,9 @@
                 </el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="海关备案编号" prop="upc">
+            <el-form-item label="海关备案编号" prop="ean">
               <el-input
-                v-model="ruleForm.upc"
+                v-model="ruleForm.ean"
                 placeholder="请输入"
                 style="width: 200px"
                 :disabled="isdisabled"
@@ -118,22 +118,22 @@
               >
                 <el-option
                   v-for="item in countryOfOriginoptions"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
+                  :key="item.dictValue"
+                  :label="item.dictLabel"
+                  :value="item.dictValue"
                 >
                 </el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="申报单位" prop="readConverterExp">
+            <el-form-item label="申报单位" prop="unit">
               <el-select
-                v-model="ruleForm.readConverterExp"
+                v-model="ruleForm.unit"
                 placeholder="请选择"
                 style="width: 200px"
                 :disabled="isdisabled"
               >
                 <el-option
-                  v-for="item in readConverterExpoptions"
+                  v-for="item in unitoptions"
                   :key="item.value"
                   :label="item.label"
                   :value="item.value"
@@ -150,9 +150,9 @@
               >
                 <el-option
                   v-for="item in statutoryUnit1options"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
+                  :key="item.dictValue"
+                  :label="item.dictLabel"
+                  :value="item.dictValue"
                 >
                 </el-option>
               </el-select>
@@ -175,9 +175,9 @@
               >
                 <el-option
                   v-for="item in statutoryUnit2options"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
+                  :key="item.dictValue"
+                  :label="item.dictLabel"
+                  :value="item.dictValue"
                 >
                 </el-option>
               </el-select>
@@ -191,9 +191,9 @@
                 :disabled="isdisabled"
               ></el-input>
             </el-form-item>
-            <el-form-item label="备注" prop="remark">
+            <el-form-item label="备注" prop="explains">
               <el-input
-                v-model="ruleForm.remark"
+                v-model="ruleForm.explains"
                 placeholder="请输入"
                 style="width: 200px"
                 :disabled="isdisabled"
@@ -204,182 +204,225 @@
       </el-form>
       <div class="baseinfo">规格设置</div>
       <div class="card-title" style="margin: 10px 0px 10px 10px">规格列表</div>
-      <el-table :data="tableData" style="width: 100%" border>
-        <el-table-column
-          prop="specificationName"
-          header-align="center"
-          align="center"
-          label="规格名称"
-        >
-          <template slot-scope="scope">
-            <div
-              v-if="
-                type == 'reject' || type == 'detail' || type == 'completion'
-              "
-            >
-              {{ scope.row.specificationName }}
-            </div>
-            <el-input
-              v-else
-              v-model="scope.row.specificationName"
-              placeholder="请输入内容"
-            ></el-input>
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="specificationAmount"
-          header-align="center"
-          align="center"
-          label="规格数量"
-        >
-          <template slot-scope="scope">
-            <div
-              v-if="
-                type == 'reject' || type == 'detail' || type == 'completion'
-              "
-            >
-              {{ scope.row.specificationAmount }}
-            </div>
-            <el-input
-              v-else
-              v-model="scope.row.specificationAmount"
-              placeholder="请输入内容"
-              v-Int
-            ></el-input>
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="customsNumber"
-          header-align="center"
-          align="center"
-          label="物料号"
-          v-if="type != 'completion'&&type != 'completiondetail'"
-        >
-          <template slot-scope="scope">
-            <div
-              v-if="
-                type == 'reject' || type == 'detail' || type == 'completion'
-              "
-            >
-              {{ scope.row.customsNumber }}
-            </div>
-            <el-input
-              v-else
-              v-model="scope.row.customsNumber"
-              placeholder="请输入内容"
-            ></el-input>
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="weight"
-          header-align="center"
-          align="center"
-          label="申报重量"
-          v-if="type != 'completion'&&type != 'completiondetail'"
-        >
-          <template slot-scope="scope">
-            <div
-              v-if="
-                type == 'reject' || type == 'detail' || type == 'completion'
-              "
-            >
-              {{ scope.row.weight }}
-            </div>
-            <el-input
-              v-else
-              v-enterNumber
-              v-model="scope.row.weight"
-              placeholder="请输入内容"
-            ></el-input>
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="freightCost"
-          header-align="center"
-          align="center"
-          label="供货成本"
-          v-if="type != 'completion'&&type != 'completiondetail'"
-        >
-          <template slot-scope="scope">
-            <div
-              v-if="
-                type == 'reject' || type == 'detail' || type == 'completion'
-              "
-            >
-              {{ scope.row.freightCost }}
-            </div>
-            <el-input
-              v-else
-              v-model="scope.row.freightCost"
-              placeholder="请输入内容"
-            ></el-input>
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="inventoryTotal"
-          header-align="center"
-          align="center"
-          label="库存"
-        >
-          <template slot-scope="scope">
-            <div
-              v-if="
-                type == 'reject' || type == 'detail' || type == 'completion'
-              "
-            >
-              {{ scope.row.inventoryTotal }}
-            </div>
-            <el-input
-              v-else
-              v-Int
-              v-model="scope.row.inventoryTotal"
-              placeholder="请输入内容"
-            ></el-input>
-          </template>
-        </el-table-column>
-         <el-table-column
-          prop="inventoryTotal"
-          header-align="center"
-          align="center"
-          label="库存"
-        >
-          <template slot-scope="scope">
-            <div
-              v-if="
-                type == 'reject' || type == 'detail' || type == 'completion'
-              "
-            >
-              {{ scope.row.inventoryTotal }}
-            </div>
-            <el-input
-              v-else
-              v-Int
-              v-model="scope.row.inventoryTotal"
-              placeholder="请输入内容"
-            ></el-input>
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="操作"
-          header-align="center"
-          align="center"
-          width="200px"
-          label="操作"
-          v-if="type != 'reject' && type != 'detail' && type != 'completion'&& type != 'completiondetail'"
-        >
-          <template slot-scope="scope">
-            <el-button type="primary" size="mini" @click="addnum"
-              >新增</el-button
-            >
-            <el-button
-              type="danger"
-              size="mini"
-              @click="delnum(scope.row, scope.$index)"
-              >删除</el-button
-            >
-          </template>
-        </el-table-column>
-      </el-table>
+      <div class="table-box">
+        <el-table :data="tableData" style="width: 100%" border>
+          <el-table-column
+            prop="specificationName"
+            header-align="center"
+            align="center"
+            label="规格名称"
+          >
+            <template slot-scope="scope">
+              <div
+                v-if="
+                  type == 'reject' || type == 'detail' || type == 'completion'
+                "
+              >
+                {{ scope.row.specificationName }}
+              </div>
+              <el-input
+                v-else
+                v-model="scope.row.specificationName"
+                placeholder="请输入内容"
+              ></el-input>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="specificationAmount"
+            header-align="center"
+            align="center"
+            label="规格数量"
+          >
+            <template slot-scope="scope">
+              <div
+                v-if="
+                  type == 'reject' || type == 'detail' || type == 'completion'
+                "
+              >
+                {{ scope.row.specificationAmount }}
+              </div>
+              <el-input
+                v-else
+                v-model="scope.row.specificationAmount"
+                placeholder="请输入内容"
+                v-Int
+              ></el-input>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="customsNumber"
+            header-align="center"
+            align="center"
+            label="物料号"
+            v-if="type != 'completion' && type != 'completiondetail'"
+          >
+            <template slot-scope="scope">
+              <div
+                v-if="
+                  type == 'reject' || type == 'detail' || type == 'completion'
+                "
+              >
+                {{ scope.row.customsNumber }}
+              </div>
+              <el-input
+                v-else
+                v-model="scope.row.customsNumber"
+                placeholder="请输入内容"
+              ></el-input>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="weight"
+            header-align="center"
+            align="center"
+            label="申报重量"
+            v-if="type != 'completion' && type != 'completiondetail'"
+          >
+            <template slot-scope="scope">
+              <div
+                v-if="
+                  type == 'reject' || type == 'detail' || type == 'completion'
+                "
+              >
+                {{ scope.row.weight }}
+              </div>
+              <el-input
+                v-else
+                v-enterNumber
+                v-model="scope.row.weight"
+                placeholder="请输入内容"
+              ></el-input>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="freightCost"
+            header-align="center"
+            align="center"
+            label="供货成本"
+            v-if="type != 'completion' && type != 'completiondetail'"
+          >
+            <template slot-scope="scope">
+              <div
+                v-if="
+                  type == 'reject' || type == 'detail' || type == 'completion'
+                "
+              >
+                {{ scope.row.freightCost }}
+              </div>
+              <el-input
+                v-else
+                v-model="scope.row.freightCost"
+                placeholder="请输入内容"
+              ></el-input>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="inventoryTotal"
+            header-align="center"
+            align="center"
+            label="库存"
+          >
+            <template slot-scope="scope">
+              <div
+                v-if="
+                  type == 'reject' || type == 'detail' || type == 'completion'
+                "
+              >
+                {{ scope.row.inventoryTotal }}
+              </div>
+              <el-input
+                v-else
+                v-Int
+                v-model="scope.row.inventoryTotal"
+                placeholder="请输入内容"
+              ></el-input>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="gongyingshangchenben"
+            header-align="center"
+            align="center"
+            label="供应商成本"
+            v-if="type == 'completion' || type == 'completiondetail'"
+          >
+            <template slot-scope="scope">
+              <div v-if="type == 'completion'">
+                {{ scope.row.gongyingshangchenben }}
+              </div>
+              <el-input
+                v-else
+                v-Int
+                v-model="scope.row.gongyingshangchenben"
+                placeholder="请输入内容"
+              ></el-input>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="pingtaimaolirun"
+            header-align="center"
+            align="center"
+            label="平台毛利润"
+            v-if="type == 'completion' || type == 'completiondetail'"
+          >
+            <template slot-scope="scope">
+              <div v-if="type == 'completiondetail'">
+                {{ scope.row.pingtaimaolirun }}
+              </div>
+              <el-input
+                v-else
+                v-Int
+                v-model="scope.row.pingtaimaolirun"
+                placeholder="请输入内容"
+              ></el-input>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="pingtaimaolirun"
+            header-align="center"
+            align="center"
+            label="图片"
+            v-if="type == 'completion' || type == 'completiondetail'"
+          >
+            <template slot-scope="scope">
+              <div v-if="type == 'completiondetail'">
+                <img :src="scope.row.pingtaimaolirun[0].url" alt="" />
+              </div>
+              <FileUpload
+                v-else
+                :value="scope.row.pingtaimaolirun"
+                :limit="1"
+                :fileSize="fileSize"
+                :isShowTip="false"
+              />
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="操作"
+            header-align="center"
+            align="center"
+            width="200px"
+            label="操作"
+            v-if="
+              type != 'reject' &&
+              type != 'detail' &&
+              type != 'completion' &&
+              type != 'completiondetail'
+            "
+          >
+            <template slot-scope="scope">
+              <el-button type="primary" size="mini" @click="addnum"
+                >新增</el-button
+              >
+              <el-button
+                type="danger"
+                size="mini"
+                @click="delnum(scope.row, scope.$index)"
+                >删除</el-button
+              >
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
       <div class="reject-result" v-if="type == 'reject'">
         <div class="baseinfo">驳回原因</div>
         <el-form
@@ -405,7 +448,7 @@
           </el-row>
         </el-form>
       </div>
-      <div class="submit-btn" v-if="type != 'detail'&&type!='completion'">
+      <div class="submit-btn" v-if="type != 'detail' && type != 'completion'">
         <el-button
           type="primary"
           v-if="type != 'reject'"
@@ -476,7 +519,9 @@
 <script>
 import store from "@/store";
 import ImageUpload from "@/components/ImageUpload/index";
+import FileUpload from "@/components/FileUpload/index";
 import selfDirective from "@/utils/selfDirective";
+
 import {
   listcommodity,
   getcommodity,
@@ -486,10 +531,13 @@ import {
   exportcommodity,
   approvalcommodity,
   copycommodity,
+  warehouseapi,
+  supplierbase,
 } from "@/api/commodity/commodity";
 
 export default {
   components: {
+    FileUpload,
     ImageUpload,
   },
   data() {
@@ -506,17 +554,17 @@ export default {
         countryOfOrigin: null,
         commodityBaseCode: null,
         skuCode: null,
-        readConverterExp: null,
+        unit: null,
         commodityBrand: null,
         supplierBaseCode: null,
-        warehouseBaseCode: null,
-        upc: null,
+        warehouseBaseCode: "",
+        ean: null,
         createTime: null,
         statutoryUnit1: null,
         statutoryNumber1: null,
         statutoryUnit2: null,
         statutoryNumber2: null,
-        remark: null,
+        explains: null,
       },
       rules: {
         name: [
@@ -528,7 +576,7 @@ export default {
         countryOfOrigin: [
           { required: true, message: "请输入原产国", trigger: "change" },
         ],
-        readConverterExp: [
+        unit: [
           { required: true, message: "请输入申报单位", trigger: "change" },
         ],
         skuCode: [
@@ -546,7 +594,7 @@ export default {
         warehouseBaseCode: [
           { required: true, message: "请输入所属仓库", trigger: "change" },
         ],
-        upc: [
+        ean: [
           { required: true, message: "请输入海关备案编号", trigger: "change" },
         ],
         statutoryUnit1: [
@@ -556,76 +604,13 @@ export default {
           { required: true, message: "请输入法定第一数量", trigger: "change" },
         ],
       },
-      countryOfOriginoptions: [
-        {
-          label: "中国",
-          value: "1",
-        },
-        {
-          label: "美国",
-          value: "2",
-        },
-      ], //原产国
-      readConverterExpoptions: [
-        {
-          label: "测试单位1",
-          value: "1",
-        },
-        {
-          label: "测试单位2",
-          value: "2",
-        },
-      ], //申报单位
-      commodityBrandoptions: [
-        {
-          label: "测试品牌1",
-          value: "1",
-        },
-        {
-          label: "测试品牌2",
-          value: "2",
-        },
-      ], //商品品牌
-      supplierBaseCodeoptions: [
-        {
-          label: "测试所属供应商1",
-          value: "1",
-        },
-        {
-          label: "测试所属供应商2",
-          value: "2",
-        },
-      ], //所属供应商
-      gwarehouseBaseCodeoptions: [
-        {
-          label: "测试所属属仓库1",
-          value: "1",
-        },
-        {
-          label: "测试所属属仓库2",
-          value: "2",
-        },
-      ], //所属仓库
-      statutoryUnit1options: [
-        {
-          label: "个",
-          value: "1",
-        },
-        {
-          label: "枚",
-          value: "2",
-        },
-      ], //法定第一单位
-      statutoryUnit2options: [
-        {
-          label: "颗",
-          value: "1",
-        },
-        {
-          label: "粒",
-          value: "2",
-        },
-      ], //法定第二单位
+      countryOfOriginoptions: [], //原产国
+      unitoptions: [], //申报单位
+      commodityBrandoptions: [], //商品品牌
+      supplierBaseCodeoptions: [], //所属供应商
+      gwarehouseBaseCodeoptions: [], //所属仓库
+      statutoryUnit1options: [], //法定第一单位
+      statutoryUnit2options: [], //法定第二单位
       tableData: [
         {
           selfid: 1,
@@ -655,7 +640,7 @@ export default {
   },
   created() {
     this.type = this.$route.query.type;
-    var type = this.$route.query.type;
+    let type = this.$route.query.type;
     this.title = this.$route.query.title;
     if (
       type == "edit" ||
@@ -663,14 +648,79 @@ export default {
       type == "detail" ||
       type == "completion"
     ) {
-      this.ruleForm = this.$route.query.data;
+      let { data } = this.$route.query;
+      let querydata = {
+        id: data.id,
+        name: data.name,
+        countryOfOrigin: data.countryOfOrigin,
+        commodityBaseCode: data.commodityBaseCode,
+        skuCode: data.skuCode,
+        unit: data.unit,
+        commodityBrand: data.commodityBrand,
+        supplierBaseCode: data.supplierBaseCode,
+        warehouseBaseCode: data.warehouseBaseCode,
+        ean: data.ean,
+        createTime: data.createTime,
+        statutoryUnit1: data.statutoryUnit1,
+        statutoryNumber1: data.statutoryNumber1,
+        statutoryUnit2: data.statutoryUnit2,
+        statutoryNumber2: data.statutoryNumber2,
+        explains: data.explains,
+      };
+      this.ruleForm = querydata;
       this.tableData = this.$route.query.data.specificationList;
       if (type == "detail") {
         this.isdisabled = true;
       }
     }
+    this.getwarehouseapi(); //获取仓库
+    this.getsupplierbase(); //所属供应商
+    this.getDicts("gj").then((response) => {
+      this.countryOfOriginoptions = response.data;
+    });
+    this.getDicts("pp").then((response) => {
+      this.commodityBrandoptions = response.data;
+    });
+    this.getDicts("pp").then((response) => {
+      this.commodityBrandoptions = response.data;
+    });
+    this.getDicts("dw").then((response) => {
+      this.statutoryUnit1options = response.data;
+      this.statutoryUnit2options = response.data;
+      this.unitoptions = response.data;
+    });
   },
   methods: {
+    //获取仓库
+    getwarehouseapi() {
+      warehouseapi().then((res) => {
+        var gwarehouseBaseCodeoptions = res.rows;
+        var arr = [];
+        gwarehouseBaseCodeoptions.map((item) => {
+          var obj = {
+            label: item.warehouseName,
+            value: item.id.toString(),
+          };
+          arr.push(obj);
+        });
+        this.gwarehouseBaseCodeoptions = arr;
+      });
+    },
+    //所属供应商
+    getsupplierbase() {
+      supplierbase().then((res) => {
+        var supplierBaseCodeoptions = res.rows;
+        var arr = [];
+        supplierBaseCodeoptions.map((item) => {
+          var obj = {
+            label: item.supplierName,
+            value: item.id.toString(),
+          };
+          arr.push(obj);
+        });
+        this.supplierBaseCodeoptions = arr;
+      });
+    },
     back() {
       this.$store.dispatch("tagsView/delView", this.$route);
       this.$router.go(-1);
@@ -707,8 +757,48 @@ export default {
         }
       });
     },
+    Validatetable() {
+      let tableData = this.tableData;
+      var flag = false;
+      tableData.map((item, index) => {
+        var num = Number(index) + 1;
+        if (!item.inventoryTotal) {
+          flag = true;
+          this.$message.error("请输入第" + num + "行库存");
+        }
+        if (!item.freightCost) {
+          flag = true;
+          this.$message.error("请输入第" + num + "行供货成本");
+        }
+        if (!item.weight) {
+          flag = true;
+          this.$message.error("请输入第" + num + "行申报重量");
+        }
+        if (!item.customsNumber) {
+          flag = true;
+          this.$message.error("请输入第" + num + "行物料号");
+        }
+        if (!item.specificationAmount) {
+          flag = true;
+          this.$message.error("请输入第" + num + "行规格数量");
+        }
+        if (!item.specificationName) {
+          flag = true;
+          this.$message.error("请输入第" + num + "行规格名称");
+        }
+      });
+      return flag;
+    },
     //商品状态（0：待审核，1：商品信息待补全，2：归档）',
     savedraft() {
+      if (this.Validatetable()) {
+        return;
+      }
+      var ruleForm = this.ruleForm;
+      if (ruleForm.statutoryUnit2 && !ruleForm.statutoryNumber2) {
+        this.$message.error("请输入法定第二数量");
+        return;
+      }
       this.$refs["ruleForm"].validate((valid) => {
         if (valid) {
           var obj = {
@@ -731,25 +821,18 @@ export default {
       });
     },
     submit() {
+      if (this.Validatetable()) {
+        return;
+      }
       var ruleForm = this.ruleForm;
+      if (ruleForm.statutoryUnit2 && !ruleForm.statutoryNumber2) {
+        this.$message.error("请输入法定第二数量");
+        return;
+      }
       this.$refs["ruleForm"].validate((valid) => {
         if (valid) {
           var obj = {
-            name: ruleForm.name,
-            countryOfOrigin: ruleForm.countryOfOrigin,
-            commodityBaseCode: ruleForm.commodityBaseCode,
-            skuCode: ruleForm.skuCode,
-            readConverterExp: ruleForm.readConverterExp,
-            commodityBrand: ruleForm.commodityBrand,
-            supplierBaseCode: ruleForm.supplierBaseCode,
-            warehouseBaseCode: ruleForm.warehouseBaseCode,
-            upc: ruleForm.upc,
-            createTime: ruleForm.createTime,
-            statutoryUnit1: ruleForm.statutoryUnit1,
-            statutoryNumber1: ruleForm.statutoryNumber1,
-            statutoryUnit2: ruleForm.statutoryUnit2,
-            statutoryNumber2: ruleForm.statutoryNumber2,
-            remark: ruleForm.remark,
+            ...this.ruleForm,
             status: 0, //区分草稿还是提交审核
             specificationList: this.tableData,
           };
@@ -771,22 +854,7 @@ export default {
       this.$refs["ruleForm"].validate((valid) => {
         if (valid) {
           var obj = {
-            id: id.name,
-            name: ruleForm.name,
-            countryOfOrigin: ruleForm.countryOfOrigin,
-            commodityBaseCode: ruleForm.commodityBaseCode,
-            skuCode: ruleForm.skuCode,
-            readConverterExp: ruleForm.readConverterExp,
-            commodityBrand: ruleForm.commodityBrand,
-            supplierBaseCode: ruleForm.supplierBaseCode,
-            warehouseBaseCode: ruleForm.warehouseBaseCode,
-            upc: ruleForm.upc,
-            createTime: ruleForm.createTime,
-            statutoryUnit1: ruleForm.statutoryUnit1,
-            statutoryNumber1: ruleForm.statutoryNumber1,
-            statutoryUnit2: ruleForm.statutoryUnit2,
-            statutoryNumber2: ruleForm.statutoryNumber2,
-            remark: ruleForm.remark,
+            ...this.ruleForm,
             status: 0, //区分草稿还是提交审核
             specificationList: this.tableData,
           };
@@ -854,5 +922,10 @@ export default {
 <style scoped>
 .demo-ruleForm /deep/.el-form-item {
   margin-bottom: 20px;
+}
+.table-box /deep/ .el-table__header .cell::before {
+  content: "*";
+  color: red;
+  margin-right: 5px;
 }
 </style>

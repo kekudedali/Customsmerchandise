@@ -132,7 +132,13 @@ export const constantRoutes = [{
                 component: (resolve) => require(['@/views/commodity/plaftorm/components/edit'], resolve),
                 name: 'commodityEdit',
                 meta: { title: '修改商品' }
-            }
+            },
+            {
+                path: '/completiongoods/edit',
+                component: (resolve) => require(['@/views/commodity/plaftorm/components/edit'], resolve),
+                name: 'completiongoodsEdit',
+                meta: { title: '运营信息补全' }
+            },
         ]
     },
 

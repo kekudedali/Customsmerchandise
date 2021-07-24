@@ -394,7 +394,7 @@ export default {
     handleAdd() {
       this.reset();
       this.$router.push({
-        path: "/commodity/edit",
+        path: "/completiongoods/edit",
         query: {
           type: "add",
           title: "新增海关商品备案",
@@ -404,7 +404,7 @@ export default {
     /** 补全按钮操作 */
     handlecompletion(row) {
        this.$router.push({
-        path: "/commodity/edit",
+        path: "/completiongoods/edit",
         query: {
           type: "completion",
           title: "补全海关商品备案",
@@ -416,7 +416,7 @@ export default {
     handleUpdate(row) {
       this.reset();
       this.$router.push({
-        path: "/commodity/edit",
+        path: "/completiongoods/edit",
         query: {
           type: "edit",
           title: "修改海关商品备案",
@@ -427,7 +427,7 @@ export default {
     handleUpdatereject(row) {
       this.reset();
       this.$router.push({
-        path: "/commodity/edit",
+        path: "/completiongoods/edit",
         query: {
           type: "reject",
           title: "驳回海关商品备案",
@@ -438,7 +438,7 @@ export default {
     handlemore(row) {
       this.reset();
       this.$router.push({
-        path: "/commodity/edit",
+        path: "/completiongoods/edit",
         query: {
           type: "detail",
           title: "海关商品备案详情",

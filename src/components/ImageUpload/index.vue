@@ -2,19 +2,19 @@
   <div class="component-upload-image">
     <el-upload
       :action="uploadImgUrl"
-      list-type="picture-card"
-      :on-success="handleUploadSuccess"
       :before-upload="handleBeforeUpload"
+      :file-list="fileList"
       :limit="limit"
       :on-error="handleUploadError"
       :on-exceed="handleExceed"
-      name="file"
-      :on-remove="handleRemove"
+      :on-success="handleUploadSuccess"
       :show-file-list="true"
       :headers="headers"
-      :file-list="fileList"
-      :on-preview="handlePictureCardPreview"
       :class="{hide: this.fileList.length >= this.limit}"
+      list-type="picture-card"
+      name="file"
+      :on-remove="handleRemove"
+      :on-preview="handlePictureCardPreview"
     >
       <i class="el-icon-plus"></i>
     </el-upload>

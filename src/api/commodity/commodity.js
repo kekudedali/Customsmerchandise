@@ -60,3 +60,21 @@ export function copycommodity(data) {
         data: data
     })
 }
+
+// 所属仓库
+export function warehouseapi(query) {
+    return request({
+        url: '/commodity/warehouseapi/list',
+        method: 'get',
+        params: query
+    })
+}
+
+// 所属供应商
+export function supplierbase(query) {
+    return request({
+        url: '/commodity/supplierbase/list',
+        method: 'get',
+        params: query
+    })
+}
