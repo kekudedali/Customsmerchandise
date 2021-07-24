@@ -1,162 +1,109 @@
 <template>
   <div class="app-container">
-    <el-card class="box-card">
-      <div style="margin-bottom: 20px">
-        <el-button size="small" type="primary" @click="back">返回</el-button>
-      </div>
-      <div class="baseinfo">基本信息</div>
-      <div style="margin-top: 20px">
-        <el-form
-          :model="queryParams"
-          ref="queryForm"
-          :inline="true"
-          v-show="showSearch"
-          label-width="68px"
-        >
-          <el-form-item label="商品名称" prop="noticeTitle">
-            <el-input
-              v-model="queryParams.noticeTitle"
-              placeholder="请输入商品名称"
-              clearable
-              size="small"
-              @keyup.enter.native="handleQuery"
-            />
-          </el-form-item>
-          <el-form-item label="商品条码" prop="noticeTitle">
-            <el-input
-              v-model="queryParams.commodityBaseCode"
-              placeholder="请输入商品条码"
-              clearable
-              size="small"
-              @keyup.enter.native="handleQuery"
-            />
-          </el-form-item>
-          <el-form-item label="入库日期" prop="noticeTitle">
-            <el-date-picker
-              v-model="queryParams.createTime"
-              type="datetimerange"
-              range-separator="至"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期"
-            >
-            </el-date-picker>
-          </el-form-item>
-          <el-form-item>
-            <el-button
-              type="primary"
-              icon="el-icon-search"
-              size="mini"
-              @click="handleQuery"
-              >搜索</el-button
-            >
-            <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
-              >重置</el-button
-            >
-            <el-button
-              icon="el-icon-box"
-              type="primary"
-              size="mini"
-              @click="chooseproduct"
-              >一键选品</el-button
-            >
-          </el-form-item>
-        </el-form>
-
-        <el-row :gutter="10" class="mb8">
-          <right-toolbar
-            :showSearch.sync="showSearch"
-            @queryTable="getList"
-          ></right-toolbar>
-        </el-row>
-
-        <el-table
-          ref="multipleTable"
-          v-loading="loading"
-          :data="commodityList"
-          @selection-change="handleSelectionChange"
-        >
-          <el-table-column type="selection" width="55"> </el-table-column>
-          <el-table-column label="序号" align="center" prop="id" width="100">
-            <template slot-scope="scope">
-              <div>
-                {{
-                  scope.$index +
-                  (queryParams.pageNum - 1) * queryParams.pageSize +
-                  1
-                }}
-              </div>
-            </template>
-          </el-table-column>
-          <el-table-column label="商品名称" align="center" prop="name">
-            <template slot-scope="scope">
-              {{ scope.row.name }}
-              <span
-                class="copy"
-                @click="handelcopy"
-                v-if="scope.row.status == '已归档'"
-                >【复制】</span
-              >
-            </template>
-          </el-table-column>
-          <el-table-column
-            label="平台编码"
-            align="center"
-            prop="commodityBaseCode"
-            width="200"
-            :show-overflow-tooltip="true"
-          />
-          <el-table-column
-            label="商品品牌"
-            align="center"
-            prop="commodityBrand"
-            width="150"
-          />
-          <el-table-column
-            label="商品条码"
-            align="center"
-            prop="skuCode"
-            width="150"
-          />
-          <el-table-column label="库存" align="center" prop="kc" width="150">
-            <template slot-scope="scope">
-              <el-tooltip placement="bottom" effect="light">
-                <div slot="content">
-                  <div
-                    v-for="(item, index) in scope.row.specificationList"
-                    :key="index"
-                  >
-                    {{ item.specificationName }}
-                    <span style="margin-left: 10px">
-                      {{ item.inventoryUsable + " g" }}</span
-                    >
-                    <span style="margin-left: 10px">{{
-                      item.inventoryTotal
-                    }}</span>
-                  </div>
-                </div>
-                <div class="stock">{{ scope.row.inventoryTotal }}</div>
-              </el-tooltip>
-            </template>
-          </el-table-column>
-        </el-table>
-        <pagination
-          v-show="total > 0"
-          :total="total"
-          :page.sync="queryParams.pageNum"
-          :limit.sync="queryParams.pageSize"
-          @pagination="getList"
+    <el-form
+      :model="queryParams"
+      ref="queryForm"
+      :inline="true"
+      v-show="showSearch"
+      label-width="68px"
+    >
+      <el-form-item label="分类名称" prop="noticeTitle">
+        <el-input
+          v-model="queryParams.noticeTitle"
+          placeholder="请输入分类名称"
+          clearable
+          size="small"
+          @keyup.enter.native="handleQuery"
         />
-      </div>
-    </el-card>
+      </el-form-item>
+      <el-form-item>
+        <el-button
+          type="primary"
+          icon="el-icon-search"
+          size="mini"
+          @click="handleQuery"
+          >搜索</el-button
+        >
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
+          >重置</el-button
+        >
+      </el-form-item>
+    </el-form>
+
+    <el-row :gutter="10" class="mb8">
+      <right-toolbar
+        :showSearch.sync="showSearch"
+        @queryTable="getList"
+      ></right-toolbar>
+    </el-row>
+
+    <el-table ref="multipleTable" v-loading="loading" :data="commodityList">
+      <el-table-column type="selection" width="55"> </el-table-column>
+      <el-table-column label="序号" align="center" prop="id" width="100">
+        <template slot-scope="scope">
+          <div>
+            {{
+              scope.$index +
+              (queryParams.pageNum - 1) * queryParams.pageSize +
+              1
+            }}
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column label="分类名称" align="center" prop="name">
+        <template slot-scope="scope">
+          {{ scope.row.name }}
+        </template>
+      </el-table-column>
+      <el-table-column label="APP图标" align="center" prop="apptb">
+        <template slot-scope="scope">
+          <div v-if="!scope.row.apptb">暂无图片</div>
+          <el-image
+            v-else
+            style="width: 50px; height: 50px"
+            :src="scope.row.apptb"
+            :preview-src-list="[scope.row.apptb]"
+          >
+          </el-image>
+        </template>
+      </el-table-column>
+      <el-table-column label="小程序图标" align="center" prop="xcxtb">
+        <template slot-scope="scope">
+          <div v-if="!scope.row.apptb">暂无图片</div>
+          <el-image
+            v-else
+            style="width: 50px; height: 50px"
+            :src="scope.row.xcxtb"
+            :preview-src-list="[scope.row.xcxtb]"
+          >
+          </el-image>
+        </template>
+      </el-table-column>
+      <el-table-column label="排序" align="center" prop="px" />
+      <el-table-column label="操作" align="center" prop="opration" width="150">
+        <template slot-scope="scope">
+          <el-button type="text" size="mini" @click="handleedit"
+            >修改</el-button
+          >
+        </template>
+      </el-table-column>
+    </el-table>
+    <pagination
+      v-show="total > 0"
+      :total="total"
+      :page.sync="queryParams.pageNum"
+      :limit.sync="queryParams.pageSize"
+      @pagination="getList"
+    />
     <!-- 添加或修改公告对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="780px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-row>
           <el-col :span="12">
-            <el-form-item label="商品名称" prop="name">
+            <el-form-item label="分类名称" prop="name">
               <el-input
                 v-model="form.name"
-                placeholder="请输入商品名称"
+                placeholder="请输入分类名称"
                 style="width: 200px"
               />
             </el-form-item>
@@ -234,7 +181,26 @@ export default {
       // 总条数
       total: 0,
       // 公告表格数据
-      commodityList: [],
+      commodityList: [
+        {
+          id: 1,
+          name: "测试小程序",
+          apptb:
+            "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg",
+          xcxtb:
+            "https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpeg",
+          px: 1,
+        },
+        {
+          id: 2,
+          name: "测试小程序",
+          apptb:
+            "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg",
+          xcxtb:
+            "https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpeg",
+          px: 1,
+        },
+      ],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -255,7 +221,7 @@ export default {
       // 表单校验
       rules: {
         name: [
-          { required: true, message: "商品名称不能为空", trigger: "blur" },
+          { required: true, message: "分类名称不能为空", trigger: "blur" },
         ],
         noticeType: [
           { required: true, message: "公告类型不能为空", trigger: "change" },
@@ -266,19 +232,9 @@ export default {
     };
   },
   created() {
-    this.getList();
-    this.getDicts("sys_notice_status").then((response) => {
-      this.statusOptions = response.data;
-    });
-    this.getDicts("sys_notice_type").then((response) => {
-      this.typeOptions = response.data;
-    });
+    // this.getList();
   },
   methods: {
-    back() {
-      this.$store.dispatch("tagsView/delView", this.$route);
-      this.$router.go(-1);
-    },
     chooseproduct() {
       if (this.multipleSelection.length == 0) {
         this.$message.error("请选择一条商品数据");
@@ -350,8 +306,6 @@ export default {
       this.form = {
         id: undefined,
         noticeTitle: undefined,
-        noticeType: undefined,
-        noticeContent: undefined,
         status: "0",
       };
       this.resetForm("form");
@@ -384,6 +338,16 @@ export default {
             });
           }
         }
+      });
+    },
+    handleedit() {
+      this.reset();
+      this.$router.push({
+        path: "/Commodityclassification/editclassification",
+        query: {
+          type: "add",
+          title: "新增商品分类",
+        },
       });
     },
   },

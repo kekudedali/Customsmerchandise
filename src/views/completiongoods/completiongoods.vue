@@ -2,13 +2,13 @@
   <div class="app-container">
     <div class="radio-box">
       <el-radio-group
-        v-model="queryParams.state"
+        v-model="queryParams.status"
         @change="changeStatus"
         size="small"
       >
         <el-radio-button :label="''">运营信息补全 </el-radio-button>
         <el-radio-button :label="'0'">运营商品审核驳回</el-radio-button>
-        <el-radio-button :label="'1'">运营商品已归档</el-radio-button>
+        <el-radio-button :label="'2'">运营商品已归档</el-radio-button>
       </el-radio-group>
     </div>
     <el-form
@@ -114,31 +114,31 @@
         align="center"
         prop="createTime"
         width="180"
-        v-if="queryParams.state == '0'"
+        v-if="queryParams.status == '0'"
       />
       <el-table-column
         label="驳回原因"
         align="center"
         prop="updateBy"
         width="150"
-        v-if="queryParams.state == '1'"
+        v-if="queryParams.status == '0'"
       />
       <el-table-column
         label="驳回时间"
         align="center"
         prop="updateTime"
         width="180"
-        v-if="queryParams.state == '1'"
+        v-if="queryParams.status == '0'"
       />
       <el-table-column
         label="操作"
         align="center"
         class-name="small-padding fixed-width"
         width="200"
-        v-if="queryParams.state != '0'"
+        v-if="queryParams.status != '0'"
       >
         <template slot-scope="scope">
-          <span v-if="queryParams.state === ''">
+          <span v-if="queryParams.status === ''">
             <el-button
               size="mini"
               type="text"
@@ -148,7 +148,7 @@
               >商品补全</el-button
             >
           </span>
-          <span v-if="queryParams.state == '1'">
+          <span v-if="queryParams.status == '0'">
             <el-button
               size="mini"
               type="text"
@@ -158,7 +158,7 @@
               >修改</el-button
             >
           </span>
-          <span v-if="queryParams.state == '2'">
+          <span v-if="queryParams.status == '2'">
             <el-button
               size="mini"
               type="text"
@@ -291,7 +291,7 @@ export default {
         pageNum: 1,
         pageSize: 10,
         noticeTitle: "",
-        state: "",
+        status: "",
       },
       // 表单参数
       form: {},

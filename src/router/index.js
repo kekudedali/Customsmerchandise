@@ -145,6 +145,12 @@ export const constantRoutes = [{
                 name: 'chooseproduct',
                 meta: { title: '选品' }
             },
+            {
+                path: '/Commodityclassification/editclassification',
+                component: (resolve) => require(['@/views/Commodityclassification/components/editclassification'], resolve),
+                name: 'editclassification',
+                meta: { title: '新增商品分类' }
+            },
         ]
     },
 
