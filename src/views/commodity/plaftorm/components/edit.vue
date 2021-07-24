@@ -339,26 +339,7 @@
             </template>
           </el-table-column>
           <el-table-column
-            prop="gongyingshangchenben"
-            header-align="center"
-            align="center"
-            label="供应商成本"
-            v-if="type == 'completion' || type == 'completiondetail'"
-          >
-            <template slot-scope="scope">
-              <div v-if="type == 'completion'">
-                {{ scope.row.gongyingshangchenben }}
-              </div>
-              <el-input
-                v-else
-                v-Int
-                v-model="scope.row.gongyingshangchenben"
-                placeholder="请输入内容"
-              ></el-input>
-            </template>
-          </el-table-column>
-          <el-table-column
-            prop="pingtaimaolirun"
+            prop="grossMargin"
             header-align="center"
             align="center"
             label="平台毛利润"
@@ -366,33 +347,41 @@
           >
             <template slot-scope="scope">
               <div v-if="type == 'completiondetail'">
-                {{ scope.row.pingtaimaolirun }}
+                {{ scope.row.grossMargin }}
               </div>
               <el-input
                 v-else
                 v-Int
-                v-model="scope.row.pingtaimaolirun"
+                v-model="scope.row.grossMargin"
                 placeholder="请输入内容"
               ></el-input>
             </template>
           </el-table-column>
           <el-table-column
-            prop="pingtaimaolirun"
+            prop="goodsimg"
             header-align="center"
             align="center"
             label="图片"
             v-if="type == 'completion' || type == 'completiondetail'"
           >
             <template slot-scope="scope">
-              <div v-if="type == 'completiondetail'">
-                <img :src="scope.row.pingtaimaolirun[0].url" alt="" />
+              <div v-show="showimg(scope.row)" class="tableimg-box">
+                <el-image
+                  style="width: 50px; height: 50px"
+                  :src="getsrc(scope.row)"
+                  :preview-src-list="[getsrc(scope.row)]"
+                >
+                </el-image>
+                 <el-button  style="margin-left:10px;" type="danger" icon="el-icon-delete" circle @click="deltableimg(scope.$index)"></el-button>
               </div>
-              <FileUpload
-                v-else
-                :value="scope.row.pingtaimaolirun"
+              <ImageUpload
+                v-show="showupload(scope.row)"
                 :limit="1"
                 :fileSize="fileSize"
-                :isShowTip="false"
+                :isShowTip="isShowTip"
+                uploadtype="btn"
+                :fileList.sync="scope.row.goodsimg"
+                :ref="'tableupload'+scope.$index"
               />
             </template>
           </el-table-column>
@@ -487,26 +476,29 @@
             <el-col :span="18" :offset="1">
               <el-form-item label="商品封面图" prop="spfmt">
                 <ImageUpload
-                  :value="ruleFormtwo.spfmt"
                   :limit="limit"
                   :fileSize="fileSize"
                   :isShowTip="isShowTip"
+                  uploadtype="image"
+                  :fileList.sync="ruleFormthree.spfmt"
                 />
               </el-form-item>
               <el-form-item label="商品轮播图" prop="spfmt">
                 <ImageUpload
-                  :value="ruleFormtwo.spfmt"
                   :limit="6"
                   :fileSize="fileSize"
                   :isShowTip="isShowTip"
+                  uploadtype="image"
+                  :fileList.sync="ruleFormthree.splbt"
                 />
               </el-form-item>
               <el-form-item label="商品描述" prop="spfmt">
                 <ImageUpload
-                  :value="ruleFormtwo.spfmt"
                   :limit="9"
                   :fileSize="fileSize"
                   :isShowTip="isShowTip"
+                  uploadtype="image"
+                   :fileList.sync="ruleFormthree.spms"
                 />
               </el-form-item>
             </el-col>
@@ -514,6 +506,11 @@
         </el-form>
       </div>
     </el-card>
+    <div class="submit-btn" v-if="type == 'completion'">
+      <el-button type="primary" size="small" @click="completionsubmit"
+        >提交审核</el-button
+      >
+    </div>
   </div>
 </template>
 <script>
@@ -630,6 +627,8 @@ export default {
       },
       ruleFormthree: {
         spfmt: [],
+        splbt: [],
+        spms: [],
       },
       autosize: { minRows: 2, maxRows: 6 },
       rulesthree: {
@@ -637,13 +636,15 @@ export default {
           { required: true, message: "请输入商品封面图", trigger: "change" },
         ],
       },
+      fileList: [],
     };
   },
   created() {
     this.type = this.$route.query.type;
     let type = this.$route.query.type;
     this.title = this.$route.query.title;
-    this.tableData = {
+
+    this.tableData = [{
       selfid: 1,
       specificationName: "",
       customsNumber: "",
@@ -652,7 +653,7 @@ export default {
       freightCost: "",
       specificationName: "",
       inventoryTotal: "",
-    };
+    }];
     if (
       type == "edit" ||
       type == "reject" ||
@@ -680,7 +681,11 @@ export default {
         explain: data.explain,
       };
       this.ruleForm = querydata;
-      this.tableData = this.$route.query.data.specificationList || [
+      var specificationList = this.$route.query.data.specificationList
+      specificationList.map(item=>{
+          item.goodsimg = []
+      })
+      this.tableData = specificationList || [
         {
           selfid: 1,
           specificationName: "",
@@ -690,6 +695,7 @@ export default {
           freightCost: "",
           specificationName: "",
           inventoryTotal: "",
+          goodsimg: [],
         },
       ];
       if (type == "detail") {
@@ -714,6 +720,39 @@ export default {
     });
   },
   methods: {
+    deltableimg(index){
+      this.$refs['tableupload'+index].clearfile();
+      this.tableData[index].goodsimg = [];
+    },
+    showimg(row) {
+      var flag = false;
+      if (row.goodsimg.length > 0) {
+        if (row.goodsimg[0].url) {
+          flag = true;
+        }
+      }
+      return flag;
+    },
+    getsrc(row) {
+      var img = "";
+      if (row.goodsimg.length > 0) {
+        if (row.goodsimg[0].url) {
+          img = row.goodsimg[0].url;
+        }
+      }
+      return img;
+    },
+    showupload(row) {
+      var flag = true;
+      if (this.type == "completion") {
+        if (row.goodsimg.length > 0) {
+          if (row.goodsimg[0].url) {
+            flag = false;
+          }
+        }
+      }
+      return flag;
+    },
     //获取仓库
     getwarehouseapi() {
       warehouseapi().then((res) => {
@@ -895,6 +934,31 @@ export default {
         }
       });
     },
+    completionsubmit() {
+      // this.tableData;
+      console.log(this.tableData);
+      // debugger;
+      //  this.$refs["ruleForm"].validate((valid) => {
+      //   if (valid) {
+      //     var obj = {
+      //       ...this.ruleForm,
+      //       status: 0, //区分草稿还是提交审核
+      //       specificationList: this.tableData,
+      //     };
+      //     editcommodity(obj).then((res) => {
+      //       if (res.code == 200) {
+      //         this.$message.success("提交审核成功！");
+      //         this.back();
+      //       } else {
+      //         this.$message.error(res.msg);
+      //       }
+      //     });
+      //   } else {
+      //     console.log("error submit!!");
+      //     return false;
+      //   }
+      // });
+    },
   },
 };
 </script>
@@ -940,6 +1004,11 @@ export default {
 }
 .reject-result {
   margin-top: 20px;
+}
+.tableimg-box{
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 </style>
 <style scoped>
