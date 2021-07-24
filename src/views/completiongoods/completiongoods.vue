@@ -60,7 +60,7 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column label="商品名称" align="center" prop="name" >
+      <el-table-column label="商品名称" align="center" prop="name">
         <template slot-scope="scope">
           {{ scope.row.name }}
           <span
@@ -142,7 +142,7 @@
             <el-button
               size="mini"
               type="text"
-              icon="el-icon-box" 
+              icon="el-icon-box"
               @click="handlecompletion(scope.row)"
               v-hasPermi="['commodity:plaftorm:approval']"
               >商品补全</el-button
@@ -333,16 +333,21 @@ export default {
       this.loading = true;
       listcommodity(this.queryParams).then((response) => {
         var commodityList = response.rows;
+
         commodityList.map((item) => {
           var inventoryTotal = 0;
-          item.specificationList.map((item) => {
-            item.inventoryTotal = item.inventoryTotal ? item.inventoryTotal : 0;
-            item.inventoryUsable = item.inventoryUsable
-              ? item.inventoryUsable
-              : 0;
+          if (item.specificationList) {
+            item.specificationList.map((item) => {
+              item.inventoryTotal = item.inventoryTotal
+                ? item.inventoryTotal
+                : 0;
+              item.inventoryUsable = item.inventoryUsable
+                ? item.inventoryUsable
+                : 0;
 
-            inventoryTotal += item.inventoryTotal;
-          });
+              inventoryTotal += item.inventoryTotal;
+            });
+          }
           item.inventoryTotal = inventoryTotal;
         });
         this.commodityList = commodityList;
@@ -403,12 +408,12 @@ export default {
     },
     /** 补全按钮操作 */
     handlecompletion(row) {
-       this.$router.push({
+      this.$router.push({
         path: "/completiongoods/edit",
         query: {
           type: "completion",
           title: "补全海关商品备案",
-          data:row
+          data: row,
         },
       });
     },

@@ -134,9 +134,9 @@
               >
                 <el-option
                   v-for="item in unitoptions"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
+                  :key="item.dictValue"
+                  :label="item.dictLabel"
+                  :value="item.dictValue"
                 >
                 </el-option>
               </el-select>
@@ -191,9 +191,9 @@
                 :disabled="isdisabled"
               ></el-input>
             </el-form-item>
-            <el-form-item label="备注" prop="explains">
+            <el-form-item label="备注" prop="explain">
               <el-input
-                v-model="ruleForm.explains"
+                v-model="ruleForm.explain"
                 placeholder="请输入"
                 style="width: 200px"
                 :disabled="isdisabled"
@@ -451,20 +451,20 @@
       <div class="submit-btn" v-if="type != 'detail' && type != 'completion'">
         <el-button
           type="primary"
-          v-if="type != 'reject'"
+          v-if="type != 'reject' && type != 'edit'"
           size="small"
           @click="savedraft"
           >保存草稿箱</el-button
         >
         <el-button
           type="primary"
-          v-if="type != 'reject'"
+          v-if="type != 'reject' && type != 'edit'"
           size="small"
           @click="submit"
           >提交审核</el-button
         >
         <el-button
-          v-if="type == 'reject' || type == 'detail'"
+          v-if="type == 'reject' || type == 'detail' || type == 'edit'"
           type="primary"
           size="small"
           @click="resubmit"
@@ -527,6 +527,7 @@ import {
   getcommodity,
   delcommodity,
   addcommodity,
+  editcommodity,
   updatecommodity,
   exportcommodity,
   approvalcommodity,
@@ -564,7 +565,7 @@ export default {
         statutoryNumber1: null,
         statutoryUnit2: null,
         statutoryNumber2: null,
-        explains: null,
+        explain: null,
       },
       rules: {
         name: [
@@ -642,11 +643,22 @@ export default {
     this.type = this.$route.query.type;
     let type = this.$route.query.type;
     this.title = this.$route.query.title;
+    this.tableData = {
+      selfid: 1,
+      specificationName: "",
+      customsNumber: "",
+      specificationAmount: "",
+      weight: "",
+      freightCost: "",
+      specificationName: "",
+      inventoryTotal: "",
+    };
     if (
       type == "edit" ||
       type == "reject" ||
       type == "detail" ||
-      type == "completion"
+      type == "completion" ||
+      type == "completiondetail"
     ) {
       let { data } = this.$route.query;
       let querydata = {
@@ -665,10 +677,21 @@ export default {
         statutoryNumber1: data.statutoryNumber1,
         statutoryUnit2: data.statutoryUnit2,
         statutoryNumber2: data.statutoryNumber2,
-        explains: data.explains,
+        explain: data.explain,
       };
       this.ruleForm = querydata;
-      this.tableData = this.$route.query.data.specificationList;
+      this.tableData = this.$route.query.data.specificationList || [
+        {
+          selfid: 1,
+          specificationName: "",
+          customsNumber: "",
+          specificationAmount: "",
+          weight: "",
+          freightCost: "",
+          specificationName: "",
+          inventoryTotal: "",
+        },
+      ];
       if (type == "detail") {
         this.isdisabled = true;
       }
@@ -858,7 +881,7 @@ export default {
             status: 0, //区分草稿还是提交审核
             specificationList: this.tableData,
           };
-          addcommodity(obj).then((res) => {
+          editcommodity(obj).then((res) => {
             if (res.code == 200) {
               this.$message.success("提交审核成功！");
               this.back();
