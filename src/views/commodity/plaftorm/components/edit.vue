@@ -341,6 +341,7 @@
           <el-table-column
             prop="grossMargin"
             header-align="center"
+            key="grossMargin"
             align="center"
             label="平台毛利润"
             v-if="type == 'completion' || type == 'completiondetail'"
@@ -359,6 +360,7 @@
           <el-table-column
             prop="Productpicture"
             header-align="center"
+            key="Productpicture"
             align="center"
             label="图片"
             v-if="type == 'completion' || type == 'completiondetail'"
@@ -379,7 +381,7 @@
                   type="danger"
                   icon="el-icon-delete"
                   circle
-                  @click="deltableimg(scope.$index)"
+                  @click="deltableimg(scope.row, scope.$index)"
                 ></el-button>
               </div>
               <ImageUpload
@@ -422,11 +424,7 @@
       </div>
       <div class="reject-result" v-if="type == 'reject'">
         <div class="baseinfo">驳回原因</div>
-        <el-form
-          :model="ruleForm"
-          label-width="120px"
-          class="demo-ruleForm"
-        >
+        <el-form :model="ruleForm" label-width="120px" class="demo-ruleForm">
           <el-row>
             <el-col :span="12" :offset="6">
               <el-form-item label="驳回原因" prop="explain">
@@ -503,7 +501,7 @@
           >提交审核</el-button
         >
         <el-button
-          v-if=" type == 'detail' || type == 'edit'"
+          v-if="type == 'detail' || type == 'edit'"
           type="primary"
           size="small"
           @click="resubmit"
@@ -717,7 +715,7 @@ export default {
       },
       fileList: [],
       radio: "2",
-      rejectdisabled:true,
+      rejectdisabled: true,
     };
   },
   created() {
@@ -738,6 +736,7 @@ export default {
         inventoryTotal: "",
       },
     ];
+
     if (
       type == "edit" ||
       type == "reject" ||
@@ -765,10 +764,50 @@ export default {
         explain: data.explain,
       };
       this.ruleForm = querydata;
+      //规格数据
       var specificationList = this.$route.query.data.specificationList;
+
       specificationList.map((item) => {
         item.Productpicture = [];
       });
+
+      //图片数据
+      var operationList = this.$route.query.data.operationList || [];
+      //商品封面图
+      var spfmt = [];
+      //商品轮播图
+      var splbt = [];
+      //商品描述
+      var spms = [];
+      //规格图片
+      var specificaimg = [];
+      operationList.map((item) => {
+        var imgdata = item.url ? JSON.parse(item.url) : [];
+        if (item.type == 0) {
+          spfmt = imgdata;
+        }
+        if (item.type == 1) {
+          splbt = imgdata;
+        }
+        if (item.type == 2) {
+          spms = imgdata;
+        }
+        if (item.type == 3) {
+          specificaimg.push(item);
+        }
+      });
+      this.$set(this.ruleFormthree, "spfmt", spfmt);
+      this.$set(this.ruleFormthree, "splbt", splbt);
+      this.$set(this.ruleFormthree, "spms", spms);
+      specificationList.map((item) => {
+        specificaimg.map((specitem) => {
+          if (item.specificationBaseCode == specitem.specificationBaseCode) {
+            var imgdata = specitem.url ? JSON.parse(specitem.url) : [];
+            this.$set(item, "Productpicture", imgdata);
+          }
+        });
+      });
+
       this.tableData = specificationList || [
         {
           selfid: 1,
@@ -782,6 +821,7 @@ export default {
           Productpicture: [],
         },
       ];
+      console.log(this.tableData);
       if (type == "detail") {
         this.isdisabled = true;
       }
@@ -804,13 +844,14 @@ export default {
     });
   },
   methods: {
-    deltableimg(index) {
-      // this.$refs["tableupload" + index].clearfile();
-      this.tableData.map((item, tableindex) => {
-        if (tableindex == index) {
-          this.$set(item, "Productpicture", []);
-        }
-      });
+    deltableimg(row, index) {
+      debugger;
+      this.$refs["tableupload" + index].clearfile(row.Productpicture[0]);
+      // this.tableData.map((item, tableindex) => {
+      //   if (tableindex == index) {
+      //     this.$set(item, "Productpicture", []);
+      //   }
+      // });
     },
     showimg(row) {
       var flag = false;
@@ -1000,8 +1041,8 @@ export default {
         }
       });
     },
-    rejectsubmit(){
-       this.$refs["ruleForm"].validate((valid) => {
+    rejectsubmit() {
+      this.$refs["ruleForm"].validate((valid) => {
         if (valid) {
           var obj = {
             ...this.ruleForm,
@@ -1061,7 +1102,7 @@ export default {
           } else {
             var obj = {
               id: this.ruleForm.id,
-              status: this.ruleFormtwo.status, 
+              status: this.ruleFormtwo.status,
               explain: this.ruleFormtwo.explain,
             };
           }
@@ -1081,17 +1122,9 @@ export default {
     },
     completionsubmit() {
       var tableData = this.tableData;
-      var tablearr = [];
       var flag = false;
       tableData.map((item, index) => {
         var num = Number(index) + 1;
-        // var obj = {
-        //   specificationName: item.specificationName,
-        //   specificationAmount: item.specificationAmount,
-        //   inventoryTotal: item.inventoryTotal,
-        //   grossMargin: item.grossMargin,
-        // };
-        // tablearr.push(obj);
         if (!item.grossMargin) {
           flag = true;
           this.$message.error("请输入第" + num + "行平台毛利润");
@@ -1116,7 +1149,8 @@ export default {
 
       tableData.map((item) => {
         var obj = {
-          specificationBaseCode: item.specificationBaseCode, //商品平台编码
+          commodityBaseCode: item.commodityBaseCode, //商品平台编码
+          specificationBaseCode: item.specificationBaseCode, //规格平台编码
           type: 3,
           url: JSON.stringify(item.Productpicture),
         };
@@ -1133,6 +1167,7 @@ export default {
             if (valid) {
               var obj = {
                 ...that.ruleForm,
+                status:3,
                 specificationList: tableData,
                 operationList: operationList,
               };

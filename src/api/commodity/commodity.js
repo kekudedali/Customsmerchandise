@@ -26,7 +26,7 @@ export function addcommodity(data) {
     })
 }
 
-// 新增公告
+// 修改公告
 export function editcommodity(data) {
     return request({
         url: '/commodity/plaftorm/commodity/details',

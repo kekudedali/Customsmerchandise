@@ -142,8 +142,10 @@ export default {
       this.fileList.splice(findex, 1);
       this.$emit('update:fileList', this.fileList)
     },
-    clearfile(){
-      this.fileList = []
+    clearfile(file){
+      const findex = this.fileList.map((f) => f.name).indexOf(file.name);
+      this.fileList.splice(findex, 1);
+      this.$emit('update:fileList', this.fileList)
     },
     // 上传成功回调
     handleUploadSuccess(res) {
