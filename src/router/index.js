@@ -151,6 +151,12 @@ export const constantRoutes = [{
                 name: 'editclassification',
                 meta: { title: '新增商品分类' }
             },
+            {
+                path: '/completiongoods/checkout',
+                component: (resolve) => require(['@/views/completiongoods/checkout'], resolve),
+                name: 'checkout',
+                meta: { title: '分配库存' }
+            },
         ]
     },
 

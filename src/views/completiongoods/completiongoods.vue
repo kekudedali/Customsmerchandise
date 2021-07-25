@@ -182,7 +182,7 @@
                 size="mini"
                 type="text"
                 icon="el-icon-box"
-                @click="handlemore(scope.row)"
+                @click="handlecheckout(scope.row)"
                 v-hasPermi="['commodity:plaftorm:edit']"
                 >分配库存</el-button
               >
@@ -465,7 +465,7 @@ export default {
         path: "/completiongoods/edit",
         query: {
           type: "completion",
-          typetwo:"reject",
+          typetwo: "reject",
           title: "驳回海关商品备案",
           data: row,
         },
@@ -478,8 +478,18 @@ export default {
         query: {
           type: "completion",
           typetwo: "completiondetail",
-          typethree:"completiondetail",
+          typethree: "completiondetail",
           title: "海关商品备案详情",
+          data: row,
+        },
+      });
+    },
+    handlecheckout(row) {
+      this.reset();
+       this.$router.push({
+        path: "/completiongoods/checkout",
+        query: {
+          title: "分配库存",
           data: row,
         },
       });

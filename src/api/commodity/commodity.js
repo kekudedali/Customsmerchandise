@@ -105,3 +105,19 @@ export function chooseproduct(query) {
         data: query
     })
 }
+//分配库存
+export function allocation(query) {
+    return request({
+        url: '/commodity/plaftorm/commodity/allocation',
+        method: 'post',
+        data: query
+    })
+}
+//渠道
+export function getchannel(query) {
+    return request({
+        url: '/commodity/distributorbase/list',
+        method: 'get',
+        data: query
+    })
+}
