@@ -344,10 +344,10 @@
             key="grossMargin"
             align="center"
             label="平台毛利润"
-            v-if="type == 'completion' || type == 'completiondetail'"
+            v-if="type == 'completion'"
           >
             <template slot-scope="scope">
-              <div v-if="type == 'completiondetail'">
+              <div v-if="typetwo == 'completiondetail'">
                 {{ scope.row.grossMargin }}
               </div>
               <el-input
@@ -363,11 +363,14 @@
             key="Productpicture"
             align="center"
             label="图片"
-            v-if="type == 'completion' || type == 'completiondetail'"
+            v-if="type == 'completion'"
           >
             <template slot-scope="scope">
               <div
-                v-show="scope.row.Productpicture.length > 0"
+                v-if="
+                  scope.row.Productpicture.length > 0 &&
+                  typetwo == 'completiondetail'
+                "
                 class="tableimg-box"
               >
                 <el-image
@@ -377,6 +380,7 @@
                 >
                 </el-image>
                 <el-button
+                  v-if="typetwo != 'completiondetail'"
                   style="margin-left: 10px"
                   type="danger"
                   icon="el-icon-delete"
@@ -385,7 +389,10 @@
                 ></el-button>
               </div>
               <ImageUpload
-                v-show="scope.row.Productpicture.length == 0"
+                v-show="
+                  scope.row.Productpicture.length == 0 &&
+                  typetwo != 'completiondetail'
+                "
                 :limit="1"
                 :fileSize="fileSize"
                 :isShowTip="isShowTip"
@@ -448,43 +455,7 @@
           >
         </div>
       </div>
-      <div class="reject-result" v-if="typetwo == 'audit'">
-        <div class="baseinfo">审核</div>
-        <el-form
-          :model="ruleFormtwo"
-          :rules="rulestwo"
-          ref="ruleFormrwo"
-          label-width="120px"
-          class="demo-ruleForm"
-        >
-          <el-row>
-            <el-col :span="12" :offset="6">
-              <el-form-item label="审核" prop="status">
-                <el-radio v-model="ruleFormtwo.status" label="2">通过</el-radio>
-                <el-radio v-model="ruleFormtwo.status" label="1"
-                  >不通过</el-radio
-                >
-              </el-form-item>
-              <el-form-item label="驳回原因" prop="spfmt">
-                <el-input
-                  type="textarea"
-                  placeholder="请输入"
-                  v-model="ruleFormtwo.explain"
-                  maxlength="200"
-                  show-word-limit
-                  :autosize="autosize"
-                >
-                </el-input>
-              </el-form-item>
-            </el-col>
-          </el-row>
-        </el-form>
-        <div class="submit-btn">
-          <el-button type="primary" size="small" @click="auditsubmit"
-            >提交</el-button
-          >
-        </div>
-      </div>
+
       <div class="submit-btn" v-if="type != 'detail' && type != 'completion'">
         <el-button
           type="primary"
@@ -523,7 +494,21 @@
           <el-row>
             <el-col :span="18" :offset="1">
               <el-form-item label="商品封面图" prop="spfmt">
+                <div
+                  v-if="ruleFormthree.spfmt && typetwo == 'completiondetail'"
+                >
+                  <template v-for="(item, index) in this.ruleFormthree.spfmt">
+                    <el-image
+                      :key="index"
+                      style="width: 148px; height: 148px; margin-right: 10px"
+                      :src="item.url"
+                      :preview-src-list="[item.url]"
+                    >
+                    </el-image>
+                  </template>
+                </div>
                 <ImageUpload
+                  v-else
                   :limit="limit"
                   :fileSize="fileSize"
                   :isShowTip="isShowTip"
@@ -532,7 +517,21 @@
                 />
               </el-form-item>
               <el-form-item label="商品轮播图" prop="spfmt">
+                <div
+                  v-if="ruleFormthree.splbt && typetwo == 'completiondetail'"
+                >
+                  <template v-for="(item, index) in this.ruleFormthree.splbt">
+                    <el-image
+                      :key="index"
+                      style="width: 148px; height: 148px; margin-right: 10px"
+                      :src="item.url"
+                      :preview-src-list="[item.url]"
+                    >
+                    </el-image>
+                  </template>
+                </div>
                 <ImageUpload
+                  v-else
                   :limit="6"
                   :fileSize="fileSize"
                   :isShowTip="isShowTip"
@@ -541,7 +540,21 @@
                 />
               </el-form-item>
               <el-form-item label="商品描述" prop="spfmt">
+                <div
+                  v-if="ruleFormthree.spfmt && typetwo == 'completiondetail'"
+                >
+                  <template v-for="(item, index) in this.ruleFormthree.spfmt">
+                    <el-image
+                      :key="index"
+                      style="width: 148px; height: 148px; margin-right: 10px"
+                      :src="item.url"
+                      :preview-src-list="[item.url]"
+                    >
+                    </el-image>
+                  </template>
+                </div>
                 <ImageUpload
+                  v-else
                   :limit="9"
                   :fileSize="fileSize"
                   :isShowTip="isShowTip"
@@ -554,7 +567,76 @@
         </el-form>
       </div>
     </el-card>
-    <div class="submit-btn" v-if="type == 'completion'">
+    <!-- 审核------------------------------------------------------ -->
+    <el-card class="box-card" v-if="(type == 'audit' || typetwo == 'completiondetail')&&typethree!='completiondetail'">
+      <div class="reject-result" >
+        <div class="baseinfo">审核</div>
+        <el-form
+          :model="ruleFormtwo"
+          :rules="rulestwo"
+          ref="ruleFormrwo"
+          label-width="120px"
+          class="demo-ruleForm"
+        >
+          <el-row>
+            <el-col :span="12" :offset="6">
+              <el-form-item label="审核" prop="status">
+                <el-radio v-model="ruleFormtwo.status" label="2">通过</el-radio>
+                <el-radio v-model="ruleFormtwo.status" label="1"
+                  >不通过</el-radio
+                >
+              </el-form-item>
+              <el-form-item label="驳回原因" prop="spfmt">
+                <el-input
+                  type="textarea"
+                  placeholder="请输入"
+                  v-model="ruleFormtwo.explain"
+                  maxlength="200"
+                  show-word-limit
+                  :autosize="autosize"
+                >
+                </el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
+        <div class="submit-btn">
+          <el-button type="primary" size="small" @click="auditsubmit"
+            >提交</el-button
+          >
+        </div>
+      </div>
+    </el-card>
+    <!-- 驳回------------------------------------------------------ -->
+    <el-card class="box-card" v-if="typetwo == 'reject'">
+      <div class="reject-result">
+        <div class="baseinfo">驳回原因</div>
+        <el-form :model="ruleForm" label-width="120px" class="demo-ruleForm">
+          <el-row>
+            <el-col :span="12" :offset="6">
+              <el-form-item label="驳回原因" prop="explain">
+                <el-input
+                  type="textarea"
+                  placeholder="请输入"
+                  v-model="ruleForm.explain"
+                  maxlength="200"
+                  show-word-limit
+                  :autosize="autosize"
+                  :disabled="rejectdisabled"
+                >
+                </el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
+        <div class="submit-btn">
+          <el-button type="primary" size="small" @click="completionsubmit"
+            >重新提交审核</el-button
+          >
+        </div>
+      </div>
+    </el-card>
+    <div class="submit-btn" v-if="type == 'completion' && typetwo != 'reject'&&typetwo!='completiondetail'">
       <el-button type="primary" size="small" @click="completionsubmit"
         >提交审核</el-button
       >
@@ -591,6 +673,7 @@ export default {
       title: "新增海关商品备案",
       type: "add",
       typetwo: "add",
+      typethree: "add",
       isdisabled: false,
       limit: 5,
       fileSize: 20,
@@ -721,6 +804,12 @@ export default {
   created() {
     this.type = this.$route.query.type;
     this.typetwo = this.$route.query.typetwo;
+    this.typethree = this.$route.query.typethree;
+
+    if (this.typetwo == "reject" || this.typetwo == "completiondetail") {
+      this.isdisabled = true;
+    }
+
     let type = this.$route.query.type;
     this.title = this.$route.query.title;
 
@@ -1100,11 +1189,21 @@ export default {
               explain: this.ruleFormtwo.explain,
             };
           } else {
-            var obj = {
-              id: this.ruleForm.id,
-              status: this.ruleFormtwo.status,
-              explain: this.ruleFormtwo.explain,
-            };
+            var status = this.ruleFormtwo.status;
+            if (this.typethree == "completion") {
+              var statustwo = status == "2" ? "5" : "4";
+              var obj = {
+                id: this.ruleForm.id,
+                status: statustwo,
+                explain: this.ruleFormtwo.explain,
+              };
+            } else {
+              var obj = {
+                id: this.ruleForm.id,
+                status: status,
+                explain: this.ruleFormtwo.explain,
+              };
+            }
           }
           approvalcommodity(obj).then((res) => {
             if (res.code == 200) {
@@ -1167,7 +1266,7 @@ export default {
             if (valid) {
               var obj = {
                 ...that.ruleForm,
-                status:3,
+                status: 3,
                 specificationList: tableData,
                 operationList: operationList,
               };

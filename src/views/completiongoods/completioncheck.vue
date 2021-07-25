@@ -1,16 +1,5 @@
 <template>
   <div class="app-container">
-    <div class="radio-box">
-      <el-radio-group
-        v-model="queryParams.status"
-        @change="changeStatus"
-        size="small"
-      >
-        <el-radio-button :label="'2'">运营信息补全 </el-radio-button>
-        <el-radio-button :label="'4'">运营商品审核驳回</el-radio-button>
-        <el-radio-button :label="'5'">运营商品已归档</el-radio-button>
-      </el-radio-group>
-    </div>
     <el-form
       :model="queryParams"
       ref="queryForm"
@@ -114,14 +103,13 @@
         align="center"
         prop="createTime"
         width="180"
-        v-if="queryParams.status == '5'"
+        v-if="queryParams.status == '4'"
       />
       <el-table-column
         label="驳回原因"
         align="center"
         prop="updateBy"
         width="150"
-        :show-overflow-tooltip="true"
         v-if="queryParams.status == '4'"
       />
       <el-table-column
@@ -138,73 +126,15 @@
         width="200"
       >
         <template slot-scope="scope">
-          <span v-if="queryParams.status == '2'">
+          <span>
             <el-button
               size="mini"
               type="text"
-              icon="el-icon-box"
+              icon="el-icon-s-check"
               @click="handlecompletion(scope.row)"
               v-hasPermi="['commodity:plaftorm:approval']"
-              >商品补全</el-button
+              >审核</el-button
             >
-          </span>
-          <span v-if="queryParams.status == '4'">
-            <el-button
-              size="mini"
-              type="text"
-              icon="el-icon-edit"
-              @click="handleUpdatereject(scope.row)"
-              v-hasPermi="['commodity:plaftorm:edit']"
-              >修改</el-button
-            >
-          </span>
-          <span v-if="queryParams.status == '5'">
-            <div>
-              <el-button
-                size="mini"
-                type="text"
-                icon="el-icon-more"
-                @click="handlemore(scope.row)"
-                v-hasPermi="['commodity:plaftorm:edit']"
-                >更多</el-button
-              >
-              <el-button
-                size="mini"
-                type="text"
-                icon="el-icon-circle-close"
-                @click="handlecopy(scope.row)"
-                v-hasPermi="['commodity:plaftorm:edit']"
-                >禁用</el-button
-              >
-            </div>
-            <div>
-              <el-button
-                size="mini"
-                type="text"
-                icon="el-icon-box"
-                @click="handlemore(scope.row)"
-                v-hasPermi="['commodity:plaftorm:edit']"
-                >分配库存</el-button
-              >
-              <el-button
-                size="mini"
-                type="text"
-                icon="el-icon-notebook-1"
-                @click="handlecopy(scope.row)"
-                v-hasPermi="['commodity:plaftorm:edit']"
-                >分配记录</el-button
-              >
-            </div>
-            <div>
-              <el-button
-                size="mini"
-                type="text"
-                icon="el-icon-data-line"
-                @click="handlemore(scope.row)"
-                v-hasPermi="['commodity:plaftorm:edit']"
-                >出库统计</el-button
-              >
-            </div>
           </span>
         </template>
       </el-table-column>
@@ -321,7 +251,7 @@ export default {
         pageNum: 1,
         pageSize: 10,
         noticeTitle: "",
-        status: "2",
+        status: "3",
       },
       // 表单参数
       form: {},
@@ -442,7 +372,9 @@ export default {
         path: "/completiongoods/edit",
         query: {
           type: "completion",
-          title: "补全海关商品备案",
+          typetwo: "completiondetail",
+          typethree: "completion",
+          title: "运营商信息审核",
           data: row,
         },
       });
@@ -464,8 +396,7 @@ export default {
       this.$router.push({
         path: "/completiongoods/edit",
         query: {
-          type: "completion",
-          typetwo:"reject",
+          type: "reject",
           title: "驳回海关商品备案",
           data: row,
         },
@@ -476,9 +407,7 @@ export default {
       this.$router.push({
         path: "/completiongoods/edit",
         query: {
-          type: "completion",
-          typetwo: "completiondetail",
-          typethree:"completiondetail",
+          type: "detail",
           title: "海关商品备案详情",
           data: row,
         },
