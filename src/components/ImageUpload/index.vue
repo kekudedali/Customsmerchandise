@@ -1,24 +1,17 @@
 <template>
   <div>
-    <el-button
-      v-show="uploadtype == 'btn'"
-      size="mini"
-      type="primary"
-      @click="choosefile"
-      >选取文件</el-button
-    >
-    <div class="component-upload-image" v-show="uploadtype != 'btn'">
+    <div class="component-upload-image" >
       <el-upload
         :action="uploadImgUrl"
         :before-upload="handleBeforeUpload"
-        :file-list.sync="fileList"
+        :file-list.sync="fileListData"
         :limit="limit"
         :on-error="handleUploadError"
         :on-exceed="handleExceed"
         :on-success="handleUploadSuccess"
         :show-file-list="true"
         :headers="headers"
-        :class="{ hide: this.fileList.length >= this.limit }"
+        :class="{ hide: this.fileList.length >= this.limit,small:uploadtype == 'btn'}"
         list-type="picture-card"
         name="file"
         :on-remove="handleRemove"
@@ -81,8 +74,8 @@ export default {
       default: () => ["png", "jpg", "jpeg"],
     },
     fileList: {
-      type: Array,
-      default: []
+      type: [Array, Object, String],
+      default: [],
     },
     // 是否显示提示
     isShowTip: {
@@ -100,31 +93,24 @@ export default {
       headers: {
         Authorization: "Bearer " + getToken(),
       },
-      fileListData:[],
-      listText:[""]
+      fileListData: [],
+      listText: [""],
+      fileListData: [],
     };
   },
   watch: {
-    value: {
-      handler(val) {
-        if (val) {
-          // 首先将值转为数组
-          const list = Array.isArray(val) ? val : this.value.split(",");
-          // 然后将数组转为对象数组
-          this.fileList = list.map((item) => {
-            if (typeof item === "string") {
-              item = { name: item, url: item };
-            }
-            return item;
-          });
-        } else {
-          this.fileList = [];
-          return [];
+    filelist: {
+      handler(newValue) {
+        if (newValue) {
+          this.fileListData = newValue;
         }
       },
       deep: true,
       immediate: true,
     },
+  },
+  created() {
+    this.fileListData = this.fileList;
   },
   computed: {
     // 是否显示提示
@@ -138,19 +124,19 @@ export default {
     },
     // 删除图片
     handleRemove(file, fileList) {
-      const findex = this.fileList.map((f) => f.name).indexOf(file.name);
-      this.fileList.splice(findex, 1);
-      this.$emit('update:fileList', this.fileList)
+      const findex = this.fileListData.map((f) => f.name).indexOf(file.name);
+      this.fileListData.splice(findex, 1);
+      this.$emit("update:fileList", this.fileListData);
     },
-    clearfile(file){
-      const findex = this.fileList.map((f) => f.name).indexOf(file.name);
-      this.fileList.splice(findex, 1);
-      this.$emit('update:fileList', this.fileList)
+    clearfile(file) {
+      const findex = this.fileListData.map((f) => f.name).indexOf(file.name);
+      this.fileListData.splice(findex, 1);
+      this.$emit("update:fileList", this.fileListData);
     },
     // 上传成功回调
     handleUploadSuccess(res) {
-      this.fileList.push({ name: res.data.name, url: res.data.url });
-      this.$emit('update:fileList', this.fileList)
+      this.fileListData.push({ name: res.data.name, url: res.data.url });
+      this.$emit("update:fileList", this.fileListData);
       this.loading.close();
     },
     // 上传前loading加载
@@ -222,6 +208,16 @@ export default {
 // .el-upload--picture-card 控制加号部分
 ::v-deep.hide .el-upload--picture-card {
   display: none;
+}
+::v-deep.small .el-upload-list__item{
+  width: 100px;
+  height: 50px;
+}
+::v-deep.small .el-upload--picture-card{
+  width: 100px;
+  height: 50px;
+  line-height: 60px;
+  animation: none;
 }
 // 去掉动画效果
 ::v-deep .el-list-enter-active,

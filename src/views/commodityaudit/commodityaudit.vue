@@ -411,10 +411,9 @@ export default {
         path: "/commodity/edit",
         query: {
           type: "detail",
-          title: "海关商品备案详情",
+          title: "海关商品备案审批",
           data: row,
           typetwo:"audit"
-
         },
       });
     },

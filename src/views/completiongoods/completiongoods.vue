@@ -190,7 +190,7 @@
                 size="mini"
                 type="text"
                 icon="el-icon-notebook-1"
-                @click="handlecopy(scope.row)"
+                @click="handlerecord(scope.row)"
                 v-hasPermi="['commodity:plaftorm:edit']"
                 >分配记录</el-button
               >
@@ -200,7 +200,7 @@
                 size="mini"
                 type="text"
                 icon="el-icon-data-line"
-                @click="handlemore(scope.row)"
+                @click="handlestatistics(scope.row)"
                 v-hasPermi="['commodity:plaftorm:edit']"
                 >出库统计</el-button
               >
@@ -486,9 +486,32 @@ export default {
     },
     handlecheckout(row) {
       this.reset();
-       this.$router.push({
+      this.$router.push({
         path: "/completiongoods/checkout",
         query: {
+          type:'checkout',
+          title: "分配库存",
+          data: row,
+        },
+      });
+    },
+    handlerecord(row) {
+      this.reset();
+      this.$router.push({
+        path: "/completiongoods/checkout",
+        query: {
+          type:'record',
+          title: "分配库存",
+          data: row,
+        },
+      });
+    },
+    handlestatistics(row) {
+      this.reset();
+      this.$router.push({
+        path: "/completiongoods/checkout",
+        query: {
+          type:'statistics',
           title: "分配库存",
           data: row,
         },

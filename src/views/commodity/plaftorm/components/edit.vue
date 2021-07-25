@@ -366,36 +366,18 @@
             v-if="type == 'completion'"
           >
             <template slot-scope="scope">
-              <div
-                v-if="
-                  scope.row.Productpicture.length > 0 &&
-                  typetwo == 'completiondetail'
-                "
-                class="tableimg-box"
+              <el-image
+                v-if="typetwo == 'completiondetail'"
+                style="width: 50px; height: 50px"
+                :src="getsrc(scope.row)"
+                :preview-src-list="[getsrc(scope.row)]"
               >
-                <el-image
-                  style="width: 50px; height: 50px"
-                  :src="getsrc(scope.row)"
-                  :preview-src-list="[getsrc(scope.row)]"
-                >
-                </el-image>
-                <el-button
-                  v-if="typetwo != 'completiondetail'"
-                  style="margin-left: 10px"
-                  type="danger"
-                  icon="el-icon-delete"
-                  circle
-                  @click="deltableimg(scope.row, scope.$index)"
-                ></el-button>
-              </div>
+              </el-image>
               <ImageUpload
-                v-show="
-                  scope.row.Productpicture.length == 0 &&
-                  typetwo != 'completiondetail'
-                "
+                v-else
                 :limit="1"
                 :fileSize="fileSize"
-                :isShowTip="isShowTip"
+                :isShowTip="false"
                 uploadtype="btn"
                 :fileList.sync="scope.row.Productpicture"
                 :ref="'tableupload' + scope.$index"
@@ -568,8 +550,14 @@
       </div>
     </el-card>
     <!-- 审核------------------------------------------------------ -->
-    <el-card class="box-card" v-if="(type == 'audit' || typetwo == 'completiondetail')&&typethree!='completiondetail'">
-      <div class="reject-result" >
+    <el-card
+      class="box-card"
+      v-if="
+        (typetwo == 'audit' || typetwo == 'completiondetail') &&
+        typethree != 'completiondetail'
+      "
+    >
+      <div class="reject-result">
         <div class="baseinfo">审核</div>
         <el-form
           :model="ruleFormtwo"
@@ -636,7 +624,14 @@
         </div>
       </div>
     </el-card>
-    <div class="submit-btn" v-if="type == 'completion' && typetwo != 'reject'&&typetwo!='completiondetail'">
+    <div
+      class="submit-btn"
+      v-if="
+        type == 'completion' &&
+        typetwo != 'reject' &&
+        typetwo != 'completiondetail'
+      "
+    >
       <el-button type="primary" size="small" @click="completionsubmit"
         >提交审核</el-button
       >
@@ -934,17 +929,11 @@ export default {
   },
   methods: {
     deltableimg(row, index) {
-      debugger;
       this.$refs["tableupload" + index].clearfile(row.Productpicture[0]);
-      // this.tableData.map((item, tableindex) => {
-      //   if (tableindex == index) {
-      //     this.$set(item, "Productpicture", []);
-      //   }
-      // });
     },
     showimg(row) {
       var flag = false;
-      if (row.Productpicture.length > 0) {
+      if (row.Productpicture.length > 0 && this.typetwo == "completiondetail") {
         if (row.Productpicture[0].url) {
           flag = true;
         }

@@ -33,7 +33,7 @@
             </el-form-item>
           </el-col>
         </el-row>
-        <el-row>
+        <el-row v-if="type == 'checkout'">
           <div class="baseinfo" style="margin-bottom: 20px">分配库存</div>
           <el-col :span="18" :offset="1">
             <el-form-item label="选择需要分配的渠道" prop="channe">
@@ -80,8 +80,8 @@
           </el-col>
         </el-row>
       </el-form>
-      <div class="baseinfo">分配记录</div>
-      <el-table :data="tableData" style="width: 100%; margin-top: 20px" border>
+      <div class="baseinfo" v-if="type == 'record'" >分配记录</div>
+      <el-table v-if="type == 'record'"  :data="tableData" style="width: 100%; margin-top: 20px" border>
         <el-table-column
           prop="num"
           header-align="center"
@@ -123,8 +123,9 @@
           label="分配时间"
         />
       </el-table>
-      <div class="baseinfo">压货统计</div>
+      <div class="baseinfo"  v-if="type == 'statistics'"  >压货统计</div>
       <el-table
+        v-if="type == 'statistics'"
         :data="tableDataone"
         style="width: 100%; margin-top: 20px"
         border
@@ -170,8 +171,9 @@
           label="销量"
         />
       </el-table>
-      <div class="baseinfo">云端统计</div>
+      <div class="baseinfo" v-if="type == 'statistics'"  >云端统计</div>
       <el-table
+       v-if="type == 'statistics'"
         :data="tableDatatwo"
         style="width: 100%; margin-top: 20px"
         border
@@ -206,7 +208,7 @@
         />
       </el-table>
     </el-card>
-    <div class="submit-btn">
+    <div class="submit-btn" v-if="type == 'checkout'">
       <el-button type="primary" size="small" @click="submit">提交</el-button>
     </div>
   </div>
@@ -244,7 +246,10 @@ export default {
     ImageUpload,
   },
   created() {
+
     let { data } = this.$route.query;
+    this.type = this.$route.query.type;
+
     let querydata = {
       id: data.id,
       name: data.name,
