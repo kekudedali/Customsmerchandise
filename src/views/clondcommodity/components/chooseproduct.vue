@@ -284,7 +284,10 @@ export default {
         this.$message.error("请选择一条商品数据");
         return;
       }
-      chooseproduct(this.multipleSelection).then((res) => {
+      var obj = [{
+        commodityBaseCode:this.multipleSelection[0].commodityBaseCode
+      }]
+      chooseproduct(obj).then((res) => {
         this.msgSuccess("选品成功");
         this.multipleSelection = [];
         this.back();

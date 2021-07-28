@@ -11,7 +11,7 @@
         :model="ruleForm"
         :rules="rules"
         ref="ruleForm"
-        label-width="120px"
+        label-width="130px"
         class="demo-ruleForm"
       >
         <el-row>
@@ -56,7 +56,13 @@
                 </el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="所属供应商" prop="supplierBaseCode">
+            <el-form-item
+              label="所属供应商"
+              prop="supplierBaseCode"
+              v-if="
+                typefour != 'operainfocom' && typefour != 'operainfocomdetail'
+              "
+            >
               <el-select
                 v-model="ruleForm.supplierBaseCode"
                 placeholder="请选择"
@@ -88,7 +94,13 @@
                 </el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="海关备案编号" prop="ean">
+            <el-form-item
+              label="海关备案编号"
+              prop="ean"
+              v-if="
+                typefour != 'operainfocom' && typefour != 'operainfocomdetail'
+              "
+            >
               <el-input
                 v-model="ruleForm.ean"
                 placeholder="请输入"
@@ -96,7 +108,13 @@
                 :disabled="isdisabled"
               ></el-input>
             </el-form-item>
-            <el-form-item label="备案日期" prop="createTime">
+            <el-form-item
+              label="备案日期"
+              prop="createTime"
+              v-if="
+                typefour != 'operainfocom' && typefour != 'operainfocomdetail'
+              "
+            >
               <el-date-picker
                 v-model="ruleForm.createTime"
                 type="datetime"
@@ -166,7 +184,27 @@
                 :disabled="isdisabled"
               ></el-input>
             </el-form-item>
-            <el-form-item label="法定第二单位" prop="statutoryUnit2">
+            <el-form-item
+              label="海关备案编号"
+              prop="ean"
+              v-if="
+                typefour == 'operainfocom' || typefour == 'operainfocomdetail'
+              "
+            >
+              <el-input
+                v-model="ruleForm.ean"
+                placeholder="请输入"
+                style="width: 200px"
+                :disabled="isdisabled"
+              ></el-input>
+            </el-form-item>
+            <el-form-item
+              label="法定第二单位"
+              prop="statutoryUnit2"
+              v-if="
+                typefour != 'operainfocom' && typefour != 'operainfocomdetail'
+              "
+            >
               <el-select
                 v-model="ruleForm.statutoryUnit2"
                 placeholder="请选择"
@@ -182,7 +220,14 @@
                 </el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="法定第二数量" prop="statutoryNumber2">
+            <el-form-item
+              label="法定第二数量"
+              prop="statutoryNumber2"
+              v-if="
+                typefour != 'operainfocom' && typefour != 'operainfocomdetail'
+              "
+            >
+              <div>{{ typefour }}</div>
               <el-input
                 v-model="ruleForm.statutoryNumber2"
                 placeholder="请输入"
@@ -191,7 +236,13 @@
                 :disabled="isdisabled"
               ></el-input>
             </el-form-item>
-            <el-form-item label="备注" prop="explain">
+            <el-form-item
+              label="备注"
+              prop="explain"
+              v-if="
+                typefour != 'operainfocom' && typefour != 'operainfocomdetail'
+              "
+            >
               <el-input
                 v-model="ruleForm.explain"
                 placeholder="请输入"
@@ -201,7 +252,68 @@
             </el-form-item>
           </el-col>
         </el-row>
+        <div
+          v-if="typefour == 'operainfocom' || typefour == 'operainfocomdetail'"
+        >
+          <div class="card-title" style="margin: 10px 0px 10px 10px">
+            商品补全信息
+          </div>
+          <div class="baseinfo">补充信息</div>
+          <el-row>
+            <el-col :span="12" :offset="6">
+            <el-form-item style="margin-top: 20px" label="商品分类" prop="spfl">
+              <el-select
+                v-model="ruleForm.spfl"
+                placeholder="请选择"
+                style="width: 200px"
+                :disabled="isdisabledtwo"
+              >
+                <el-option
+                  v-for="item in spfloptions"
+                  :key="item.dictValue"
+                  :label="item.dictLabel"
+                  :value="item.dictValue"
+                >
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="跨境商品税率(%)" prop="kjspsl">
+              <el-input
+                v-model="ruleForm.kjspsl"
+                placeholder="请输入"
+                style="width: 200px"
+                :disabled="isdisabledtwo"
+              ></el-input>
+            </el-form-item>
+            <el-form-item label="初始化销量" prop="cshxl">
+              <el-input
+                v-model="ruleForm.cshxl"
+                placeholder="请输入"
+                style="width: 200px"
+                :disabled="isdisabledtwo"
+              ></el-input>
+            </el-form-item>
+            <el-form-item label="商品标签" prop="spbq">
+              <el-select
+                v-model="ruleForm.spbq"
+                placeholder="请选择"
+                style="width: 200px"
+                :disabled="isdisabledtwo"
+              >
+                <el-option
+                  v-for="item in spbqoptions"
+                  :key="item.dictValue"
+                  :label="item.dictLabel"
+                  :value="item.dictValue"
+                >
+                </el-option>
+              </el-select>
+            </el-form-item>
+            </el-col>
+          </el-row>
+        </div>
       </el-form>
+
       <div class="baseinfo">规格设置</div>
       <div class="card-title" style="margin: 10px 0px 10px 10px">规格列表</div>
       <div class="table-box">
@@ -382,6 +494,25 @@
                 :fileList.sync="scope.row.Productpicture"
                 :ref="'tableupload' + scope.$index"
               />
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="qudaplirun"
+            header-align="center"
+            key="qudaplirun"
+            align="center"
+            label="渠道利润"
+            v-if="typefour == 'operainfocom' || typefour == 'operainfocomdetail'"
+          >
+            <template slot-scope="scope">
+              <div v-if="typefour == 'operainfocomdetail'">
+                {{ scope.row.qudaplirun }}
+              </div>
+              <el-input
+                v-else
+                v-model="scope.row.qudaplirun"
+                placeholder="请输入内容"
+              ></el-input>
             </template>
           </el-table-column>
           <el-table-column
@@ -669,7 +800,9 @@ export default {
       type: "add",
       typetwo: "add",
       typethree: "add",
+      typefour: "add",
       isdisabled: false,
+      isdisabledtwo: false,
       limit: 5,
       fileSize: 20,
       isShowTip: true,
@@ -690,6 +823,10 @@ export default {
         statutoryUnit2: null,
         statutoryNumber2: null,
         explain: null,
+        spfl: null,
+        kjspsl: null,
+        spbq: null,
+        cshxl: null,
       },
       rules: {
         name: [
@@ -728,6 +865,22 @@ export default {
         statutoryNumber1: [
           { required: true, message: "请输入法定第一数量", trigger: "change" },
         ],
+        spfl: [
+          { required: true, message: "请输入商品分类", trigger: "change" },
+        ],
+        kjspsl: [
+          {
+            required: true,
+            message: "请输入跨境商品税率(%)",
+            trigger: "change",
+          },
+        ],
+        cshxl: [
+          { required: true, message: "请输入初始化销量", trigger: "change" },
+        ],
+        spbq: [
+          { required: true, message: "请输入商品标签", trigger: "change" },
+        ],
       },
       countryOfOriginoptions: [], //原产国
       unitoptions: [], //申报单位
@@ -746,6 +899,7 @@ export default {
           freightCost: "",
           specificationName: "",
           inventoryTotal: "",
+          qudaplirun: "",
         },
       ],
       selfid: 2,
@@ -794,14 +948,48 @@ export default {
       fileList: [],
       radio: "2",
       rejectdisabled: true,
+      spfloptions: [
+        {
+          dictLabel: "食品保健",
+          dictValue: "1",
+        },
+        {
+          dictLabel: "时尚轻奢",
+          dictValue: "2",
+        },
+        {
+          dictLabel: "餐酒软饮",
+          dictValue: "3",
+        },
+        {
+          dictLabel: "母婴用品",
+          dictValue: "4",
+        },
+      ],
+      spbqoptions: [
+        {
+          dictLabel: "新品",
+          dictValue: "1",
+        },
+        {
+          dictLabel: "更多",
+          dictValue: "2",
+        },
+      ],
     };
   },
   created() {
     this.type = this.$route.query.type;
     this.typetwo = this.$route.query.typetwo;
     this.typethree = this.$route.query.typethree;
+    this.typefour = this.$route.query.typefour;
 
-    if (this.typetwo == "reject" || this.typetwo == "completiondetail") {
+    if (
+      this.typetwo == "reject" ||
+      this.typetwo == "completiondetail" ||
+      this.typefour == "operainfocom" ||
+      this.typefour == "operainfocomdetail"
+    ) {
       this.isdisabled = true;
     }
 
@@ -818,6 +1006,7 @@ export default {
         freightCost: "",
         specificationName: "",
         inventoryTotal: "",
+        qudaplirun: "",
       },
     ];
 
