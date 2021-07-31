@@ -31,6 +31,9 @@
     </el-form>
 
     <el-row :gutter="10" class="mb8">
+      <el-button type="primary" size="small" @click="handleedit('add')"
+        >新增</el-button
+      >
       <right-toolbar
         :showSearch.sync="showSearch"
         @queryTable="getList"
@@ -82,7 +85,10 @@
       <el-table-column label="排序" align="center" prop="px" />
       <el-table-column label="操作" align="center" prop="opration" width="150">
         <template slot-scope="scope">
-          <el-button type="text" size="mini" @click="handleedit"
+          <el-button
+            type="text"
+            size="mini"
+            @click="handleedit('edit', scope.row)"
             >修改</el-button
           >
         </template>
@@ -340,15 +346,26 @@ export default {
         }
       });
     },
-    handleedit() {
+    handleedit(type, row) {
       this.reset();
-      this.$router.push({
-        path: "/Commodityclassification/editclassification",
-        query: {
-          type: "add",
-          title: "新增商品分类",
-        },
-      });
+      if (type == "add") {
+        this.$router.push({
+          path: "/Commodityclassification/editclassification",
+          query: {
+            type: "add",
+            title: "新增商品分类",
+          },
+        });
+      } else {
+        this.$router.push({
+          path: "/Commodityclassification/editclassification",
+          query: {
+            type: "edit",
+            title: "修改商品分类",
+            data: row,
+          },
+        });
+      }
     },
   },
 };

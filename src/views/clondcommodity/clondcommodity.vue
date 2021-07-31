@@ -86,8 +86,8 @@
       <el-table-column
         label="商品品牌"
         align="center"
-        prop="commodityBrand"
-        width="150"
+         prop="commodityBrand"
+        :show-overflow-tooltip="true"
       />
       <el-table-column
         label="商品条码"

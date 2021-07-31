@@ -31,6 +31,9 @@
     </el-form>
 
     <el-row :gutter="10" class="mb8">
+      <el-button type="primary" size="small" @click="handleedit('add')"
+        >新增</el-button
+      >
       <right-toolbar
         :showSearch.sync="showSearch"
         @queryTable="getList"
@@ -50,39 +53,21 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column label="分类名称" align="center" prop="name">
+      <el-table-column label="标签名称" align="center" prop="name">
         <template slot-scope="scope">
           {{ scope.row.name }}
         </template>
       </el-table-column>
-      <el-table-column label="APP图标" align="center" prop="apptb">
-        <template slot-scope="scope">
-          <div v-if="!scope.row.apptb">暂无图片</div>
-          <el-image
-            v-else
-            style="width: 50px; height: 50px"
-            :src="scope.row.apptb"
-            :preview-src-list="[scope.row.apptb]"
-          >
-          </el-image>
-        </template>
+      <el-table-column label="标签iocn" align="center" prop="icon">
       </el-table-column>
-      <el-table-column label="小程序图标" align="center" prop="xcxtb">
-        <template slot-scope="scope">
-          <div v-if="!scope.row.apptb">暂无图片</div>
-          <el-image
-            v-else
-            style="width: 50px; height: 50px"
-            :src="scope.row.xcxtb"
-            :preview-src-list="[scope.row.xcxtb]"
-          >
-          </el-image>
-        </template>
+      <el-table-column label="排序" align="center" prop="sort">
       </el-table-column>
-      <el-table-column label="排序" align="center" prop="px" />
       <el-table-column label="操作" align="center" prop="opration" width="150">
         <template slot-scope="scope">
-          <el-button type="text" size="mini" @click="handleedit"
+          <el-button
+            type="text"
+            size="mini"
+            @click="handleedit('edit', scope.row)"
             >修改</el-button
           >
         </template>
@@ -96,10 +81,10 @@
       @pagination="getList"
     />
     <!-- 添加或修改公告对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="780px" append-to-body>
+    <el-dialog :title="title" :visible="open" width="780px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-row>
-          <el-col :span="12">
+          <el-col :span="6" :offset="6">
             <el-form-item label="分类名称" prop="name">
               <el-input
                 v-model="form.name"
@@ -340,15 +325,15 @@ export default {
         }
       });
     },
-    handleedit() {
+    handleedit(type, row) {
       this.reset();
-      this.$router.push({
-        path: "/Commodityclassification/editclassification",
-        query: {
-          type: "add",
-          title: "新增商品分类",
-        },
-      });
+      this.open = true;
+      if (type == "edit") {
+        this.$set(this.form, "id", row.id);
+        this.title = "修改标签";
+      } else {
+        this.title = "新增标签";
+      }
     },
   },
 };

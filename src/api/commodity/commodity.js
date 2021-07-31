@@ -8,6 +8,15 @@ export function listcommodity(query) {
         params: query
     })
 }
+//渠道
+export function distributor(data) {
+    return request({
+        url: '/commodity/plaftorm/distributor/list',
+        method: 'post',
+        data
+    })
+}
+
 
 // 查询公告详细
 export function getcommodity(noticeId) {
@@ -35,6 +44,14 @@ export function editcommodity(data) {
     })
 }
 
+export function editcommoditytwo(data) {
+    return request({
+        url: '/plaftorm/distributor/edit',
+        method: 'put',
+        data: data
+    })
+}
+
 // 修改公告
 export function updatecommodity(data) {
     return request({
@@ -43,6 +60,8 @@ export function updatecommodity(data) {
         data: data
     })
 }
+
+
 
 // 删除公告
 export function delcommodity(noticeId) {
@@ -60,6 +79,8 @@ export function approvalcommodity(data) {
         data: data
     })
 }
+
+
 
 // 复制
 export function copycommodity(data) {
@@ -92,6 +113,14 @@ export function supplierbase(query) {
 export function completioncommodity(query) {
     return request({
         url: '/commodity/plaftorm/commodity/details',
+        method: 'put',
+        data: query
+    })
+}
+
+export function completioncommoditytwo(query) {
+    return request({
+        url: '/plaftorm/distributor/audit',
         method: 'put',
         data: query
     })

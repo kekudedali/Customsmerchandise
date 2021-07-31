@@ -2,7 +2,7 @@
   <div class="app-container">
     <div>
       <el-button size="small" type="primary" @click="back">返回</el-button>
-      <span class="title">"商品分类管理 > 分类分类管理"</span>
+      <span class="title">"商品分类管理 > 分类管理"</span>
     </div>
     <el-card class="box-card">
       <div class="card-title">{{ title }}</div>
@@ -35,7 +35,7 @@
           </el-col>
         </el-row>
         <el-row>
-          <div class="baseinfo" style="margin-bottom:20px;">图文信息</div>
+          <div class="baseinfo" style="margin-bottom: 20px">图文信息</div>
           <el-col :span="18" :offset="1">
             <el-form-item label="APP图标" prop="apptb">
               <ImageUpload
@@ -59,10 +59,8 @@
         </el-row>
       </el-form>
     </el-card>
-    <div class="submit-btn" >
-      <el-button type="primary" size="small" @click="submit"
-        >提交审核</el-button
-      >
+    <div class="submit-btn">
+      <el-button type="primary" size="small" @click="submit">提交</el-button>
     </div>
   </div>
 </template>
@@ -116,8 +114,24 @@ export default {
       this.$store.dispatch("tagsView/delView", this.$route);
       this.$router.go(-1);
     },
-    submit(){
-
+    submit() {
+      this.$refs["ruleForm"].validate((valid) => {
+        if (valid) {
+          if (this.form.id != undefined) {
+            updatecommodity(this.form).then((response) => {
+              this.msgSuccess("修改成功");
+              this.open = false;
+              this.getList();
+            });
+          } else {
+            addcommodity(this.form).then((response) => {
+              this.msgSuccess("新增成功");
+              this.open = false;
+              this.getList();
+            });
+          }
+        }
+      });
     },
   },
 };

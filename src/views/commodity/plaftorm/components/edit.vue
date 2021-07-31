@@ -790,16 +790,15 @@ import selfDirective from "@/utils/selfDirective";
 
 import {
   listcommodity,
-  getcommodity,
-  delcommodity,
   addcommodity,
   editcommodity,
+  editcommoditytwo,
   updatecommodity,
-  exportcommodity,
   approvalcommodity,
   warehouseapi,
   supplierbase,
   completioncommodity,
+  completioncommoditytwo
 } from "@/api/commodity/commodity";
 
 export default {
