@@ -59,7 +59,7 @@
         </el-row>
       </el-form>
     </el-card>
-    <div class="submit-btn" v-if="type == 'completion'">
+    <div class="submit-btn" >
       <el-button type="primary" size="small" @click="submit"
         >提交审核</el-button
       >

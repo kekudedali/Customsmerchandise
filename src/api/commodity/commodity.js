@@ -121,3 +121,21 @@ export function getchannel(query) {
         data: query
     })
 }
+
+//渠道端
+
+export function putShelf(query) {
+    return request({
+        url: '/commodity/plaftorm/commodity/allocation',
+        method: 'post',
+        data: query
+    })
+}
+
+export function offShelf(query) {
+    return request({
+        url: '/commodity/plaftorm/commodity/allocation',
+        method: 'post',
+        data: query
+    })
+}

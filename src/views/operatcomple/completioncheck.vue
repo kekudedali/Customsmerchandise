@@ -1,16 +1,5 @@
 <template>
   <div class="app-container">
-    <div class="radio-box">
-      <el-radio-group
-        v-model="queryParams.status"
-        @change="changeStatus"
-        size="small"
-      >
-        <el-radio-button :label="'2'">商品补全 </el-radio-button>
-        <el-radio-button :label="'4'">审核驳回</el-radio-button>
-        <el-radio-button :label="'5'">已归档</el-radio-button>
-      </el-radio-group>
-    </div>
     <el-form
       :model="queryParams"
       ref="queryForm"
@@ -38,22 +27,6 @@
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
           >重置</el-button
         >
-        <el-button
-          icon="el-icon-top"
-          type="primary"
-          size="mini"
-          @click="setputShelf"
-          v-if="queryParams.status == '5'"
-          >上架</el-button
-        >
-        <el-button
-          icon="el-icon-bottom"
-          type="primary"
-          size="mini"
-          @click="setoffShelf"
-          v-if="queryParams.status == '5'"
-          >下架</el-button
-        >
       </el-form-item>
     </el-form>
 
@@ -64,12 +37,7 @@
       ></right-toolbar>
     </el-row>
 
-    <el-table
-      v-loading="loading"
-      :data="commodityList"
-      @selection-change="handleSelectionChange"
-    >
-      <el-table-column type="selection" width="55"> </el-table-column>
+    <el-table v-loading="loading" :data="commodityList">
       <el-table-column label="序号" align="center" prop="id" width="100">
         <template slot-scope="scope">
           <div>
@@ -135,14 +103,13 @@
         align="center"
         prop="createTime"
         width="180"
-        v-if="queryParams.status == '5'"
+        v-if="queryParams.status == '4'"
       />
       <el-table-column
         label="驳回原因"
         align="center"
         prop="updateBy"
         width="150"
-        :show-overflow-tooltip="true"
         v-if="queryParams.status == '4'"
       />
       <el-table-column
@@ -159,56 +126,15 @@
         width="200"
       >
         <template slot-scope="scope">
-          <span v-if="queryParams.status == '2'">
+          <span>
             <el-button
               size="mini"
               type="text"
-              icon="el-icon-box"
+              icon="el-icon-s-check"
               @click="handlecompletion(scope.row)"
               v-hasPermi="['commodity:plaftorm:approval']"
-              >商品补全</el-button
+              >审核</el-button
             >
-          </span>
-          <span v-if="queryParams.status == '4'">
-            <el-button
-              size="mini"
-              type="text"
-              icon="el-icon-edit"
-              @click="handleUpdatereject(scope.row)"
-              v-hasPermi="['commodity:plaftorm:edit']"
-              >修改</el-button
-            >
-          </span>
-          <span v-if="queryParams.status == '5'">
-            <div>
-              <el-button
-                size="mini"
-                type="text"
-                icon="el-icon-more"
-                @click="handlemore(scope.row)"
-                v-hasPermi="['commodity:plaftorm:edit']"
-                >更多</el-button
-              >
-              <el-button
-                size="mini"
-                type="text"
-                icon="el-icon-top"
-                @click="setputShelf(scope.row)"
-                v-if="scope.row.sj"
-                v-hasPermi="['commodity:plaftorm:edit']"
-                >上架</el-button
-              >
-              <el-button
-                size="mini"
-                type="text"
-                icon="el-icon-bottom"
-                @click="setoffShelf(scope.row)"
-                v-if="!scope.row.sj"
-                style="color: red"
-                v-hasPermi="['commodity:plaftorm:edit']"
-                >下架</el-button
-              >
-            </div>
           </span>
         </template>
       </el-table-column>
@@ -288,8 +214,6 @@ import {
   exportcommodity,
   approvalcommodity,
   copycommodity,
-  putShelf,
-  offShelf,
 } from "@/api/commodity/commodity";
 import Editor from "@/components/Editor";
 
@@ -327,7 +251,7 @@ export default {
         pageNum: 1,
         pageSize: 10,
         noticeTitle: "",
-        status: "2",
+        status: "3",
       },
       // 表单参数
       form: {},
@@ -353,40 +277,6 @@ export default {
     });
   },
   methods: {
-    setputShelf() {
-      if (this.ids.length == 0) {
-        this.$message.error("请选择一条数据");
-        return;
-      }
-      var obj = {
-        ids: this.ids,
-      };
-      putShelf(obj).then((res) => {
-        if (res.data.code == 200) {
-          this.$message.success("上架成功");
-          this.ids = [];
-        } else {
-          this.$message.error(res.msg.data);
-        }
-      });
-    },
-    setoffShelf() {
-      if (this.ids.length == 0) {
-        this.$message.error("请选择一条数据");
-        return;
-      }
-      var obj = {
-        ids: this.ids,
-      };
-      offShelf(obj).then((res) => {
-        if (res.data.code == 200) {
-          this.$message.success("下架成功");
-          this.ids = [];
-        } else {
-          this.$message.error(res.msg.data);
-        }
-      });
-    },
     /** 查询公告列表 */
     handelcopy() {
       copycommodity().then((res) => {
@@ -465,14 +355,39 @@ export default {
       this.single = selection.length != 1;
       this.multiple = !selection.length;
     },
+    /** 新增按钮操作 */
+    handleAdd() {
+      this.reset();
+      this.$router.push({
+        path: "/completiongoods/edit",
+        query: {
+          type: "add",
+          title: "新增海关商品备案",
+        },
+      });
+    },
     /** 补全按钮操作 */
     handlecompletion(row) {
       this.$router.push({
         path: "/completiongoods/edit",
         query: {
           type: "completion",
+          typetwo: "completiondetail",
+          typethree: "completion",
           typefour: "operainfocom",
-          title: "补全海关商品备案",
+          title: "运营商信息审核",
+          data: row,
+        },
+      });
+    },
+    /** 修改按钮操作 */
+    handleUpdate(row) {
+      this.reset();
+      this.$router.push({
+        path: "/completiongoods/edit",
+        query: {
+          type: "edit",
+          title: "修改海关商品备案",
           data: row,
         },
       });
@@ -482,9 +397,7 @@ export default {
       this.$router.push({
         path: "/completiongoods/edit",
         query: {
-          type: "completion",
-          typetwo: "reject",
-          typefour: "operainfocom",
+          type: "reject",
           title: "驳回海关商品备案",
           data: row,
         },
@@ -495,44 +408,8 @@ export default {
       this.$router.push({
         path: "/completiongoods/edit",
         query: {
-          type: "completion",
-          typetwo: "completiondetail",
-          typethree: "completiondetail",
-          typefour: "operainfocomdetail",
+          type: "detail",
           title: "海关商品备案详情",
-          data: row,
-        },
-      });
-    },
-    handlecheckout(row) {
-      this.reset();
-      this.$router.push({
-        path: "/completiongoods/checkout",
-        query: {
-          type: "checkout",
-          title: "分配库存",
-          data: row,
-        },
-      });
-    },
-    handlerecord(row) {
-      this.reset();
-      this.$router.push({
-        path: "/completiongoods/checkout",
-        query: {
-          type: "record",
-          title: "分配库存",
-          data: row,
-        },
-      });
-    },
-    handlestatistics(row) {
-      this.reset();
-      this.$router.push({
-        path: "/completiongoods/checkout",
-        query: {
-          type: "statistics",
-          title: "分配库存",
           data: row,
         },
       });

@@ -261,54 +261,59 @@
           <div class="baseinfo">补充信息</div>
           <el-row>
             <el-col :span="12" :offset="6">
-            <el-form-item style="margin-top: 20px" label="商品分类" prop="spfl">
-              <el-select
-                v-model="ruleForm.spfl"
-                placeholder="请选择"
-                style="width: 200px"
-                :disabled="isdisabledtwo"
+              <el-form-item
+                style="margin-top: 20px"
+                label="商品分类"
+                prop="spfl"
               >
-                <el-option
-                  v-for="item in spfloptions"
-                  :key="item.dictValue"
-                  :label="item.dictLabel"
-                  :value="item.dictValue"
+                <el-select
+                  v-model="ruleForm.spfl"
+                  placeholder="请选择"
+                  style="width: 200px"
+                  :disabled="isdisabledtwo"
                 >
-                </el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item label="跨境商品税率(%)" prop="kjspsl">
-              <el-input
-                v-model="ruleForm.kjspsl"
-                placeholder="请输入"
-                style="width: 200px"
-                :disabled="isdisabledtwo"
-              ></el-input>
-            </el-form-item>
-            <el-form-item label="初始化销量" prop="cshxl">
-              <el-input
-                v-model="ruleForm.cshxl"
-                placeholder="请输入"
-                style="width: 200px"
-                :disabled="isdisabledtwo"
-              ></el-input>
-            </el-form-item>
-            <el-form-item label="商品标签" prop="spbq">
-              <el-select
-                v-model="ruleForm.spbq"
-                placeholder="请选择"
-                style="width: 200px"
-                :disabled="isdisabledtwo"
-              >
-                <el-option
-                  v-for="item in spbqoptions"
-                  :key="item.dictValue"
-                  :label="item.dictLabel"
-                  :value="item.dictValue"
+                  <el-option
+                    v-for="item in spfloptions"
+                    :key="item.dictValue"
+                    :label="item.dictLabel"
+                    :value="item.dictValue"
+                  >
+                  </el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item label="跨境商品税率(%)" prop="kjspsl">
+                <el-input
+                  v-model="ruleForm.kjspsl"
+                  placeholder="请输入"
+                  style="width: 200px"
+                  :disabled="isdisabledtwo"
+                ></el-input>
+              </el-form-item>
+              <el-form-item label="初始化销量" prop="cshxl">
+                <el-input
+                  v-model="ruleForm.cshxl"
+                  placeholder="请输入"
+                  style="width: 200px"
+                  :disabled="isdisabledtwo"
+                  v-Int
+                ></el-input>
+              </el-form-item>
+              <el-form-item label="商品标签" prop="spbq">
+                <el-select
+                  v-model="ruleForm.spbq"
+                  placeholder="请选择"
+                  style="width: 200px"
+                  :disabled="isdisabledtwo"
                 >
-                </el-option>
-              </el-select>
-            </el-form-item>
+                  <el-option
+                    v-for="item in spbqoptions"
+                    :key="item.dictValue"
+                    :label="item.dictLabel"
+                    :value="item.dictValue"
+                  >
+                  </el-option>
+                </el-select>
+              </el-form-item>
             </el-col>
           </el-row>
         </div>
@@ -459,7 +464,13 @@
             v-if="type == 'completion'"
           >
             <template slot-scope="scope">
-              <div v-if="typetwo == 'completiondetail'">
+              <div
+                v-if="
+                  typetwo == 'completiondetail' ||
+                  typefour == 'operainfocom' ||
+                  typefour == 'operainfocomdetail'
+                "
+              >
                 {{ scope.row.grossMargin }}
               </div>
               <el-input
@@ -502,7 +513,9 @@
             key="qudaplirun"
             align="center"
             label="渠道利润"
-            v-if="typefour == 'operainfocom' || typefour == 'operainfocomdetail'"
+            v-if="
+              typefour == 'operainfocom' || typefour == 'operainfocomdetail'
+            "
           >
             <template slot-scope="scope">
               <div v-if="typefour == 'operainfocomdetail'">
@@ -976,6 +989,7 @@ export default {
           dictValue: "2",
         },
       ],
+      multipleSelection:[],
     };
   },
   created() {
@@ -991,6 +1005,7 @@ export default {
       this.typefour == "operainfocomdetail"
     ) {
       this.isdisabled = true;
+      this.isdisabledtwo = true;
     }
 
     let type = this.$route.query.type;
@@ -1402,13 +1417,22 @@ export default {
       var flag = false;
       tableData.map((item, index) => {
         var num = Number(index) + 1;
-        if (!item.grossMargin) {
-          flag = true;
-          this.$message.error("请输入第" + num + "行平台毛利润");
-        }
-        if (item.Productpicture.length == 0) {
-          flag = true;
-          this.$message.error("请上传第" + num + "行图片");
+        //渠道端
+        if (this.typefour == "operainfocom") {
+          if (!item.qudaplirun) {
+            flag = true;
+            this.$message.error("请输入第" + num + "渠道利润");
+          }
+        } else {
+          //平台
+          if (!item.grossMargin) {
+            flag = true;
+            this.$message.error("请输入第" + num + "行平台毛利润");
+          }
+          if (item.Productpicture.length == 0) {
+            flag = true;
+            this.$message.error("请上传第" + num + "行图片");
+          }
         }
       });
       //获取图片数据
@@ -1442,12 +1466,24 @@ export default {
         if (valid) {
           that.$refs["ruleFormthree"].validate((valid) => {
             if (valid) {
-              var obj = {
-                ...that.ruleForm,
-                status: 3,
-                specificationList: tableData,
-                operationList: operationList,
-              };
+              if (this.typefour == "operainfocom") {
+                //渠道补全驳回重新提交
+                var obj = {
+                  ...that.ruleForm,
+                  status: 7,
+                  specificationList: tableData,
+                  operationList: operationList,
+                };
+              } else {
+                //平台补全驳回重新提交
+                var obj = {
+                  ...that.ruleForm,
+                  status: 3,
+                  specificationList: tableData,
+                  operationList: operationList,
+                };
+              }
+
               completioncommodity(obj).then((res) => {
                 if (res.code == 200) {
                   that.$message.success("提交审核成功！");
