@@ -1053,14 +1053,21 @@ export default {
         statutoryUnit2: data.statutoryUnit2,
         statutoryNumber2: data.statutoryNumber2,
         explain: data.explain,
-        commodityTypeCode:data.commodityTypeCode,
-        tax:data.tax,
-        salesVolume:data.salesVolume,
-        label:data.label,
+        commodityTypeCode: data.commodityTypeCode,
+        tax: data.tax,
+        salesVolume: data.salesVolume,
+        label: data.label,
       };
       this.ruleForm = querydata;
       //规格数据
-      var specificationList = this.$route.query.data.specificationList;
+      if (
+        this.typefour == "operainfocom" ||
+        this.typefour == "operainfocomdetail"
+      ) {
+        var specificationList = this.$route.query.data.dsList;
+      } else {
+        var specificationList = this.$route.query.data.specificationList;
+      }
 
       specificationList.map((item) => {
         item.Productpicture = [];
@@ -1248,7 +1255,7 @@ export default {
         rows.map((item) => {
           var obj = {
             dictLabel: item.value,
-            dictValue: item.distributorBaseCode,
+            dictValue: item.code,
           };
           labeloptions.push(obj);
         });
@@ -1263,7 +1270,7 @@ export default {
         rows.map((item) => {
           var obj = {
             dictLabel: item.value,
-            dictValue: item.distributorBaseCode,
+            dictValue: item.code,
           };
           commodityTypeCodeoptions.push(obj);
         });
@@ -1413,13 +1420,15 @@ export default {
         this.$message.error("请填写不通过的原因");
         return;
       }
+      var status = this.ruleFormtwo.status;
       this.$refs["ruleFormrwo"].validate((valid) => {
         if (valid) {
           if (this.typefour == "operainfocomdetail") {
+            var statustwo = status == "2" ? "3" : "2";
             //渠道端
             var obj = {
               id: this.ruleForm.id,
-              status: status,
+              status: statustwo,
               explain: this.ruleFormtwo.explain,
             };
             approvalcommoditytwo(obj).then((res) => {
@@ -1439,7 +1448,6 @@ export default {
                 explain: this.ruleFormtwo.explain,
               };
             } else {
-              var status = this.ruleFormtwo.status;
               if (this.typethree == "completion") {
                 var statustwo = status == "2" ? "5" : "4";
                 var obj = {

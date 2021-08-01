@@ -61,6 +61,16 @@
         </template>
       </el-table-column>
       <el-table-column
+        label="商品分类"
+        align="center"
+        prop="commodityTypeCode"
+        width="200"
+      >
+      <template slot-scope="scope">
+        <div>{{gettype(scope.row)}}</div>
+      </template>
+      </el-table-column>
+      <el-table-column
         label="平台编码"
         align="center"
         prop="commodityBaseCode"
@@ -70,7 +80,7 @@
       <el-table-column
         label="商品品牌"
         align="center"
-         prop="commodityBrand"
+        prop="commodityBrand"
         :show-overflow-tooltip="true"
       />
       <el-table-column
@@ -79,14 +89,17 @@
         prop="skuCode"
         width="150"
       />
-      <el-table-column label="库存" align="center" prop="kc" width="150">
+      <el-table-column
+        label="云端库存"
+        align="center"
+        prop="skuCode"
+        width="150"
+      />
+      <el-table-column label="压货库存" align="center" prop="kc" width="150">
         <template slot-scope="scope">
           <el-tooltip placement="bottom" effect="light">
             <div slot="content">
-              <div
-                v-for="(item, index) in scope.row.specificationList"
-                :key="index"
-              >
+              <div v-for="(item, index) in scope.row.dsList" :key="index">
                 {{ item.specificationName }}
                 <span style="margin-left: 10px">
                   {{ item.inventoryUsable + " g" }}</span
@@ -98,32 +111,19 @@
           </el-tooltip>
         </template>
       </el-table-column>
+      <el-table-column label="提交时间" align="center" prop="tax" width="180" />
       <el-table-column
         label="提交时间"
         align="center"
         prop="createTime"
         width="180"
-        v-if="queryParams.status == '4'"
-      />
-      <el-table-column
-        label="驳回原因"
-        align="center"
-        prop="updateBy"
-        width="150"
-        v-if="queryParams.status == '4'"
-      />
-      <el-table-column
-        label="驳回时间"
-        align="center"
-        prop="updateTime"
-        width="180"
-        v-if="queryParams.status == '4'"
       />
       <el-table-column
         label="操作"
         align="center"
         class-name="small-padding fixed-width"
         width="200"
+        fixed="right"
       >
         <template slot-scope="scope">
           <span>
@@ -214,6 +214,7 @@ import {
   exportcommodity,
   approvalcommodity,
   copycommodity,
+  getcommodityclassify,
 } from "@/api/commodity/commodity";
 import Editor from "@/components/Editor";
 import selfDirective from "@/utils/selfDirective";
@@ -266,10 +267,12 @@ export default {
         ],
       },
       type: "0",
+      commodityTypeCodeoptions:[],
     };
   },
   created() {
     this.getList();
+    this.getcommodityclassifydata(); //分类
     this.getDicts("sys_notice_status").then((response) => {
       this.statusOptions = response.data;
     });
@@ -297,8 +300,8 @@ export default {
 
         commodityList.map((item) => {
           var inventoryTotal = 0;
-          if (item.specificationList) {
-            item.specificationList.map((item) => {
+          if (item.dsList) {
+            item.dsList.map((item) => {
               item.inventoryTotal = item.inventoryTotal
                 ? item.inventoryTotal
                 : 0;
@@ -323,6 +326,31 @@ export default {
     // 公告状态字典翻译
     typeFormat(row, column) {
       return this.selectDictLabel(this.typeOptions, row.noticeType);
+    },
+    //商品类型
+    getcommodityclassifydata() {
+      getcommodityclassify().then((res) => {
+        var rows = res.rows;
+        var commodityTypeCodeoptions = [];
+        rows.map((item) => {
+          var obj = {
+            dictLabel: item.value,
+            dictValue: item.code,
+          };
+          commodityTypeCodeoptions.push(obj);
+        });
+        this.commodityTypeCodeoptions = commodityTypeCodeoptions;
+      });
+    },
+    gettype(row){
+      var commodityTypeCodeoptions = this.commodityTypeCodeoptions
+      var str = ''
+      commodityTypeCodeoptions.map(item=>{
+        if(item.dictValue == row.commodityTypeCode){
+          str = item.dictLabel
+        }
+      })
+      return str
     },
     // 取消按钮
     cancel() {

@@ -81,7 +81,7 @@
       @pagination="getList"
     />
     <!-- 添加或修改公告对话框 -->
-    <el-dialog :title="title" :visible="open" width="780px" append-to-body>
+    <el-dialog :title="title" :visible="open" width="780px" append-to-body :before-close="handeclose">
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-row>
           <el-col :span="21" :offset="1">
