@@ -206,7 +206,7 @@
 
 <script>
 import {
-  listcommodity,
+  distributor,
   getcommodity,
   delcommodity,
   addcommodity,
@@ -216,6 +216,7 @@ import {
   copycommodity,
 } from "@/api/commodity/commodity";
 import Editor from "@/components/Editor";
+import selfDirective from "@/utils/selfDirective";
 
 export default {
   name: "commodity",
@@ -251,7 +252,7 @@ export default {
         pageNum: 1,
         pageSize: 10,
         noticeTitle: "",
-        status: "3",
+        status: "1",
       },
       // 表单参数
       form: {},
@@ -291,7 +292,7 @@ export default {
     /** 查询公告列表 */
     getList() {
       this.loading = true;
-      listcommodity(this.queryParams).then((response) => {
+      distributor(this.queryParams).then((response) => {
         var commodityList = response.rows;
 
         commodityList.map((item) => {
@@ -374,7 +375,7 @@ export default {
           type: "completion",
           typetwo: "completiondetail",
           typethree: "completion",
-          typefour: "operainfocom",
+          typefour: "operainfocomdetail",
           title: "运营商信息审核",
           data: row,
         },

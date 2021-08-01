@@ -669,7 +669,7 @@
                 <div
                   v-if="ruleFormthree.spfmt && typetwo == 'completiondetail'"
                 >
-                  <template v-for="(item, index) in this.ruleFormthree.spfmt">
+                  <template v-for="(item, index) in this.ruleFormthree.spms">
                     <el-image
                       :key="index"
                       style="width: 148px; height: 148px; margin-right: 10px"
@@ -1053,6 +1053,10 @@ export default {
         statutoryUnit2: data.statutoryUnit2,
         statutoryNumber2: data.statutoryNumber2,
         explain: data.explain,
+        commodityTypeCode:data.commodityTypeCode,
+        tax:data.tax,
+        salesVolume:data.salesVolume,
+        label:data.label,
       };
       this.ruleForm = querydata;
       //规格数据
@@ -1109,10 +1113,10 @@ export default {
           freightCost: "",
           specificationName: "",
           inventoryTotal: "",
+          distributorGrossMargin: "",
           Productpicture: [],
         },
       ];
-      console.log(this.tableData);
       if (type == "detail") {
         this.isdisabled = true;
       }
@@ -1411,7 +1415,7 @@ export default {
       }
       this.$refs["ruleFormrwo"].validate((valid) => {
         if (valid) {
-          if (this.typefour == "operainfocom") {
+          if (this.typefour == "operainfocomdetail") {
             //渠道端
             var obj = {
               id: this.ruleForm.id,
@@ -1525,7 +1529,7 @@ export default {
                 var obj = {
                   ...that.ruleForm,
                   status: 1,
-                  specificationList: tableData,
+                  dsList: tableData,
                   operationList: operationList,
                 };
                 completioncommoditytwo(obj).then((res) => {

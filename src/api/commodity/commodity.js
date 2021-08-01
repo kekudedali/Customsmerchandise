@@ -76,7 +76,7 @@ export function approvalcommodity(data) {
 
 export function approvalcommoditytwo(data) {
     return request({
-        url: '/plaftorm/distributor/edit',
+        url: '/commodity/plaftorm/distributor/edit',
         method: 'put',
         data: data
     })
@@ -122,8 +122,8 @@ export function completioncommodity(query) {
 
 export function completioncommoditytwo(query) {
     return request({
-        url: '/plaftorm/distributor/audit',
-        method: 'put',
+        url: '/commodity/plaftorm/distributor/audit',
+        method: 'post',
         data: query
     })
 }

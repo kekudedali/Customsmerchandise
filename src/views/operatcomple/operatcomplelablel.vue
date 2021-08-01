@@ -7,10 +7,10 @@
       v-show="showSearch"
       label-width="68px"
     >
-      <el-form-item label="分类名称" prop="noticeTitle">
+      <el-form-item label="标签名称" prop="noticeTitle">
         <el-input
           v-model="queryParams.noticeTitle"
-          placeholder="请输入分类名称"
+          placeholder="请输入标签名称"
           clearable
           size="small"
           @keyup.enter.native="handleQuery"
@@ -58,7 +58,7 @@
           {{ scope.row.name }}
         </template>
       </el-table-column>
-      <el-table-column label="标签iocn" align="center" prop="icon">
+      <el-table-column label="标签icon" align="center" prop="icon">
       </el-table-column>
       <el-table-column label="排序" align="center" prop="sort">
       </el-table-column>
@@ -84,46 +84,32 @@
     <el-dialog :title="title" :visible="open" width="780px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-row>
-          <el-col :span="6" :offset="6">
-            <el-form-item label="分类名称" prop="name">
+          <el-col :span="21" :offset="1">
+            <el-form-item label="标签名称" prop="name">
               <el-input
                 v-model="form.name"
-                placeholder="请输入分类名称"
+                placeholder="请输入标签名称"
                 style="width: 200px"
               />
             </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="公告类型" prop="noticeType">
-              <el-select
-                v-model="form.noticeType"
+            <el-form-item label="标签icon" prop="icon">
+              <FileUpload
+                :limit="1"
+                :fileSize="fileSize"
+                :isShowTip="isShowTip"
+                uploadtype="image"
+                :fileList.sync="form.icon"
+              />
+            </el-form-item>
+            <el-form-item label="标签排序" prop="sort">
+              <el-input-number
+                v-model="form.sort"
+                placeholder="请输入 标签排序"
                 style="width: 200px"
-                placeholder="请选择"
-              >
-                <el-option
-                  v-for="dict in typeOptions"
-                  :key="dict.dictValue"
-                  :label="dict.dictLabel"
-                  :value="dict.dictValue"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="状态">
-              <el-radio-group v-model="form.status">
-                <el-radio
-                  v-for="dict in statusOptions"
-                  :key="dict.dictValue"
-                  :label="dict.dictValue"
-                  >{{ dict.dictLabel }}</el-radio
-                >
-              </el-radio-group>
-            </el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="内容">
-              <editor v-model="form.noticeContent" :min-height="192" />
+                controls-position="right"
+                :min="0"
+                v-Int
+              />
             </el-form-item>
           </el-col>
         </el-row>
@@ -145,11 +131,14 @@ import {
   chooseproduct,
 } from "@/api/commodity/commodity";
 import Editor from "@/components/Editor";
+import selfDirective from "@/utils/selfDirective";
+import FileUpload from "@/components/FileUpload/index";
 
 export default {
   name: "commodity",
   components: {
     Editor,
+    FileUpload,
   },
   data() {
     return {
@@ -202,18 +191,27 @@ export default {
         state: "",
       },
       // 表单参数
-      form: {},
+      form: {
+        icon: [],
+        sort: null,
+        name: "",
+      },
       // 表单校验
       rules: {
         name: [
-          { required: true, message: "分类名称不能为空", trigger: "blur" },
+          { required: true, message: "标签名称不能为空", trigger: "change" },
         ],
-        noticeType: [
-          { required: true, message: "公告类型不能为空", trigger: "change" },
+        icon: [
+          { required: true, message: "标签名称不能为空", trigger: "change" },
         ],
+        sort: [{ required: true, message: "排序不能为空", trigger: "change" }],
       },
       type: "0",
       multipleSelection: [],
+      limit: 5,
+      fileSize: 20,
+      isShowTip: false,
+      value: [],
     };
   },
   created() {

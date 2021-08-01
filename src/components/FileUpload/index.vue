@@ -3,7 +3,7 @@
     <el-upload
       :action="uploadFileUrl"
       :before-upload="handleBeforeUpload"
-      :file-list="fileList"
+      :file-list.sync="fileListData"
       :limit="1"
       :on-error="handleUploadError"
       :on-exceed="handleExceed"
@@ -18,20 +18,34 @@
       <!-- 上传提示 -->
       <div class="el-upload__tip" slot="tip" v-if="showTip">
         请上传
-        <template v-if="fileSize"> 大小不超过 <b style="color: #f56c6c">{{ fileSize }}MB</b> </template>
-        <template v-if="fileType"> 格式为 <b style="color: #f56c6c">{{ fileType.join("/") }}</b> </template>
+        <template v-if="fileSize">
+          大小不超过 <b style="color: #f56c6c">{{ fileSize }}MB</b>
+        </template>
+        <template v-if="fileType">
+          格式为 <b style="color: #f56c6c">{{ fileType.join("/") }}</b>
+        </template>
         的文件
       </div>
     </el-upload>
 
     <!-- 文件列表 -->
-    <transition-group class="upload-file-list el-upload-list el-upload-list--text" name="el-fade-in-linear" tag="ul">
-      <li :key="file.uid" class="el-upload-list__item ele-upload-list__item-content" v-for="(file, index) in list">
+    <transition-group
+      class="upload-file-list el-upload-list el-upload-list--text"
+      name="el-fade-in-linear"
+      tag="ul"
+    >
+      <li
+        :key="file.uid"
+        class="el-upload-list__item ele-upload-list__item-content"
+        v-for="(file, index) in fileListData"
+      >
         <el-link :href="file.url" :underline="false" target="_blank">
-          <span class="el-icon-document"> {{ getFileName(file.name) }} </span>
+          <span class="el-icon-document"> {{ file.name }} </span>
         </el-link>
         <div class="ele-upload-list__item-content-action">
-          <el-link :underline="false" @click="handleDelete(index)" type="danger">删除</el-link>
+          <el-link :underline="false" @click="handleDelete(index)" type="danger"
+            >删除</el-link
+          >
         </div>
       </li>
     </transition-group>
@@ -53,13 +67,17 @@ export default {
     // 文件类型, 例如['png', 'jpg', 'jpeg']
     fileType: {
       type: Array,
-      default: () => ["doc", "xls", "ppt", "txt", "pdf"],
+      default: () => ["doc", "xls", "ppt", "txt", "pdf", "png", "jpg", "jpeg"],
+    },
+    fileList: {
+      type: Array,
+      default: [],
     },
     // 是否显示提示
     isShowTip: {
       type: Boolean,
-      default: true
-    }
+      default: true,
+    },
   },
   data() {
     return {
@@ -67,7 +85,7 @@ export default {
       headers: {
         Authorization: "Bearer " + getToken(),
       },
-      fileList: [],
+      fileListData: [],
     };
   },
   computed: {
@@ -76,23 +94,34 @@ export default {
       return this.isShowTip && (this.fileType || this.fileSize);
     },
     // 列表
-    list() {
-      let temp = 1;
-      if (this.value) {
-        // 首先将值转为数组
-        const list = Array.isArray(this.value) ? this.value : [this.value];
-        // 然后将数组转为对象数组
-        return list.map((item) => {
-          if (typeof item === "string") {
-            item = { name: item, url: item };
-          }
-          item.uid = item.uid || new Date().getTime() + temp++;
-          return item;
-        });
-      } else {
-        this.fileList = [];
-        return [];
-      }
+    // list() {
+    //   let temp = 1;
+    //   if (this.value) {
+    //     // 首先将值转为数组
+    //     const list = Array.isArray(this.value) ? this.value : [this.value];
+    //     // 然后将数组转为对象数组
+    //     return list.map((item) => {
+    //       if (typeof item === "string") {
+    //         item = { name: item, url: item };
+    //       }
+    //       item.uid = item.uid || new Date().getTime() + temp++;
+    //       return item;
+    //     });
+    //   } else {
+    //     this.fileList = [];
+    //     return [];
+    //   }
+    // },
+  },
+  watch: {
+    filelist: {
+      handler(newValue) {
+        if (newValue) {
+          this.fileListData = newValue;
+        }
+      },
+      deep: true,
+      immediate: true,
     },
   },
   methods: {
@@ -110,7 +139,9 @@ export default {
           return false;
         });
         if (!isTypeOk) {
-          this.$message.error(`文件格式不正确, 请上传${this.fileType.join("/")}格式文件!`);
+          this.$message.error(
+            `文件格式不正确, 请上传${this.fileType.join("/")}格式文件!`
+          );
           return false;
         }
       }
@@ -134,13 +165,18 @@ export default {
     },
     // 上传成功回调
     handleUploadSuccess(res, file) {
+      this.fileListData.push({
+        uid: res.data.uid,
+        name: res.data.name,
+        url: res.data.url,
+      });
+      this.$emit("update:fileList", this.fileListData);
       this.$message.success("上传成功");
-      this.$emit("input", res.data.url);
     },
     // 删除文件
     handleDelete(index) {
-      this.fileList.splice(index, 1);
-      this.$emit("input", '');
+      this.fileListData.splice(index, 1);
+      this.$emit("update:fileList", this.fileListData);
     },
     // 获取文件名称
     getFileName(name) {
@@ -149,10 +185,13 @@ export default {
       } else {
         return "";
       }
-    }
+    },
+    handeclose(){
+      this.open = false;
+    },
   },
   created() {
-    this.fileList = this.list;
+    this.fileListData = this.fileList;
   },
 };
 </script>
@@ -175,5 +214,10 @@ export default {
 }
 .ele-upload-list__item-content-action .el-link {
   margin-right: 10px;
+}
+.el-icon-document {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 </style>

@@ -61,7 +61,7 @@ export default {
     // 图片数量限制
     limit: {
       type: Number,
-      default: 5,
+      default: 1,
     },
     // 大小限制(MB)
     fileSize: {
@@ -95,7 +95,6 @@ export default {
       },
       fileListData: [],
       listText: [""],
-      fileListData: [],
     };
   },
   watch: {
