@@ -264,16 +264,16 @@
               <el-form-item
                 style="margin-top: 20px"
                 label="商品分类"
-                prop="spfl"
+                prop="commodityTypeCode"
               >
                 <el-select
-                  v-model="ruleForm.spfl"
+                  v-model="ruleForm.commodityTypeCode"
                   placeholder="请选择"
                   style="width: 200px"
                   :disabled="isdisabledtwo"
                 >
                   <el-option
-                    v-for="item in spfloptions"
+                    v-for="item in commodityTypeCodeoptions"
                     :key="item.dictValue"
                     :label="item.dictLabel"
                     :value="item.dictValue"
@@ -281,32 +281,32 @@
                   </el-option>
                 </el-select>
               </el-form-item>
-              <el-form-item label="跨境商品税率(%)" prop="kjspsl">
+              <el-form-item label="跨境商品税率(%)" prop="tax">
                 <el-input
-                  v-model="ruleForm.kjspsl"
+                  v-model="ruleForm.tax"
                   placeholder="请输入"
                   style="width: 200px"
                   :disabled="isdisabledtwo"
                 ></el-input>
               </el-form-item>
-              <el-form-item label="初始化销量" prop="cshxl">
+              <el-form-item label="初始化销量" prop="salesVolume">
                 <el-input
-                  v-model="ruleForm.cshxl"
+                  v-model="ruleForm.salesVolume"
                   placeholder="请输入"
                   style="width: 200px"
                   :disabled="isdisabledtwo"
                   v-Int
                 ></el-input>
               </el-form-item>
-              <el-form-item label="商品标签" prop="spbq">
+              <el-form-item label="商品标签" prop="label">
                 <el-select
-                  v-model="ruleForm.spbq"
+                  v-model="ruleForm.label"
                   placeholder="请选择"
                   style="width: 200px"
                   :disabled="isdisabledtwo"
                 >
                   <el-option
-                    v-for="item in spbqoptions"
+                    v-for="item in labeloptions"
                     :key="item.dictValue"
                     :label="item.dictLabel"
                     :value="item.dictValue"
@@ -508,9 +508,9 @@
             </template>
           </el-table-column>
           <el-table-column
-            prop="qudaplirun"
+            prop="distributorGrossMargin"
             header-align="center"
-            key="qudaplirun"
+            key="distributorGrossMargin"
             align="center"
             label="渠道利润"
             v-if="
@@ -519,11 +519,11 @@
           >
             <template slot-scope="scope">
               <div v-if="typefour == 'operainfocomdetail'">
-                {{ scope.row.qudaplirun }}
+                {{ scope.row.distributorGrossMargin }}
               </div>
               <el-input
                 v-else
-                v-model="scope.row.qudaplirun"
+                v-model="scope.row.distributorGrossMargin"
                 placeholder="请输入内容"
               ></el-input>
             </template>
@@ -792,13 +792,15 @@ import {
   listcommodity,
   addcommodity,
   editcommodity,
-  editcommoditytwo,
   updatecommodity,
   approvalcommodity,
+  approvalcommoditytwo,
   warehouseapi,
   supplierbase,
   completioncommodity,
-  completioncommoditytwo
+  completioncommoditytwo,
+  getcommoditytype,
+  getcommodityclassify,
 } from "@/api/commodity/commodity";
 
 export default {
@@ -835,10 +837,10 @@ export default {
         statutoryUnit2: null,
         statutoryNumber2: null,
         explain: null,
-        spfl: null,
-        kjspsl: null,
-        spbq: null,
-        cshxl: null,
+        commodityTypeCode: null,
+        tax: null,
+        label: null,
+        salesVolume: null,
       },
       rules: {
         name: [
@@ -877,20 +879,20 @@ export default {
         statutoryNumber1: [
           { required: true, message: "请输入法定第一数量", trigger: "change" },
         ],
-        spfl: [
+        commodityTypeCode: [
           { required: true, message: "请输入商品分类", trigger: "change" },
         ],
-        kjspsl: [
+        tax: [
           {
             required: true,
             message: "请输入跨境商品税率(%)",
             trigger: "change",
           },
         ],
-        cshxl: [
+        salesVolume: [
           { required: true, message: "请输入初始化销量", trigger: "change" },
         ],
-        spbq: [
+        label: [
           { required: true, message: "请输入商品标签", trigger: "change" },
         ],
       },
@@ -911,7 +913,7 @@ export default {
           freightCost: "",
           specificationName: "",
           inventoryTotal: "",
-          qudaplirun: "",
+          distributorGrossMargin: "",
         },
       ],
       selfid: 2,
@@ -960,7 +962,7 @@ export default {
       fileList: [],
       radio: "2",
       rejectdisabled: true,
-      spfloptions: [
+      commodityTypeCodeoptions: [
         {
           dictLabel: "食品保健",
           dictValue: "1",
@@ -978,7 +980,7 @@ export default {
           dictValue: "4",
         },
       ],
-      spbqoptions: [
+      labeloptions: [
         {
           dictLabel: "新品",
           dictValue: "1",
@@ -988,7 +990,7 @@ export default {
           dictValue: "2",
         },
       ],
-      multipleSelection:[],
+      multipleSelection: [],
     };
   },
   created() {
@@ -1000,9 +1002,11 @@ export default {
     if (
       this.typetwo == "reject" ||
       this.typetwo == "completiondetail" ||
-      this.typefour == "operainfocom" ||
-      this.typefour == "operainfocomdetail"
+      this.typefour == "operainfocom"
     ) {
+      this.isdisabled = true;
+    }
+    if (this.typefour == "operainfocomdetail") {
       this.isdisabled = true;
       this.isdisabledtwo = true;
     }
@@ -1020,7 +1024,7 @@ export default {
         freightCost: "",
         specificationName: "",
         inventoryTotal: "",
-        qudaplirun: "",
+        distributorGrossMargin: "",
       },
     ];
 
@@ -1115,6 +1119,9 @@ export default {
     }
     this.getwarehouseapi(); //获取仓库
     this.getsupplierbase(); //所属供应商
+    this.getcommoditytypedata(); //标签
+    this.getcommodityclassifydata(); //分类
+
     this.getDicts("gj").then((response) => {
       this.countryOfOriginoptions = response.data;
     });
@@ -1227,6 +1234,36 @@ export default {
             tableData.splice(index, 1);
           }
         }
+      });
+    },
+    //商品标签
+    getcommoditytypedata() {
+      getcommoditytype().then((res) => {
+        var rows = res.rows;
+        var labeloptions = [];
+        rows.map((item) => {
+          var obj = {
+            dictLabel: item.value,
+            dictValue: item.distributorBaseCode,
+          };
+          labeloptions.push(obj);
+        });
+        this.labeloptions = labeloptions;
+      });
+    },
+    //商品类型
+    getcommodityclassifydata() {
+      getcommodityclassify().then((res) => {
+        var rows = res.rows;
+        var commodityTypeCodeoptions = [];
+        rows.map((item) => {
+          var obj = {
+            dictLabel: item.value,
+            dictValue: item.distributorBaseCode,
+          };
+          commodityTypeCodeoptions.push(obj);
+        });
+        this.commodityTypeCodeoptions = commodityTypeCodeoptions;
       });
     },
     Validatetable() {
@@ -1374,37 +1411,55 @@ export default {
       }
       this.$refs["ruleFormrwo"].validate((valid) => {
         if (valid) {
-          if (this.type == "reject") {
+          if (this.typefour == "operainfocom") {
+            //渠道端
             var obj = {
               id: this.ruleForm.id,
-              status: 1, //驳回
+              status: status,
               explain: this.ruleFormtwo.explain,
             };
+            approvalcommoditytwo(obj).then((res) => {
+              if (res.code == 200) {
+                this.$message.success("提交审核成功！");
+                this.back();
+              } else {
+                this.$message.error(res.msg);
+              }
+            });
           } else {
-            var status = this.ruleFormtwo.status;
-            if (this.typethree == "completion") {
-              var statustwo = status == "2" ? "5" : "4";
+            //平台端
+            if (this.type == "reject") {
               var obj = {
                 id: this.ruleForm.id,
-                status: statustwo,
+                status: 1, //驳回
                 explain: this.ruleFormtwo.explain,
               };
             } else {
-              var obj = {
-                id: this.ruleForm.id,
-                status: status,
-                explain: this.ruleFormtwo.explain,
-              };
+              var status = this.ruleFormtwo.status;
+              if (this.typethree == "completion") {
+                var statustwo = status == "2" ? "5" : "4";
+                var obj = {
+                  id: this.ruleForm.id,
+                  status: statustwo,
+                  explain: this.ruleFormtwo.explain,
+                };
+              } else {
+                var obj = {
+                  id: this.ruleForm.id,
+                  status: status,
+                  explain: this.ruleFormtwo.explain,
+                };
+              }
             }
+            approvalcommodity(obj).then((res) => {
+              if (res.code == 200) {
+                this.$message.success("提交审核成功！");
+                this.back();
+              } else {
+                this.$message.error(res.msg);
+              }
+            });
           }
-          approvalcommodity(obj).then((res) => {
-            if (res.code == 200) {
-              this.$message.success("提交审核成功！");
-              this.back();
-            } else {
-              this.$message.error(res.msg);
-            }
-          });
         } else {
           console.log("error submit!!");
           return false;
@@ -1418,7 +1473,7 @@ export default {
         var num = Number(index) + 1;
         //渠道端
         if (this.typefour == "operainfocom") {
-          if (!item.qudaplirun) {
+          if (!item.distributorGrossMargin) {
             flag = true;
             this.$message.error("请输入第" + num + "渠道利润");
           }
@@ -1469,10 +1524,18 @@ export default {
                 //渠道补全驳回重新提交
                 var obj = {
                   ...that.ruleForm,
-                  status: 7,
+                  status: 1,
                   specificationList: tableData,
                   operationList: operationList,
                 };
+                completioncommoditytwo(obj).then((res) => {
+                  if (res.code == 200) {
+                    that.$message.success("提交审核成功！");
+                    that.back();
+                  } else {
+                    that.$message.error(res.msg);
+                  }
+                });
               } else {
                 //平台补全驳回重新提交
                 var obj = {
@@ -1481,16 +1544,15 @@ export default {
                   specificationList: tableData,
                   operationList: operationList,
                 };
+                completioncommodity(obj).then((res) => {
+                  if (res.code == 200) {
+                    that.$message.success("提交审核成功！");
+                    that.back();
+                  } else {
+                    that.$message.error(res.msg);
+                  }
+                });
               }
-
-              completioncommodity(obj).then((res) => {
-                if (res.code == 200) {
-                  that.$message.success("提交审核成功！");
-                  that.back();
-                } else {
-                  that.$message.error(res.msg);
-                }
-              });
             } else {
               console.log("error submit!!");
               return false;

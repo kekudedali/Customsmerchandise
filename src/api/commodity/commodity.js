@@ -44,13 +44,7 @@ export function editcommodity(data) {
     })
 }
 
-export function editcommoditytwo(data) {
-    return request({
-        url: '/plaftorm/distributor/edit',
-        method: 'put',
-        data: data
-    })
-}
+
 
 // 修改公告
 export function updatecommodity(data) {
@@ -75,6 +69,14 @@ export function delcommodity(noticeId) {
 export function approvalcommodity(data) {
     return request({
         url: '/commodity/plaftorm/commodity/audit',
+        method: 'put',
+        data: data
+    })
+}
+
+export function approvalcommoditytwo(data) {
+    return request({
+        url: '/plaftorm/distributor/edit',
         method: 'put',
         data: data
     })
@@ -166,5 +168,22 @@ export function offShelf(query) {
         url: '/commodity/plaftorm/commodity/allocation',
         method: 'post',
         data: query
+    })
+}
+
+//商品标签
+export function getcommoditytype(params) {
+    return request({
+        url: '/commodity/label/list',
+        method: 'get',
+        params
+    })
+}
+//商品分类
+export function getcommodityclassify(params) {
+    return request({
+        url: '/commodity/classify/list ',
+        method: 'get',
+        params
     })
 }

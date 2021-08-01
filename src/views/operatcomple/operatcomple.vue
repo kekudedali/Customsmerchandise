@@ -6,9 +6,9 @@
         @change="changeStatus"
         size="small"
       >
-        <el-radio-button :label="'2'">商品补全 </el-radio-button>
-        <el-radio-button :label="'4'">审核驳回</el-radio-button>
-        <el-radio-button :label="'5'">已归档</el-radio-button>
+        <el-radio-button :label="'0'">商品补全 </el-radio-button>
+        <el-radio-button :label="'2'">审核驳回</el-radio-button>
+        <el-radio-button :label="'3'">已归档</el-radio-button>
       </el-radio-group>
     </div>
     <el-form
@@ -43,7 +43,7 @@
           type="primary"
           size="mini"
           @click="setputShelf"
-          v-if="queryParams.status == '5'"
+          v-if="queryParams.status == '3'"
           >上架</el-button
         >
         <el-button
@@ -51,7 +51,7 @@
           type="primary"
           size="mini"
           @click="setoffShelf"
-          v-if="queryParams.status == '5'"
+          v-if="queryParams.status == '3'"
           >下架</el-button
         >
       </el-form-item>
@@ -135,7 +135,7 @@
         align="center"
         prop="createTime"
         width="180"
-        v-if="queryParams.status == '5'"
+        v-if="queryParams.status == '3'"
       />
       <el-table-column
         label="驳回原因"
@@ -143,14 +143,14 @@
         prop="updateBy"
         width="150"
         :show-overflow-tooltip="true"
-        v-if="queryParams.status == '4'"
+        v-if="queryParams.status == '2'"
       />
       <el-table-column
         label="驳回时间"
         align="center"
         prop="updateTime"
         width="180"
-        v-if="queryParams.status == '4'"
+        v-if="queryParams.status == '2'"
       />
       <el-table-column
         label="操作"
@@ -159,7 +159,7 @@
         width="200"
       >
         <template slot-scope="scope">
-          <span v-if="queryParams.status == '2'">
+          <span v-if="queryParams.status == '0'">
             <el-button
               size="mini"
               type="text"
@@ -169,7 +169,7 @@
               >商品补全</el-button
             >
           </span>
-          <span v-if="queryParams.status == '4'">
+          <span v-if="queryParams.status == '2'">
             <el-button
               size="mini"
               type="text"
@@ -179,7 +179,7 @@
               >修改</el-button
             >
           </span>
-          <span v-if="queryParams.status == '5'">
+          <span v-if="queryParams.status == '3'">
             <div>
               <el-button
                 size="mini"
@@ -280,7 +280,7 @@
 
 <script>
 import {
-  listcommodity,
+  distributor,
   getcommodity,
   delcommodity,
   addcommodity,
@@ -327,7 +327,7 @@ export default {
         pageNum: 1,
         pageSize: 10,
         noticeTitle: "",
-        status: "2",
+        status: "0",
       },
       // 表单参数
       form: {},
@@ -401,7 +401,7 @@ export default {
     /** 查询公告列表 */
     getList() {
       this.loading = true;
-      listcommodity(this.queryParams).then((response) => {
+      distributor(this.queryParams).then((response) => {
         var commodityList = response.rows;
 
         commodityList.map((item) => {
