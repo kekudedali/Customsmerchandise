@@ -92,7 +92,11 @@
       />
       <el-table-column label="库存" align="center" prop="kc" width="150">
         <template slot-scope="scope">
-          <el-tooltip placement="bottom" effect="light">
+          <el-tooltip
+            placement="bottom"
+            effect="light"
+            v-if="scope.row.inventoryTotal > 0"
+          >
             <div slot="content">
               <div
                 v-for="(item, index) in scope.row.specificationList"
@@ -100,13 +104,14 @@
               >
                 {{ item.specificationName }}
                 <span style="margin-left: 10px">
-                  {{ item.inventoryUsable + " g" }}</span
+                  {{ item.specificationAmount + " g" }}</span
                 >
                 <span style="margin-left: 10px">{{ item.inventoryTotal }}</span>
               </div>
             </div>
             <div class="stock">{{ scope.row.inventoryTotal }}</div>
           </el-tooltip>
+          <div class="stock">{{ scope.row.inventoryTotal }}</div>
         </template>
       </el-table-column>
       <el-table-column
@@ -489,7 +494,7 @@ export default {
       this.$router.push({
         path: "/completiongoods/checkout",
         query: {
-          type:'checkout',
+          type: "checkout",
           title: "分配库存",
           data: row,
         },
@@ -500,7 +505,7 @@ export default {
       this.$router.push({
         path: "/completiongoods/checkout",
         query: {
-          type:'record',
+          type: "record",
           title: "分配库存",
           data: row,
         },
@@ -511,7 +516,7 @@ export default {
       this.$router.push({
         path: "/completiongoods/checkout",
         query: {
-          type:'statistics',
+          type: "statistics",
           title: "分配库存",
           data: row,
         },

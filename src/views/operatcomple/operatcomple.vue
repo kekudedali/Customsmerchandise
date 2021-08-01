@@ -135,18 +135,19 @@
         width="150"
       >
         <template slot-scope="scope">
-          <el-tooltip placement="bottom" effect="light">
+          <el-tooltip placement="bottom" effect="light"  v-if="scope.row.inventoryTotal > 0" >
             <div slot="content">
               <div v-for="(item, index) in scope.row.dsList" :key="index">
                 {{ item.specificationName }}
                 <span style="margin-left: 10px">
-                  {{ item.inventoryUsable + " g" }}</span
+                  {{ item.specificationAmount + " g" }}</span
                 >
                 <span style="margin-left: 10px">{{ item.inventoryTotal }}</span>
               </div>
             </div>
             <div class="stock">{{ scope.row.inventoryTotal }}</div>
           </el-tooltip>
+              <div v-else class="stock">{{ scope.row.inventoryTotal }}</div>
         </template>
       </el-table-column>
       <el-table-column label="税率" align="center" prop="tax" width="180" />

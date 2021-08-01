@@ -93,7 +93,7 @@
       <el-table-column
         label="商品品牌"
         align="center"
-         prop="commodityBrand"
+        prop="commodityBrand"
         :show-overflow-tooltip="true"
       />
       <el-table-column
@@ -104,7 +104,11 @@
       />
       <el-table-column label="库存" align="center" prop="kc" width="150">
         <template slot-scope="scope">
-          <el-tooltip placement="bottom" effect="light">
+          <el-tooltip
+            placement="bottom"
+            effect="light"
+            v-if="scope.row.inventoryTotal > 0"
+          >
             <div slot="content">
               <div
                 v-for="(item, index) in scope.row.specificationList"
@@ -112,13 +116,14 @@
               >
                 {{ item.specificationName }}
                 <span style="margin-left: 10px">
-                  {{ item.inventoryUsable + " g" }}</span
+                  {{ item.specificationAmount + " g" }}</span
                 >
                 <span style="margin-left: 10px">{{ item.inventoryTotal }}</span>
               </div>
             </div>
             <div class="stock">{{ scope.row.inventoryTotal }}</div>
           </el-tooltip>
+          <div v-else class="stock">{{ scope.row.inventoryTotal }}</div>
         </template>
       </el-table-column>
       <el-table-column
@@ -160,7 +165,7 @@
               type="text"
               icon="el-icon-s-check"
               @click="handleApproval(scope.row)"
-              v-hasPermi="['commodity:plaftorm:approval']"
+              v-if="scope.row.status == -1"
               >提交审核</el-button
             >
             <el-button
@@ -168,6 +173,7 @@
               type="text"
               icon="el-icon-edit"
               @click="handleUpdate(scope.row)"
+              v-if="scope.row.status != 2"
               v-hasPermi="['commodity:plaftorm:edit']"
               >修改</el-button
             >
@@ -176,6 +182,7 @@
               type="text"
               icon="el-icon-delete"
               @click="handleDelete(scope.row)"
+              v-if="scope.row.status != 2"
               v-hasPermi="['commodity:plaftorm:del']"
               >删除</el-button
             >
@@ -442,7 +449,7 @@ export default {
       const ids = row.id || this.ids;
       var obj = {
         id: ids,
-        status: 2,
+        status: 0,
       };
       this.$confirm("是否确认审核该商品?", "警告", {
         confirmButtonText: "确定",
@@ -454,7 +461,7 @@ export default {
         })
         .then(() => {
           this.getList();
-          this.msgSuccess("审核成功");
+          this.msgSuccess("提交审核成功");
         })
         .catch(() => {});
     },

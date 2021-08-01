@@ -102,7 +102,7 @@
       <el-table-column
         label="商品品牌"
         align="center"
-         prop="commodityBrand"
+        prop="commodityBrand"
         :show-overflow-tooltip="true"
       />
       <el-table-column
@@ -113,7 +113,11 @@
       />
       <el-table-column label="锁仓库存" align="center" prop="kc" width="150">
         <template slot-scope="scope">
-          <el-tooltip placement="bottom" effect="light">
+          <el-tooltip
+            placement="bottom"
+            effect="light"
+            v-if="scope.row.inventoryTotal > 0"
+          >
             <div slot="content">
               <div
                 v-for="(item, index) in scope.row.specificationList"
@@ -121,13 +125,14 @@
               >
                 {{ item.specificationName }}
                 <span style="margin-left: 10px">
-                  {{ item.inventoryUsable + " g" }}</span
+                  {{ item.specificationAmount + " g" }}</span
                 >
                 <span style="margin-left: 10px">{{ item.inventoryTotal }}</span>
               </div>
             </div>
             <div class="stock">{{ scope.row.inventoryTotal }}</div>
           </el-tooltip>
+          <div v-else class="stock">{{ scope.row.inventoryTotal }}</div>
         </template>
       </el-table-column>
       <el-table-column label="剩余库存" align="center" prop="sykc" width="180">
