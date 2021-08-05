@@ -171,7 +171,6 @@
               type="text"
               icon="el-icon-box"
               @click="handlecompletion(scope.row)"
-              v-hasPermi="['commodity:plaftorm:approval']"
               >商品补全</el-button
             >
           </span>
@@ -181,7 +180,6 @@
               type="text"
               icon="el-icon-edit"
               @click="handleUpdatereject(scope.row)"
-              v-hasPermi="['commodity:plaftorm:edit']"
               >修改</el-button
             >
           </span>
@@ -192,7 +190,6 @@
                 type="text"
                 icon="el-icon-more"
                 @click="handlemore(scope.row)"
-                v-hasPermi="['commodity:plaftorm:edit']"
                 >更多</el-button
               >
               <el-button
@@ -201,7 +198,6 @@
                 icon="el-icon-top"
                 @click="setputShelf(scope.row)"
                 v-if="scope.row.sj"
-                v-hasPermi="['commodity:plaftorm:edit']"
                 >上架</el-button
               >
               <el-button
@@ -211,7 +207,6 @@
                 @click="setoffShelf(scope.row)"
                 v-if="!scope.row.sj"
                 style="color: red"
-                v-hasPermi="['commodity:plaftorm:edit']"
                 >下架</el-button
               >
             </div>

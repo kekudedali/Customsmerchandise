@@ -16,43 +16,48 @@
       >
         <el-row>
           <el-col :span="18" :offset="1">
-            <el-form-item label="分类名称" prop="type">
+            <el-form-item label="分类名称" prop="value">
               <el-input
-                v-model="ruleForm.type"
+                v-model="ruleForm.value"
                 placeholder="请输入"
                 style="width: 200px"
                 :disabled="isdisabled"
               ></el-input>
             </el-form-item>
             <el-form-item label="排序" prop="sort">
-              <el-input
+              <el-input-number
+                :min="0"
+                controls-position="right"
                 v-model="ruleForm.sort"
                 placeholder="请输入"
                 style="width: 200px"
                 :disabled="isdisabled"
-              ></el-input>
+                v-Int
+              ></el-input-number>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <div class="baseinfo" style="margin-bottom: 20px">图文信息</div>
           <el-col :span="18" :offset="1">
-            <el-form-item label="APP图标" prop="apptb">
+            <!-- <el-form-item label="APP图标" prop="appPicture"> -->
+            <el-form-item label="APP图标">
               <ImageUpload
                 :limit="limit"
                 :fileSize="fileSize"
                 :isShowTip="isShowTip"
                 uploadtype="image"
-                :fileList.sync="ruleForm.apptb"
+                :fileList.sync="ruleForm.appPicture"
               />
             </el-form-item>
-            <el-form-item label="小程序图标" prop="xcxtb">
+            <!-- <el-form-item label="小程序图标" prop="wxPicture"> -->
+            <el-form-item label="小程序图标">
               <ImageUpload
                 :limit="6"
                 :fileSize="fileSize"
                 :isShowTip="isShowTip"
                 uploadtype="image"
-                :fileList.sync="ruleForm.xcxtb"
+                :fileList.sync="ruleForm.wxPicture"
               />
             </el-form-item>
           </el-col>
@@ -66,40 +71,43 @@
 </template>
 <script>
 import ImageUpload from "@/components/ImageUpload/index";
+import { addclassify, editclassify } from "@/api/commodity/classify";
+import selfDirective from "@/utils/selfDirective";
+
 export default {
   data() {
     return {
       title: "新增分类",
       isdisabled: false,
       ruleForm: {
-        type: "",
+        value: "",
         sort: "",
-        apptb: [],
-        xcxtb: [],
+        appPicture: [],
+        wxPicture: [],
       },
       rules: {
-        type: [
+        value: [
           { required: true, message: "请输入分类类型", trigger: "change" },
         ],
         sort: [
           { required: true, message: "请输入分类排序", trigger: "change" },
         ],
-        apptb: [
-          {
-            required: true,
-            message: "请输入APP图标",
-            trigger: "change",
-            type: "array",
-          },
-        ],
-        xcxtb: [
-          {
-            required: true,
-            message: "请输入小程序图标s",
-            trigger: "change",
-            type: "array",
-          },
-        ],
+        // appPicture: [
+        //   {
+        //     required: true,
+        //     message: "请输入APP图标",
+        //     trigger: "change",
+        //     type: "array",
+        //   },
+        // ],
+        // wxPicture: [
+        //   {
+        //     required: true,
+        //     message: "请输入小程序图标s",
+        //     trigger: "change",
+        //     type: "array",
+        //   },
+        // ],
       },
       fileSize: 2,
       isShowTip: true,
@@ -109,6 +117,15 @@ export default {
   components: {
     ImageUpload,
   },
+  created() {
+    var data = this.$route.query.data ? JSON.parse(this.$route.query.data) : {};
+    this.ruleForm = {
+      ...data,
+      appPicture: [],
+      wxPicture: [],
+    };
+    console.log(this.ruleForm);
+  },
   methods: {
     back() {
       this.$store.dispatch("tagsView/delView", this.$route);
@@ -117,17 +134,31 @@ export default {
     submit() {
       this.$refs["ruleForm"].validate((valid) => {
         if (valid) {
-          if (this.form.id != undefined) {
-            updatecommodity(this.form).then((response) => {
+          var ruleForm = this.ruleForm;
+          if (this.ruleForm.id != undefined) {
+            var obj = {
+              id: ruleForm.id,
+              value: ruleForm.value,
+              sort: ruleForm.sort,
+              appPicture: JSON.stringify(ruleForm.appPicture),
+              wxPicture: JSON.stringify(ruleForm.wxPicture),
+            };
+            editclassify(obj).then((response) => {
               this.msgSuccess("修改成功");
               this.open = false;
-              this.getList();
             });
           } else {
-            addcommodity(this.form).then((response) => {
+             var obj = {
+              value: ruleForm.value,
+              sort: ruleForm.sort,
+              appPicture: JSON.stringify(ruleForm.appPicture),
+              wxPicture: JSON.stringify(ruleForm.wxPicture),
+            };
+            debugger
+            addclassify(obj).then((response) => {
+              debugger
               this.msgSuccess("新增成功");
               this.open = false;
-              this.getList();
             });
           }
         }

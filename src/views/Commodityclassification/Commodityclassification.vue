@@ -53,36 +53,36 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column label="分类名称" align="center" prop="name">
+      <el-table-column label="分类名称" align="center" prop="value">
         <template slot-scope="scope">
-          {{ scope.row.name }}
+          {{ scope.row.value }}
         </template>
       </el-table-column>
-      <el-table-column label="APP图标" align="center" prop="apptb">
+      <el-table-column label="APP图标" align="center" prop="appPicture">
         <template slot-scope="scope">
-          <div v-if="!scope.row.apptb">暂无图片</div>
+          <div v-if="!scope.row.appPicture">暂无图片</div>
           <el-image
             v-else
             style="width: 50px; height: 50px"
-            :src="scope.row.apptb"
-            :preview-src-list="[scope.row.apptb]"
+            :src="scope.row.appPicture"
+            :preview-src-list="[scope.row.appPicture]"
           >
           </el-image>
         </template>
       </el-table-column>
-      <el-table-column label="小程序图标" align="center" prop="xcxtb">
+      <el-table-column label="小程序图标" align="center" prop="wxPicture">
         <template slot-scope="scope">
-          <div v-if="!scope.row.apptb">暂无图片</div>
+          <div v-if="!scope.row.wxPicture">暂无图片</div>
           <el-image
             v-else
             style="width: 50px; height: 50px"
-            :src="scope.row.xcxtb"
-            :preview-src-list="[scope.row.xcxtb]"
+            :src="scope.row.wxPicture"
+            :preview-src-list="[scope.row.wxPicture]"
           >
           </el-image>
         </template>
       </el-table-column>
-      <el-table-column label="排序" align="center" prop="px" />
+      <el-table-column label="排序" align="center" prop="sort" />
       <el-table-column label="操作" align="center" prop="opration" width="150">
         <template slot-scope="scope">
           <el-button
@@ -106,9 +106,9 @@
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-row>
           <el-col :span="12">
-            <el-form-item label="分类名称" prop="name">
+            <el-form-item label="分类名称" prop="value">
               <el-input
-                v-model="form.name"
+                v-model="form.value"
                 placeholder="请输入分类名称"
                 style="width: 200px"
               />
@@ -159,16 +159,12 @@
 
 <script>
 import {
-  listcommodity,
-  addcommodity,
-  updatecommodity,
-  copycommodity,
-  chooseproduct,
-} from "@/api/commodity/commodity";
+  listclassify,
+} from "@/api/commodity/classify";
 import Editor from "@/components/Editor";
 
 export default {
-  name: "commodity",
+  value: "commodity",
   components: {
     Editor,
   },
@@ -188,24 +184,6 @@ export default {
       total: 0,
       // 公告表格数据
       commodityList: [
-        {
-          id: 1,
-          name: "测试小程序",
-          apptb:
-            "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg",
-          xcxtb:
-            "https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpeg",
-          px: 1,
-        },
-        {
-          id: 2,
-          name: "测试小程序",
-          apptb:
-            "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg",
-          xcxtb:
-            "https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpeg",
-          px: 1,
-        },
       ],
       // 弹出层标题
       title: "",
@@ -226,7 +204,7 @@ export default {
       form: {},
       // 表单校验
       rules: {
-        name: [
+        value: [
           { required: true, message: "分类名称不能为空", trigger: "blur" },
         ],
         noticeType: [
@@ -238,7 +216,7 @@ export default {
     };
   },
   created() {
-    // this.getList();
+    this.getList();
   },
   methods: {
     chooseproduct() {
@@ -270,7 +248,7 @@ export default {
     /** 查询公告列表 */
     getList() {
       this.loading = true;
-      listcommodity(this.queryParams).then((response) => {
+      listclassify(this.queryParams).then((response) => {
         var commodityList = response.rows;
 
         commodityList.map((item) => {
@@ -357,12 +335,13 @@ export default {
           },
         });
       } else {
+        var rowdata = JSON.stringify(row)
         this.$router.push({
           path: "/Commodityclassification/editclassification",
           query: {
             type: "edit",
             title: "修改商品分类",
-            data: row,
+            data: rowdata,
           },
         });
       }

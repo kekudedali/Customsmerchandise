@@ -149,7 +149,7 @@
               type="text"
               icon="el-icon-box"
               @click="handlecompletion(scope.row)"
-              v-hasPermi="['commodity:plaftorm:approval']"
+              
               >商品补全</el-button
             >
           </span>
@@ -159,7 +159,7 @@
               type="text"
               icon="el-icon-edit"
               @click="handleUpdatereject(scope.row)"
-              v-hasPermi="['commodity:plaftorm:edit']"
+              
               >修改</el-button
             >
           </span>
@@ -170,7 +170,7 @@
                 type="text"
                 icon="el-icon-more"
                 @click="handlemore(scope.row)"
-                v-hasPermi="['commodity:plaftorm:edit']"
+                
                 >更多</el-button
               >
               <el-button
@@ -178,7 +178,7 @@
                 type="text"
                 icon="el-icon-circle-close"
                 @click="handlecopy(scope.row)"
-                v-hasPermi="['commodity:plaftorm:edit']"
+                
                 >禁用</el-button
               >
             </div>
@@ -188,7 +188,7 @@
                 type="text"
                 icon="el-icon-box"
                 @click="handlecheckout(scope.row)"
-                v-hasPermi="['commodity:plaftorm:edit']"
+                
                 >分配库存</el-button
               >
               <el-button
@@ -196,7 +196,7 @@
                 type="text"
                 icon="el-icon-notebook-1"
                 @click="handlerecord(scope.row)"
-                v-hasPermi="['commodity:plaftorm:edit']"
+                
                 >分配记录</el-button
               >
             </div>
@@ -206,7 +206,7 @@
                 type="text"
                 icon="el-icon-data-line"
                 @click="handlestatistics(scope.row)"
-                v-hasPermi="['commodity:plaftorm:edit']"
+                
                 >出库统计</el-button
               >
             </div>

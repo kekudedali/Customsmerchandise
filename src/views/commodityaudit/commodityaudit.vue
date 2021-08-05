@@ -133,7 +133,7 @@
               type="text"
               icon="el-icon-s-check"
               @click="handlemore(scope.row)"
-              v-hasPermi="['commodity:plaftorm:edit']"
+              
               >审核</el-button
             >
           </span>

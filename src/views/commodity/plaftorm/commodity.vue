@@ -50,7 +50,6 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['commodity:plaftorm:add']"
           >新增</el-button
         >
       </el-col>
@@ -174,7 +173,6 @@
               icon="el-icon-edit"
               @click="handleUpdate(scope.row)"
               v-if="scope.row.status != 2"
-              v-hasPermi="['commodity:plaftorm:edit']"
               >修改</el-button
             >
             <el-button
@@ -193,7 +191,6 @@
               type="text"
               icon="el-icon-edit"
               @click="handleUpdatereject(scope.row)"
-              v-hasPermi="['commodity:plaftorm:edit']"
               >修改</el-button
             >
           </span>
@@ -203,7 +200,6 @@
               type="text"
               icon="el-icon-more"
               @click="handlemore(scope.row)"
-              v-hasPermi="['commodity:plaftorm:edit']"
               >更多</el-button
             >
             <el-button
@@ -211,7 +207,6 @@
               type="text"
               icon="el-icon-copy-document"
               @click="handlecopy(scope.row)"
-              v-hasPermi="['commodity:plaftorm:edit']"
               >复制</el-button
             >
           </span>

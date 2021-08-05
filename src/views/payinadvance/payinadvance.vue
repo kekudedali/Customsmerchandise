@@ -59,7 +59,7 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['commodity:plaftorm:add']"
+          
           >新增</el-button
         >
       </el-col> -->
@@ -158,7 +158,7 @@
               type="text"
               icon="el-icon-copy-document"
               @click="handlemore(scope.row)"
-              v-hasPermi="['commodity:plaftorm:edit']"
+              
               >更多</el-button
             >
           </span>

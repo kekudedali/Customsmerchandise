@@ -179,6 +179,7 @@ export function getcommoditytype(params) {
         params
     })
 }
+
 //商品分类
 export function getcommodityclassify(params) {
     return request({

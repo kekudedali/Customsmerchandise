@@ -137,7 +137,7 @@
               type="text"
               icon="el-icon-s-check"
               @click="handlecompletion(scope.row)"
-              v-hasPermi="['commodity:plaftorm:approval']"
+              
               >审核</el-button
             >
           </span>
