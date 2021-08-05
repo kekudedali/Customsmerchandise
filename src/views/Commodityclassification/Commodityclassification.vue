@@ -7,9 +7,9 @@
       v-show="showSearch"
       label-width="68px"
     >
-      <el-form-item label="分类名称" prop="noticeTitle">
+      <el-form-item label="分类名称" prop="value">
         <el-input
-          v-model="queryParams.noticeTitle"
+          v-model="queryParams.value"
           placeholder="请输入分类名称"
           clearable
           size="small"

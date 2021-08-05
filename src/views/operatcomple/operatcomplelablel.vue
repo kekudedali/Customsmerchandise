@@ -7,9 +7,9 @@
       v-show="showSearch"
       label-width="68px"
     >
-      <el-form-item label="标签名称" prop="noticeTitle">
+      <el-form-item label="标签名称" prop="value">
         <el-input
-          v-model="queryParams.noticeTitle"
+          v-model="queryParams.value"
           placeholder="请输入标签名称"
           clearable
           size="small"
@@ -53,12 +53,12 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column label="标签名称" align="center" prop="name">
+      <el-table-column label="标签名称" align="center" prop="value">
         <template slot-scope="scope">
-          {{ scope.row.name }}
+          {{ scope.row.value }}
         </template>
       </el-table-column>
-      <el-table-column label="标签icon" align="center" prop="icon">
+      <el-table-column label="标签icon" align="center" prop="code">
       </el-table-column>
       <el-table-column label="排序" align="center" prop="sort">
       </el-table-column>
@@ -85,20 +85,20 @@
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-row>
           <el-col :span="21" :offset="1">
-            <el-form-item label="标签名称" prop="name">
+            <el-form-item label="标签名称" prop="value">
               <el-input
-                v-model="form.name"
+                v-model="form.value"
                 placeholder="请输入标签名称"
                 style="width: 200px"
               />
             </el-form-item>
-            <el-form-item label="标签icon" prop="icon">
+            <el-form-item label="标签icon" prop="code">
               <FileUpload
                 :limit="1"
                 :fileSize="fileSize"
                 :isShowTip="isShowTip"
                 uploadtype="image"
-                :fileList.sync="form.icon"
+                :fileList.sync="form.code"
               />
             </el-form-item>
             <el-form-item label="标签排序" prop="sort">
@@ -124,12 +124,11 @@
 
 <script>
 import {
-  listcommodity,
-  addcommodity,
-  updatecommodity,
-  copycommodity,
-  chooseproduct,
-} from "@/api/commodity/commodity";
+  listlabel,
+  addlabel,
+  editlabel,
+  dellabel
+} from "@/api/commodity/label";
 import Editor from "@/components/Editor";
 import selfDirective from "@/utils/selfDirective";
 import FileUpload from "@/components/FileUpload/index";
@@ -156,24 +155,6 @@ export default {
       total: 0,
       // 公告表格数据
       commodityList: [
-        {
-          id: 1,
-          name: "测试小程序",
-          apptb:
-            "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg",
-          xcxtb:
-            "https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpeg",
-          px: 1,
-        },
-        {
-          id: 2,
-          name: "测试小程序",
-          apptb:
-            "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg",
-          xcxtb:
-            "https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpeg",
-          px: 1,
-        },
       ],
       // 弹出层标题
       title: "",
@@ -187,21 +168,16 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        noticeTitle: "",
-        state: "",
       },
       // 表单参数
       form: {
-        icon: [],
+        code: [],
         sort: null,
         name: "",
       },
       // 表单校验
       rules: {
         name: [
-          { required: true, message: "标签名称不能为空", trigger: "change" },
-        ],
-        icon: [
           { required: true, message: "标签名称不能为空", trigger: "change" },
         ],
         sort: [{ required: true, message: "排序不能为空", trigger: "change" }],
@@ -215,7 +191,7 @@ export default {
     };
   },
   created() {
-    // this.getList();
+    this.getList();
   },
   methods: {
     chooseproduct() {
@@ -230,7 +206,6 @@ export default {
       });
     },
     handleSelectionChange(val) {
-      console.log(val);
       this.multipleSelection = val;
     },
     /** 查询公告列表 */
@@ -247,7 +222,7 @@ export default {
     /** 查询公告列表 */
     getList() {
       this.loading = true;
-      listcommodity(this.queryParams).then((response) => {
+      listlabel(this.queryParams).then((response) => {
         var commodityList = response.rows;
 
         commodityList.map((item) => {
@@ -288,8 +263,6 @@ export default {
     reset() {
       this.form = {
         id: undefined,
-        noticeTitle: undefined,
-        status: "0",
       };
       this.resetForm("form");
     },
@@ -303,18 +276,22 @@ export default {
       this.resetForm("queryForm");
       this.handleQuery();
     },
+    handeclose(){
+      this.open = false;
+    },
     /** 提交按钮 */
     submitForm: function () {
       this.$refs["form"].validate((valid) => {
         if (valid) {
+          this.$set(this.form,'code',JSON.stringify(this.form.code))
           if (this.form.id != undefined) {
-            updatecommodity(this.form).then((response) => {
+            editlabel(this.form).then((response) => {
               this.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
-            addcommodity(this.form).then((response) => {
+            addlabel(this.form).then((response) => {
               this.msgSuccess("新增成功");
               this.open = false;
               this.getList();
@@ -327,9 +304,11 @@ export default {
       this.reset();
       this.open = true;
       if (type == "edit") {
+        this.$set(this.form, "code", []);
         this.$set(this.form, "id", row.id);
         this.title = "修改标签";
       } else {
+         this.$set(this.form, "code", []);
         this.title = "新增标签";
       }
     },

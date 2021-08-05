@@ -13,16 +13,16 @@
           v-show="showSearch"
           label-width="68px"
         >
-          <el-form-item label="商品名称" prop="noticeTitle">
+          <el-form-item label="商品名称" prop="name">
             <el-input
-              v-model="queryParams.noticeTitle"
+              v-model="queryParams.name"
               placeholder="请输入商品名称"
               clearable
               size="small"
               @keyup.enter.native="handleQuery"
             />
           </el-form-item>
-          <el-form-item label="商品条码" prop="noticeTitle">
+          <el-form-item label="商品条码" >
             <el-input
               v-model="queryParams.commodityBaseCode"
               placeholder="请输入商品条码"
@@ -31,7 +31,7 @@
               @keyup.enter.native="handleQuery"
             />
           </el-form-item>
-          <el-form-item label="入库日期" prop="noticeTitle">
+          <el-form-item label="入库日期" >
             <el-date-picker
               v-model="queryParams.createTime"
               type="datetimerange"
@@ -253,7 +253,7 @@ export default {
         pageNum: 1,
         pageSize: 10,
         noticeTitle: "",
-        state: "",
+        status: "5",
       },
       // 表单参数
       form: {},

@@ -146,6 +146,7 @@ export default {
             editclassify(obj).then((response) => {
               this.msgSuccess("修改成功");
               this.open = false;
+              this.back()
             });
           } else {
              var obj = {
@@ -154,11 +155,10 @@ export default {
               appPicture: JSON.stringify(ruleForm.appPicture),
               wxPicture: JSON.stringify(ruleForm.wxPicture),
             };
-            debugger
             addclassify(obj).then((response) => {
-              debugger
               this.msgSuccess("新增成功");
               this.open = false;
+               this.back()
             });
           }
         }
