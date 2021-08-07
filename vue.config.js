@@ -5,9 +5,9 @@ function resolve(dir) {
     return path.join(__dirname, dir)
 }
 
-const name = process.env.VUE_APP_TITLE || '若依管理系统' // 网页标题
+const name = process.env.VUE_APP_TITLE || '云茂ERP管理平台' // 网页标题
 
-const port = process.env.port || process.env.npm_config_port || 80 // 端口
+const port = process.env.port || process.env.npm_config_port || 70 // 端口
 
 // vue.config.js 配置说明
 //官方vue.config.js 参考文档 https://cli.vuejs.org/zh/config/#css-loaderoptions
@@ -33,8 +33,8 @@ module.exports = {
         proxy: {
             // detail: https://cli.vuejs.org/config/#devserver-proxy
             [process.env.VUE_APP_BASE_API]: {
-                // target: `http://114.115.248.164:9000`,
-                target: `http://172.16.1.6:9000`,
+                target: `http://backend-two.ymall.net.cn`,
+                // target: `http://172.16.1.6:9000`,
                 changeOrigin: true,
                 pathRewrite: {
                     ['^' + process.env.VUE_APP_BASE_API]: ''

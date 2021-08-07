@@ -125,32 +125,30 @@
       :before-close="handeclose"
       class="gonggao"
     >
-      <el-form ref="form" :model="form" :rules="rules" label-width="100px">
-        <div class="baseinfo">基本信息</div>
+      <el-form ref="form" :model="form" :rules="rules" label-width="110px">
+        <!-- <div class="baseinfo">基本信息</div> -->
         <el-row>
-          <el-col :span="21" :offset="1" style="margin-top: 10px">
-            <el-form-item label="渠道名称" prop="distributorName">
+          <el-col :span="15" :offset="3" style="margin-top: 10px">
+            <el-form-item label="渠道名称：" prop="distributorName">
               <el-input
                 v-model="form.distributorName"
                 placeholder="请输入"
-                style="width: 300px"
                 :disabled="isdisabled"
               />
             </el-form-item>
-            <el-form-item label="渠道负责人" prop="userName">
+            <el-form-item label="渠道负责人：" prop="userName">
               <el-input
                 v-model="form.userName"
                 placeholder="请输入"
-                style="width: 300px"
                 :disabled="isdisabled"
               />
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
-          <div class="baseinfo">支付信息</div>
-          <el-col :span="21" :offset="1" style="margin-top: 10px">
-            <el-form-item label="支付手续费" prop="distributorRate">
+          <!-- <div class="baseinfo">支付信息</div> -->
+          <el-col :span="15" :offset="3" style="margin-top: 10px">
+            <el-form-item label="支付手续费：" prop="distributorRate">
               <el-input
                 v-model="form.distributorRate"
                 placeholder="请输入"
@@ -162,16 +160,16 @@
           </el-col>
         </el-row>
         <el-row>
-          <div class="baseinfo">系统对接</div>
-          <el-col :span="21" :offset="1" style="margin-top: 10px">
-            <el-form-item label="渠道Key" prop="distributorkey">
+          <!-- <div class="baseinfo">系统对接</div> -->
+          <el-col :span="15" :offset="3" style="margin-top: 10px">
+            <el-form-item label="渠道Key：" prop="distributorkey">
               <el-input
                 v-model="form.distributorkey"
                 :disabled="isdisabled"
                 placeholder="请输入"
               />
             </el-form-item>
-            <el-form-item label="渠道URL" prop="url">
+            <el-form-item label="渠道URL：" prop="url">
               <el-input
                 v-model="form.url"
                 :disabled="isdisabled"
@@ -196,9 +194,9 @@
           </el-col>
         </el-row> -->
         <el-row>
-          <div class="baseinfo">状态</div>
-          <el-col :span="21" :offset="1" style="margin-top: 10px">
-            <el-form-item label="渠道状态" prop="state">
+          <!-- <div class="baseinfo">状态</div> -->
+          <el-col :span="15" :offset="3" style="margin-top: 10px">
+            <el-form-item label="渠道状态：" prop="state">
               <el-radio v-model="form.state" :disabled="isdisabled" :label="1"
                 >启用</el-radio
               >
@@ -476,20 +474,11 @@ export default {
     font-style: normal;
     color: #555555;
   }
-  .baseinfo {
-    width: 100%;
-    height: 40px;
-    line-height: 40px;
-    color: #999;
-    background-color: #f2f2f2;
-    padding-left: 10px;
-    border-radius: 5px;
-    margin-top: 10px;
-  }
 }
 .baseinfo {
-  width: 100%;
+  width: 80%;
   height: 40px;
+  margin: 0 auto;
   line-height: 40px;
   color: #999;
   background-color: #f2f2f2;

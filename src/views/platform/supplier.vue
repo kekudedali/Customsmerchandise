@@ -67,8 +67,21 @@
           <el-button
             type="text"
             size="mini"
+            icon="el-icon-edit"
             @click="handleedit('edit', scope.row)"
             >修改</el-button
+          >
+          <el-button
+            type="text"
+            size="mini"
+            @click="handleedit('more', scope.row)"
+            >更多</el-button
+          >
+          <el-button
+            type="text"
+            size="mini"
+            @click="handleedit('del', scope.row)"
+            >删除</el-button
           >
         </template>
       </el-table-column>
@@ -81,35 +94,92 @@
       @pagination="getList"
     />
     <!-- 添加或修改公告对话框 -->
-    <el-dialog :title="title" :visible="open" width="780px" append-to-body :before-close="handeclose">
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+    <el-dialog
+      :title="title"
+      :visible="open"
+      width="780px"
+      append-to-body
+      :before-close="handeclose"
+    >
+      <el-form ref="form" :model="form" :rules="rules" label-width="120px">
         <el-row>
-          <el-col :span="21" :offset="1">
-            <el-form-item label="标签名称" prop="name">
+          <el-col :span="15" :offset="3">
+            <el-form-item label="供应商名称：" prop="name">
               <el-input
                 v-model="form.name"
-                placeholder="请输入标签名称"
-                style="width: 200px"
+                :disabled="isdisable"
+                placeholder="请输入"
               />
             </el-form-item>
-            <el-form-item label="标签icon" prop="icon">
-              <FileUpload
-                :limit="1"
-                :fileSize="fileSize"
-                :isShowTip="isShowTip"
-                uploadtype="image"
-                :fileList.sync="form.icon"
+            <el-form-item label="供应商国家：" prop="country">
+              <el-select
+                v-model="form.country"
+                :disabled="isdisable"
+                placeholder="请选择"
+              >
+                <el-option
+                  v-for="item in countryoptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                >
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="供应商地区：" prop="area">
+              <el-input
+                type="textarea"
+                v-model="form.area"
+                placeholder="请输入"
+                :rows="7"
+                maxlength="300"
+                show-word-limit
+                :disabled="isdisable"
               />
             </el-form-item>
-            <el-form-item label="标签排序" prop="sort">
-              <el-input-number
-                v-model="form.sort"
-                placeholder="请输入 标签排序"
-                style="width: 200px"
-                controls-position="right"
-                :min="0"
-                v-Int
+            <el-form-item label="供应商负责人：" prop="managemnet">
+              <el-input
+                v-model="form.managemnet"
+                :disabled="isdisable"
+                placeholder="请输入"
               />
+            </el-form-item>
+            <el-form-item label="联系方式：" prop="phone">
+              <el-input
+                v-model="form.phone"
+                :disabled="isdisable"
+                placeholder="请输入"
+              />
+            </el-form-item>
+            <el-form-item label="供应商类别：" prop="producttype">
+              <el-select
+                v-model="form.producttype"
+                :disabled="isdisable"
+                placeholder="请选择"
+              >
+                <el-option
+                  v-for="item in producttypeoptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                >
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="代收款公司：" prop="company">
+              <el-select
+                v-model="form.company"
+                :disabled="isdisable"
+                placeholder="请选择"
+              >
+                <el-option
+                  v-for="item in companyoptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                >
+                </el-option>
+              </el-select>
             </el-form-item>
           </el-col>
         </el-row>
@@ -199,12 +269,30 @@ export default {
       // 表单校验
       rules: {
         name: [
-          { required: true, message: "标签名称不能为空", trigger: "change" },
+          { required: true, message: "供应商名称不能为空", trigger: "change" },
         ],
-        icon: [
-          { required: true, message: "标签名称不能为空", trigger: "change" },
+        country: [
+          { required: true, message: "供应商国家不能为空", trigger: "change" },
         ],
-        sort: [{ required: true, message: "排序不能为空", trigger: "change" }],
+        area: [
+          { required: true, message: "供应商地区不能为空", trigger: "change" },
+        ],
+        managemnet: [
+          {
+            required: true,
+            message: "供应商负责人不能为空",
+            trigger: "change",
+          },
+        ],
+        phone: [
+          { required: true, message: "联系方式不能为空", trigger: "change" },
+        ],
+        producttype: [
+          { required: true, message: "供应商类别不能为空", trigger: "change" },
+        ],
+        company: [
+          { required: true, message: "代收款公司不能为空", trigger: "change" },
+        ],
       },
       type: "0",
       multipleSelection: [],
@@ -212,6 +300,9 @@ export default {
       fileSize: 20,
       isShowTip: false,
       value: [],
+      countryoptions: [],
+      producttypeoptions: [],
+      companyoptions: [],
     };
   },
   created() {
@@ -327,11 +418,17 @@ export default {
       this.reset();
       this.open = true;
       if (type == "edit") {
-        this.$set(this.form, "id", row.id);
+         this.form = row;
         this.title = "修改标签";
-      } else {
+      } else if (type == "add") {
         this.title = "新增标签";
+      } else if (type == "more") {
+        this.form = row;
+        this.isdisable = true;
       }
+    },
+    handeclose() {
+      this.open = false;
     },
   },
 };

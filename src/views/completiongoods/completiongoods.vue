@@ -111,7 +111,7 @@
             </div>
             <div class="stock">{{ scope.row.inventoryTotal }}</div>
           </el-tooltip>
-          <div class="stock">{{ scope.row.inventoryTotal }}</div>
+          <div class="stock" v-else >{{ scope.row.inventoryTotal }}</div>
         </template>
       </el-table-column>
       <el-table-column
@@ -324,7 +324,7 @@ export default {
       // 查询参数
       queryParams: {
         pageNum: 1,
-        pageSize: 10,
+        pageSize: 50,
         noticeTitle: "",
         status: "2",
       },

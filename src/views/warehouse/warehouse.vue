@@ -117,7 +117,7 @@
     >
       <el-form ref="form" :model="form" :rules="rules" label-width="130px">
         <el-row>
-          <el-col :span="12" :offset="4">
+          <el-col :span="15" :offset="3">
             <el-form-item label="仓库名称:" prop="ckname">
               <el-input
                 v-model="form.ckname"

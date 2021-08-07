@@ -15,15 +15,16 @@
         class="demo-ruleForm"
       >
         <el-row>
-          <el-col :span="6" :offset="6">
+          <el-col :span="12" :offset="6">
             <el-form-item label="商品名称" prop="name">
               <el-input
                 v-model="ruleForm.name"
                 placeholder="请输入"
-                style="width: 200px"
                 :disabled="isdisabled"
               ></el-input>
             </el-form-item>
+          </el-col>
+          <el-col :span="6" :offset="6">
             <el-form-item label="平台编码" prop="commodityBaseCode">
               <el-input
                 v-model="ruleForm.commodityBaseCode"
@@ -322,6 +323,18 @@
       <div class="baseinfo">规格设置</div>
       <div class="card-title" style="margin: 10px 0px 10px 10px">规格列表</div>
       <div class="table-box">
+        <el-button
+          type="primary"
+          style="margin-bottom: 10px; float: right"
+          v-if="
+            type != 'detail' &&
+            type != 'completion' &&
+            type != 'completiondetail'
+          "
+          size="mini"
+          @click="addnum"
+          >新增</el-button
+        >
         <el-table :data="tableData" style="width: 100%" border>
           <el-table-column
             prop="specificationName"
@@ -330,11 +343,7 @@
             label="规格名称"
           >
             <template slot-scope="scope">
-              <div
-                v-if="
-                  type == 'reject' || type == 'detail' || type == 'completion'
-                "
-              >
+              <div v-if="type == 'detail' || type == 'completion'">
                 {{ scope.row.specificationName }}
               </div>
               <el-input
@@ -351,11 +360,7 @@
             label="规格数量"
           >
             <template slot-scope="scope">
-              <div
-                v-if="
-                  type == 'reject' || type == 'detail' || type == 'completion'
-                "
-              >
+              <div v-if="type == 'detail' || type == 'completion'">
                 {{ scope.row.specificationAmount }}
               </div>
               <el-input
@@ -374,11 +379,7 @@
             v-if="type != 'completion' && type != 'completiondetail'"
           >
             <template slot-scope="scope">
-              <div
-                v-if="
-                  type == 'reject' || type == 'detail' || type == 'completion'
-                "
-              >
+              <div v-if="type == 'detail' || type == 'completion'">
                 {{ scope.row.customsNumber }}
               </div>
               <el-input
@@ -396,11 +397,7 @@
             v-if="type != 'completion' && type != 'completiondetail'"
           >
             <template slot-scope="scope">
-              <div
-                v-if="
-                  type == 'reject' || type == 'detail' || type == 'completion'
-                "
-              >
+              <div v-if="type == 'detail' || type == 'completion'">
                 {{ scope.row.weight }}
               </div>
               <el-input
@@ -419,11 +416,7 @@
             v-if="type != 'completion' && type != 'completiondetail'"
           >
             <template slot-scope="scope">
-              <div
-                v-if="
-                  type == 'reject' || type == 'detail' || type == 'completion'
-                "
-              >
+              <div v-if="type == 'detail' || type == 'completion'">
                 {{ scope.row.freightCost }}
               </div>
               <el-input
@@ -440,11 +433,7 @@
             label="库存"
           >
             <template slot-scope="scope">
-              <div
-                v-if="
-                  type == 'reject' || type == 'detail' || type == 'completion'
-                "
-              >
+              <div v-if="type == 'detail' || type == 'completion'">
                 {{ scope.row.inventoryTotal }}
               </div>
               <el-input
@@ -535,16 +524,12 @@
             width="200px"
             label="操作"
             v-if="
-              type != 'reject' &&
               type != 'detail' &&
               type != 'completion' &&
               type != 'completiondetail'
             "
           >
             <template slot-scope="scope">
-              <el-button type="primary" size="mini" @click="addnum"
-                >新增</el-button
-              >
               <el-button
                 type="danger"
                 size="mini"
