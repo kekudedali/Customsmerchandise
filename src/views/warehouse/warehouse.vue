@@ -7,26 +7,7 @@
       v-show="showSearch"
       label-width="68px"
     >
-      <!-- <el-form-item label="商品名称" prop="noticeTitle">
-        <el-input
-          v-model="queryParams.noticeTitle"
-          placeholder="请输入商品名称"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item> -->
       <el-form-item>
-        <!-- <el-button
-          type="primary"
-          icon="el-icon-search"
-          size="mini"
-          @click="handleQuery"
-          >搜索</el-button
-        >
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
-          >重置</el-button
-        > -->
         <el-button type="primary" size="mini" @click="handleAdd"
           >新增</el-button
         >
@@ -55,21 +36,37 @@
       <el-table-column
         label="仓库名"
         align="center"
-        prop="cangkuming"
+        prop="warehouseName"
+        width="200"
         :show-overflow-tooltip="true"
       />
       <el-table-column
         label="仓库地址"
         align="center"
-        prop="ckdz"
+        prop="warehouseLocation"
         :show-overflow-tooltip="true"
       />
       <el-table-column
         label="是否对接"
         align="center"
-        prop="isdj"
+        prop="status"
         width="100"
-      />
+      >
+        <template slot-scope="scope">
+          <span>{{ scope.row.status == "1" ? "已对接" : "未对接" }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="是否启用" align="center" prop="state" width="100">
+        <template slot-scope="scope">
+          <el-switch
+            v-model="scope.row.state == '1'"
+            active-color="#13ce66"
+            inactive-color="#ff4949"
+            @change="changestate(scope.row)"
+          >
+          </el-switch>
+        </template>
+      </el-table-column>
       <el-table-column
         label="操作"
         align="center"
@@ -83,16 +80,14 @@
               type="text"
               icon="el-icon-edit"
               @click="handleUpdate(scope.row)"
-              
               >修改</el-button
             >
             <el-button
               size="mini"
               type="text"
               icon="el-icon-delete"
-              style="color:red;"
+              style="color: red"
               @click="handleDelete(scope.row)"
-              
               >删除</el-button
             >
           </span>
@@ -120,24 +115,37 @@
       <el-form ref="form" :model="form" :rules="rules" label-width="130px">
         <el-row>
           <el-col :span="15" :offset="3">
-            <el-form-item label="仓库名称:" prop="ckname">
+            <el-form-item label="仓库名称:" prop="warehouseName">
               <el-input
-                v-model="form.ckname"
+                v-model="form.warehouseName"
                 placeholder="请输入"
                 size="small"
               />
             </el-form-item>
-            <el-form-item label="仓库地址:" prop="ckaddress">
+            <el-form-item label="仓库地址:" prop="warehouseLocation">
               <el-input
-                v-model="form.ckaddress"
+                type="textarea"
+                :rows="3"
+                v-model="form.warehouseLocation"
                 placeholder="请输入"
                 size="small"
+                maxlength="100"
+                show-word-limit
               />
             </el-form-item>
-            <el-form-item label="是否对接:" prop="isdj">
-              <el-select v-model="form.isdj" size="small" placeholder="请选择">
+            <!--是否对接（0。未对接 1.已对接） -->
+            <el-form-item label="是否启用:" prop="state">
+              <el-radio v-model="form.state" :label="0">禁用</el-radio>
+              <el-radio v-model="form.state" :label="1">启用</el-radio>
+            </el-form-item>
+            <el-form-item label="是否对接:" prop="status">
+              <el-select
+                v-model="form.status"
+                size="small"
+                placeholder="请选择"
+              >
                 <el-option
-                  v-for="item in djoptions"
+                  v-for="item in statusoptions"
                   :key="item.value"
                   :label="item.label"
                   :value="item.value"
@@ -145,34 +153,15 @@
                 </el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="对接参数:" prop="djcs">
+            <el-form-item label="对接参数:" prop="key">
               <el-input
                 type="textarea"
                 :rows="7"
                 placeholder="请输入内容"
-                v-model="form.djcs"
+                v-model="form.key"
                 size="small"
-              />
-            </el-form-item>
-            <el-form-item label="支付公司参数:" prop="zfgscs">
-              <el-input
-                placeholder="请输入内容"
-                size="small"
-                v-model="form.zfgscs"
-              />
-            </el-form-item>
-            <el-form-item label="海关备案公司参数:" prop="hgbacs">
-              <el-input
-                placeholder="请输入内容"
-                size="small"
-                v-model="form.hgbacs"
-              />
-            </el-form-item>
-            <el-form-item label="仓库推送地址:" prop="cktsdz">
-              <el-input
-                placeholder="请输入内容"
-                size="small"
-                v-model="form.cktsdz"
+                maxlength="1000"
+                show-word-limit
               />
             </el-form-item>
           </el-col>
@@ -187,15 +176,11 @@
 
 <script>
 import {
-  listcommodity,
-  getcommodity,
-  delcommodity,
-  addcommodity,
-  updatecommodity,
-  exportcommodity,
-  approvalcommodity,
-  copycommodity,
-} from "@/api/commodity/commodity";
+  listwarehouse,
+  delwarehouse,
+  addwarehouse,
+  editwarehouse,
+} from "@/api/warehouse";
 import Editor from "@/components/Editor";
 
 export default {
@@ -231,43 +216,52 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        noticeTitle: "",
-        status: "0",
       },
       // 表单参数
       form: {
-        ckname: "",
-        ckaddress: "",
-        isdj: "",
-        djcs: "",
-        zfgscs: "",
-        hgbacs: "",
-        cktsdz: "",
+        warehouseName: "",
+        warehouseLocation: "",
+        status: "1",
+        state: "0",
+        key: "",
       },
       // 表单校验
       rules: {
-        ckname: [
+        warehouseName: [
           { required: true, message: "仓库名称不能为空", trigger: "change" },
         ],
-        ckaddress: [
+        warehouseLocation: [
           { required: true, message: "仓库地址不能为空", trigger: "change" },
         ],
-        isdj: [
+        status: [
           { required: true, message: "是否对接不能为空", trigger: "change" },
         ],
-        djcs: [
+        key: [
           { required: true, message: "对接参数不能为空", trigger: "change" },
+        ],
+        state: [
+          { required: true, message: "是否启用不能为空", trigger: "change" },
         ],
       },
       type: "0",
-      djoptions: [
+      stateoptions: [
         {
-          label: "是",
-          value: "1",
+          label: "禁用",
+          value: 0,
         },
         {
-          label: "否",
-          value: "0",
+          label: "启用",
+          value: 1,
+        },
+      ],
+      statusoptions: [
+        {
+          label: "未对接",
+          value: 0,
+        },
+        {
+          label: "已对接",
+          value: 1,
         },
       ],
     };
@@ -285,7 +279,7 @@ export default {
     /** 查询公告列表 */
     handelcopy() {
       copycommodity().then((res) => {
-        this.msgSuccess("复制成功");
+        this.$message.success("复制成功");
       });
     },
     /** 查询公告列表 */
@@ -296,7 +290,7 @@ export default {
     /** 查询公告列表 */
     getList() {
       this.loading = true;
-      listcommodity(this.queryParams).then((response) => {
+      listwarehouse(this.queryParams).then((response) => {
         var commodityList = response.rows;
         commodityList.map((item) => {
           var inventoryTotal = 0;
@@ -336,10 +330,11 @@ export default {
     reset() {
       this.form = {
         id: undefined,
-        noticeTitle: undefined,
-        noticeType: undefined,
-        noticeContent: undefined,
-        status: "0",
+        warehouseName: "",
+        warehouseLocation: "",
+        status: 1,
+        state: 1,
+        key: "",
       };
       this.resetForm("form");
     },
@@ -385,13 +380,16 @@ export default {
         })
         .then(() => {
           this.getList();
-          this.msgSuccess("审核成功");
+          this.$message.success("审核成功");
         })
         .catch(() => {});
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
+      this.form = {
+        ...row,
+      }
       this.open = true;
     },
     handleUpdatereject(row) {
@@ -416,7 +414,7 @@ export default {
         })
         .then(() => {
           this.getList();
-          this.msgSuccess("复制成功");
+          this.$message.success("复制成功");
         })
         .catch(() => {});
     },
@@ -425,14 +423,14 @@ export default {
       this.$refs["form"].validate((valid) => {
         if (valid) {
           if (this.form.id != undefined) {
-            updatecommodity(this.form).then((response) => {
-              this.msgSuccess("修改成功");
+            editwarehouse(this.form).then((response) => {
+              this.$message.success("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
-            addcommodity(this.form).then((response) => {
-              this.msgSuccess("新增成功");
+            addwarehouse(this.form).then((response) => {
+              this.$message.success("新增成功");
               this.open = false;
               this.getList();
             });
@@ -443,19 +441,37 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
-      this.$confirm("是否确认删除该商品?", "警告", {
+      this.$confirm("是否确认删除该仓库?", "警告", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
       })
         .then(function () {
-          return delcommodity(ids);
+          return delwarehouse(ids);
         })
         .then(() => {
           this.getList();
-          this.msgSuccess("删除成功");
+          this.$message.success("删除成功");
         })
         .catch(() => {});
+    },
+    changestate(row) {
+      var that = this
+      const statestr = row.state == 1 ? "禁用" : "启用";
+      this.$confirm("是否确认" + statestr + "该仓库?", "警告", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      }).then(function () {
+        var obj = {
+          id: row.id,
+          state: row.state == 1 ? 0 : 1,
+        };
+        editwarehouse(obj).then((response) => {
+          that.$message.success(statestr + "成功");
+          that.getList();
+        });
+      });
     },
   },
 };
