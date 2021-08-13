@@ -68,6 +68,7 @@
         label="是否对接"
         align="center"
         prop="isdj"
+        width="100"
       />
       <el-table-column
         label="操作"
@@ -89,6 +90,7 @@
               size="mini"
               type="text"
               icon="el-icon-delete"
+              style="color:red;"
               @click="handleDelete(scope.row)"
               
               >删除</el-button

@@ -1383,7 +1383,7 @@ export default {
         if (valid) {
           var obj = {
             ...this.ruleForm,
-            status: data.status, //区分草稿还是提交审核
+            status: 0, //区分草稿还是提交审核
             specificationList: this.tableData,
           };
           editcommodity(obj).then((res) => {

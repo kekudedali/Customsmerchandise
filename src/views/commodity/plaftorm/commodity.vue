@@ -94,7 +94,11 @@
         align="center"
         prop="commodityBrand"
         :show-overflow-tooltip="true"
-      />
+      >
+        <template slot-scope="scope">
+          {{ getbrand(scope.row) }}
+        </template>
+      </el-table-column>
       <el-table-column
         label="商品条码"
         align="center"
@@ -139,7 +143,7 @@
       <el-table-column
         label="驳回原因"
         align="center"
-        prop="updateBy"
+        prop="explain"
         width="150"
         v-if="queryParams.status == '1'"
       />
@@ -158,7 +162,7 @@
         v-if="queryParams.status != '0'"
       >
         <template slot-scope="scope">
-          <span v-if="queryParams.status === ''">
+          <span v-if="queryParams.status == '-1'">
             <el-button
               size="mini"
               type="text"
@@ -179,9 +183,9 @@
               size="mini"
               type="text"
               icon="el-icon-delete"
+              style="color: red"
               @click="handleDelete(scope.row)"
               v-if="scope.row.status != 2"
-              v-hasPermi="['commodity:plaftorm:del']"
               >删除</el-button
             >
           </span>
@@ -339,6 +343,7 @@ export default {
         ],
       },
       type: "0",
+      commodityBrandoptions: [],
     };
   },
   created() {
@@ -348,6 +353,9 @@ export default {
     });
     this.getDicts("sys_notice_type").then((response) => {
       this.typeOptions = response.data;
+    });
+    this.getDicts("pp").then((response) => {
+      this.commodityBrandoptions = response.data;
     });
   },
   methods: {
@@ -545,6 +553,16 @@ export default {
           this.msgSuccess("删除成功");
         })
         .catch(() => {});
+    },
+    getbrand(row) {
+      let commodityBrandoptions = this.commodityBrandoptions;
+      let Brand = "";
+      commodityBrandoptions.map((item) => {
+        if (row.commodityBrand == item.dictValue) {
+          Brand = item.dictLabel
+        }
+      });
+      return Brand
     },
   },
 };
