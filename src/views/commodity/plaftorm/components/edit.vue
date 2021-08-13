@@ -2,7 +2,7 @@
   <div class="app-container">
     <div>
       <el-button size="small" type="primary" @click="back">返回</el-button>
-      <span class="title">"海关商品管理 > 海关商品备案"</span>
+      <!-- <span class="title">{{maintitle}}</span> -->
     </div>
     <el-card class="box-card">
       <div class="card-title">{{ title }}</div>
@@ -795,6 +795,7 @@ export default {
   },
   data() {
     return {
+      maintitle:"海关商品管理 > 海关商品备案",
       title: "新增海关商品备案",
       type: "add",
       typetwo: "add",

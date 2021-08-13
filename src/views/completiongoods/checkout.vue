@@ -15,7 +15,7 @@
       >
         <el-row>
           <el-col :span="18" :offset="1">
-            <el-form-item label="商品名称" prop="name">
+            <el-form-item label="商品名称:" prop="name">
               <el-input
                 v-model="ruleForm.name"
                 placeholder="请输入"
@@ -23,7 +23,7 @@
                 :disabled="isdisabled"
               ></el-input>
             </el-form-item>
-            <el-form-item label="商品条码" prop="skuCode">
+            <el-form-item label="商品条码:" prop="skuCode">
               <el-input
                 v-model="ruleForm.skuCode"
                 placeholder="请输入"
@@ -36,7 +36,7 @@
         <el-row v-if="type == 'checkout'">
           <div class="baseinfo" style="margin-bottom: 20px">分配库存</div>
           <el-col :span="18" :offset="1">
-            <el-form-item label="选择需要分配的渠道" prop="channe">
+            <el-form-item label="选择需要分配的渠道:" prop="channe">
               <el-checkbox-group
                 v-model="ruleForm.channe"
                 @change="handleCheckedtypeChange"
@@ -49,10 +49,14 @@
                 >
               </el-checkbox-group>
             </el-form-item>
-            <el-form-item label="选择渠道分配的数量" prop="xcxtb" style="">
+            <el-form-item label="选择渠道分配的数量:" prop="xcxtb" style="">
               <div v-if="checkedspcarr.length > 0">
-                <div v-for="(item, index) in checkedspcarr" :key="index">
-                  <div class="channel-box">
+                <div
+                  v-for="(item, index) in checkedspcarr"
+                  :key="index"
+                  class="channel-father"
+                >
+                  <div class="channel-box-one">
                     <div class="channel-title">{{ item.name }}</div>
                   </div>
                   <div
@@ -61,8 +65,14 @@
                     :key="spcindex"
                   >
                     <div class="channel-box-inner">
-                      <span> {{ spcitem.specificationName }} </span>
-                      <span> × {{ spcitem.specificationAmount }} </span>
+                      <span style="margin-right: 10px">
+                        <span class="havebgc">
+                          {{ spcitem.specificationName }}
+                        </span>
+                        <span class="havebgc">
+                          × {{ spcitem.specificationAmount }}
+                        </span>
+                      </span>
                       <el-input
                         v-model="spcitem.inventoryUsable"
                         placeholder="请输入"
@@ -80,8 +90,13 @@
           </el-col>
         </el-row>
       </el-form>
-      <div class="baseinfo" v-if="type == 'record'" >分配记录</div>
-      <el-table v-if="type == 'record'"  :data="tableData" style="width: 100%; margin-top: 20px" border>
+      <div class="baseinfo" v-if="type == 'record'">分配记录</div>
+      <el-table
+        v-if="type == 'record'"
+        :data="tableData"
+        style="width: 100%; margin-top: 20px"
+        border
+      >
         <el-table-column
           prop="num"
           header-align="center"
@@ -123,7 +138,7 @@
           label="分配时间"
         />
       </el-table>
-      <div class="baseinfo"  v-if="type == 'statistics'"  >压货统计</div>
+      <div class="baseinfo" v-if="type == 'statistics'">压货统计</div>
       <el-table
         v-if="type == 'statistics'"
         :data="tableDataone"
@@ -171,9 +186,9 @@
           label="销量"
         />
       </el-table>
-      <div class="baseinfo" v-if="type == 'statistics'"  >云端统计</div>
+      <div class="baseinfo" v-if="type == 'statistics'">云端统计</div>
       <el-table
-       v-if="type == 'statistics'"
+        v-if="type == 'statistics'"
         :data="tableDatatwo"
         style="width: 100%; margin-top: 20px"
         border
@@ -246,7 +261,6 @@ export default {
     ImageUpload,
   },
   created() {
-
     let { data } = this.$route.query;
     this.type = this.$route.query.type;
 
@@ -272,7 +286,9 @@ export default {
     //规格数据
     var specificationList = this.$route.query.data.specificationList || [];
     specificationList.map((item, index) => {
-      item.inventoryUsabletwo = JSON.parse(JSON.stringify(item.inventoryUsable)) ;
+      item.inventoryUsabletwo = JSON.parse(
+        JSON.stringify(item.inventoryUsable)
+      );
       item.inventoryUsable = "";
     });
     //渠道对应规格
@@ -409,31 +425,42 @@ export default {
   align-items: center;
   justify-content: center;
 }
-.channel-box {
-  width: 100%;
-  border: 1px solid #ccc;
-  .channel-title {
+.channel-father {
+  margin-bottom: 10px;
+  .channel-box-one {
     width: 100%;
-    color: #999;
-    background-color: #f2f2f2;
-    padding: 5px;
-    box-sizing: border-box;
-    padding-left: 10px;
+    border: 1px solid #ccc;
+    .channel-title {
+      width: 100%;
+      color: #999;
+      background-color: #f2f2f2;
+      padding: 5px;
+      box-sizing: border-box;
+      padding-left: 10px;
+    }
   }
   .channel-box {
     width: 100%;
     padding: 10px;
     box-sizing: border-box;
-    margin-bottom: 10px !important;
     padding-left: 10px;
     min-height: 50px;
+    border: 1px solid #ccc;
+    height: 55px;
     .channel-box-inner {
-      padding: 20px;
       display: flex;
-      justify-content: center;
+      justify-content: flex-start;
+      padding-left: 10px;
       align-items: center;
     }
   }
+}
+.havebgc {
+  border: 1px solid #ccc;
+  padding: 5px;
+  background-color: #f2f2f2;
+  border-radius: 5px;
+  margin-right: 5px;
 }
 </style>
 <style scoped>

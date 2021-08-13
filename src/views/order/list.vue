@@ -327,12 +327,8 @@
 
 <script>
 import {
-  listcommodity,
-  addcommodity,
-  updatecommodity,
-  copycommodity,
-  chooseproduct,
-} from "@/api/commodity/commodity";
+  listorder,
+} from "@/api/order";
 import Editor from "@/components/Editor";
 import selfDirective from "@/utils/selfDirective";
 import FileUpload from "@/components/FileUpload/index";
@@ -360,24 +356,6 @@ export default {
       total: 0,
       // 公告表格数据
       commodityList: [
-        {
-          id: 1,
-          name: "测试小程序",
-          apptb:
-            "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg",
-          xcxtb:
-            "https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpeg",
-          px: 1,
-        },
-        {
-          id: 2,
-          name: "测试小程序",
-          apptb:
-            "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg",
-          xcxtb:
-            "https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpeg",
-          px: 1,
-        },
       ],
       // 弹出层标题
       title: "",
@@ -394,11 +372,6 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        orderno: "",
-        orderstatus: "",
-        ordertime: [],
-        qudaoname: "",
-        ddhdzt: "",
       },
       // 表单参数
       form: {
@@ -570,8 +543,7 @@ export default {
     };
   },
   created() {
-    this.$route
-    // this.getList();
+    this.getList();
   },
   methods: {
     chooseproduct() {
@@ -603,7 +575,7 @@ export default {
     /** 查询公告列表 */
     getList() {
       this.loading = true;
-      listcommodity(this.queryParams).then((response) => {
+      listorder(this.queryParams).then((response) => {
         var commodityList = response.rows;
 
         commodityList.map((item) => {
@@ -644,8 +616,6 @@ export default {
     reset() {
       this.form = {
         id: undefined,
-        noticeTitle: undefined,
-        status: "0",
       };
       this.resetForm("form");
     },
