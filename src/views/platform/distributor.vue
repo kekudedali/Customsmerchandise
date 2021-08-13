@@ -7,20 +7,21 @@
       v-show="showSearch"
       label-width="68px"
     >
-      <el-form-item label="渠道名称" prop="noticeTitle">
+      <el-form-item label="渠道名称" prop="distributorName">
         <el-input
-          v-model="queryParams.noticeTitle"
+          v-model="queryParams.distributorName"
           placeholder="请输入标签名称"
           clearable
           size="small"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="状态" prop="noticeTitle">
+      <el-form-item label="状态" prop="state">
         <el-select
           v-model="queryParams.state"
           @change="handleQuery"
           placeholder="请选择"
+          clearable
         >
           <el-option
             v-for="item in stateoptions"
@@ -56,7 +57,6 @@
     </el-row>
 
     <el-table ref="multipleTable" v-loading="loading" :data="commodityList">
-      <el-table-column type="selection" width="55"> </el-table-column>
       <el-table-column label="序号" align="center" prop="id" width="100">
         <template slot-scope="scope">
           <div>
@@ -68,12 +68,12 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column label="渠道名称" align="center" prop="distributorName">
+      <el-table-column label="渠道名称" align="center" prop="distributorName" :show-overflow-tooltip="true">
         <template slot-scope="scope">
           {{ scope.row.distributorName }}
         </template>
       </el-table-column>
-      <el-table-column label="渠道负责人" align="center" prop="userName" />
+      <el-table-column label="渠道负责人" align="center" prop="userName" :show-overflow-tooltip="true" />
       <el-table-column
         label="支付手续费（%）"
         align="center"
@@ -81,28 +81,44 @@
       />
       <el-table-column label="Key" align="center" prop="distributorkey" />
       <el-table-column label="URL" align="center" prop="url" />
-      <el-table-column label="状态" align="center" prop="state">
-        <template slot-scope="scope">
-          <div>{{ scope.row.state === "1" ? "启用" : "禁用" }}</div>
+      <el-table-column label="渠道状态" align="center" prop="state">
+         <template slot-scope="scope">
+          <el-switch
+            v-model="scope.row.state == '1'"
+            active-color="#13ce66"
+            inactive-color="#ff4949"
+            @change="changestate(scope.row)"
+          >
+          </el-switch>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" prop="opration" width="150">
+      <el-table-column
+        label="操作"
+        align="center"
+        prop="opration"
+        width="200"
+        fixed="right"
+      >
         <template slot-scope="scope">
           <el-button
             type="text"
             size="mini"
-            @click="handleedit('more', scope.row)"
-            >更多</el-button
-          >
-          <el-button
-            type="text"
-            size="mini"
+            icon="el-icon-edit"
             @click="handleedit('edit', scope.row)"
             >修改</el-button
           >
           <el-button
             type="text"
             size="mini"
+            icon="el-icon-more"
+            @click="handleedit('more', scope.row)"
+            >更多</el-button
+          >
+          <el-button
+            type="text"
+            size="mini"
+            icon="el-icon-delete"
+            style="color: red"
             @click="handleedit('del', scope.row)"
             >删除</el-button
           >
@@ -126,7 +142,18 @@
       class="gonggao"
     >
       <el-form ref="form" :model="form" :rules="rules" label-width="110px">
-        <!-- <div class="baseinfo">基本信息</div> -->
+        <el-row>
+          <el-col :span="15" :offset="3" style="margin-top: 10px">
+            <el-form-item label="渠道状态：" prop="state">
+              <el-radio v-model="form.state" :disabled="isdisabled" :label="1"
+                >启用</el-radio
+              >
+              <el-radio v-model="form.state" :disabled="isdisabled" :label="0"
+                >禁用</el-radio
+              >
+            </el-form-item>
+          </el-col>
+        </el-row>
         <el-row>
           <el-col :span="15" :offset="3" style="margin-top: 10px">
             <el-form-item label="渠道名称：" prop="distributorName">
@@ -146,7 +173,6 @@
           </el-col>
         </el-row>
         <el-row>
-          <!-- <div class="baseinfo">支付信息</div> -->
           <el-col :span="15" :offset="3" style="margin-top: 10px">
             <el-form-item label="支付手续费：" prop="distributorRate">
               <el-input
@@ -160,7 +186,6 @@
           </el-col>
         </el-row>
         <el-row>
-          <!-- <div class="baseinfo">系统对接</div> -->
           <el-col :span="15" :offset="3" style="margin-top: 10px">
             <el-form-item label="渠道Key：" prop="distributorkey">
               <el-input
@@ -175,34 +200,6 @@
                 :disabled="isdisabled"
                 placeholder="请输入"
               />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <!-- <el-row>
-          <div class="baseinfo">压货菜单</div>
-          <el-col :span="21" :offset="1" style="margin-top: 10px">
-            <el-form-item label="商品菜单" prop="name">
-              <el-checkbox-group v-model="form.menu">
-                <el-checkbox
-                  v-for="(item, index) in menulist"
-                  :label="item"
-                  :key="index"
-                  >{{ item }}</el-checkbox
-                >
-              </el-checkbox-group>
-            </el-form-item>
-          </el-col>
-        </el-row> -->
-        <el-row>
-          <!-- <div class="baseinfo">状态</div> -->
-          <el-col :span="15" :offset="3" style="margin-top: 10px">
-            <el-form-item label="渠道状态：" prop="state">
-              <el-radio v-model="form.state" :disabled="isdisabled" :label="1"
-                >启用</el-radio
-              >
-              <el-radio v-model="form.state" :disabled="isdisabled" :label="0"
-                >禁用</el-radio
-              >
             </el-form-item>
           </el-col>
         </el-row>
@@ -297,10 +294,6 @@ export default {
       isShowTip: false,
       value: [],
       stateoptions: [
-        {
-          value: "",
-          label: "全部",
-        },
         {
           value: "0",
           label: "禁用",
@@ -406,6 +399,24 @@ export default {
             });
           }
         }
+      });
+    },
+    changestate(row) {
+      var that = this;
+      const statestr = row.state == 1 ? "禁用" : "启用";
+      this.$confirm("是否确认" + statestr + "该渠道?", "警告", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      }).then(function () {
+        var obj = {
+          id: row.id,
+          state: row.state == 1 ? 0 : 1,
+        };
+        editdistributor(obj).then((response) => {
+          that.$message.success(statestr + "成功");
+          that.getList();
+        });
       });
     },
     handleedit(type, row) {

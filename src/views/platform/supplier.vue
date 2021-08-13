@@ -5,16 +5,34 @@
       ref="queryForm"
       :inline="true"
       v-show="showSearch"
-      label-width="68px"
+      label-width="100px"
     >
-      <el-form-item label="标签名称" prop="noticeTitle">
+      <el-form-item label="供应商名称" prop="supplierName">
         <el-input
-          v-model="queryParams.noticeTitle"
-          placeholder="请输入标签名称"
+          v-model="queryParams.supplierName"
+          placeholder="请输入"
           clearable
           size="small"
           @keyup.enter.native="handleQuery"
         />
+      </el-form-item>
+      <el-form-item label="供应商类别" prop="category">
+        <el-select
+          v-model="queryParams.category"
+          :disabled="isdisable"
+          placeholder="请选择"
+          style="width: 100%"
+          clearable
+          @change="handleQuery"
+        >
+          <el-option
+            v-for="item in categoryoptions"
+            :key="item.dictValue"
+            :label="item.dictLabel"
+            :value="item.dictValue"
+          >
+          </el-option>
+        </el-select>
       </el-form-item>
       <el-form-item>
         <el-button
@@ -40,8 +58,7 @@
       ></right-toolbar>
     </el-row>
 
-    <el-table ref="multipleTable" v-loading="loading" :data="commodityList">
-      <el-table-column type="selection" width="55"> </el-table-column>
+    <el-table ref="multipleTable" v-loading="loading" :data="supplierList">
       <el-table-column label="序号" align="center" prop="id" width="100">
         <template slot-scope="scope">
           <div>
@@ -53,16 +70,55 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column label="标签名称" align="center" prop="name">
+      <el-table-column
+        label="供应商名称"
+        align="center"
+        prop="supplierName"
+        :show-overflow-tooltip="true"
+      >
+      </el-table-column>
+      <el-table-column
+        label="国家"
+        align="center"
+        prop="nation"
+        :show-overflow-tooltip="true"
+      >
         <template slot-scope="scope">
-          {{ scope.row.name }}
+          <span>{{ getdictlabel(scope.row, nationoptions, "nation") }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="标签icon" align="center" prop="icon">
+      <el-table-column
+        label="地区"
+        align="center"
+        prop="district"
+        :show-overflow-tooltip="true"
+      >
       </el-table-column>
-      <el-table-column label="排序" align="center" prop="sort">
+      <el-table-column label="负责人" align="center" prop="userName"  :show-overflow-tooltip="true">
       </el-table-column>
-      <el-table-column label="操作" align="center" prop="opration" width="150">
+      <el-table-column label="联系方式" align="center" prop="phone"  :show-overflow-tooltip="true">
+      </el-table-column>
+      <el-table-column label="邮箱" align="center" prop="emall"  :show-overflow-tooltip="true">
+      </el-table-column>
+      <el-table-column label="供应商类别" align="center" prop="category"  :show-overflow-tooltip="true">
+        <template slot-scope="scope">
+          <span>{{
+            getdictlabel(scope.row, categoryoptions, "category")
+          }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="是否启用" align="center" prop="state" width="100">
+        <template slot-scope="scope">
+          <el-switch
+            v-model="scope.row.state == '1'"
+            active-color="#13ce66"
+            inactive-color="#ff4949"
+            @change="changestate(scope.row)"
+          >
+          </el-switch>
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" align="center" prop="opration" width="200" fixed="right">
         <template slot-scope="scope">
           <el-button
             type="text"
@@ -74,13 +130,16 @@
           <el-button
             type="text"
             size="mini"
+            icon="el-icon-more"
             @click="handleedit('more', scope.row)"
             >更多</el-button
           >
           <el-button
             type="text"
             size="mini"
-            @click="handleedit('del', scope.row)"
+            icon="el-icon-delete"
+            style="color: red"
+            @click="handleDelete('del', scope.row)"
             >删除</el-button
           >
         </template>
@@ -104,42 +163,41 @@
       <el-form ref="form" :model="form" :rules="rules" label-width="120px">
         <el-row>
           <el-col :span="15" :offset="3">
-            <el-form-item label="供应商名称：" prop="name">
+            <el-form-item label="供应商名称：" prop="supplierName">
               <el-input
-                v-model="form.name"
+                v-model="form.supplierName"
                 :disabled="isdisable"
                 placeholder="请输入"
               />
             </el-form-item>
-            <el-form-item label="供应商国家：" prop="country">
+            <!--是否对接（0。未对接 1.已对接） -->
+            <el-form-item label="是否启用:" prop="state">
+              <el-radio v-model="form.state" :disabled="isdisable" :label="0"
+                >禁用</el-radio
+              >
+              <el-radio v-model="form.state" :disabled="isdisable" :label="1"
+                >启用</el-radio
+              >
+            </el-form-item>
+            <el-form-item label="供应商国家：" prop="nation">
               <el-select
-                v-model="form.country"
+                v-model="form.nation"
                 :disabled="isdisable"
                 placeholder="请选择"
+                style="width: 100%"
               >
                 <el-option
-                  v-for="item in countryoptions"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
+                  v-for="item in nationoptions"
+                  :key="item.dictValue"
+                  :label="item.dictLabel"
+                  :value="item.dictValue"
                 >
                 </el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="供应商地区：" prop="area">
+            <el-form-item label="供应商负责人：" prop="userName">
               <el-input
-                type="textarea"
-                v-model="form.area"
-                placeholder="请输入"
-                :rows="7"
-                maxlength="300"
-                show-word-limit
-                :disabled="isdisable"
-              />
-            </el-form-item>
-            <el-form-item label="供应商负责人：" prop="managemnet">
-              <el-input
-                v-model="form.managemnet"
+                v-model="form.userName"
                 :disabled="isdisable"
                 placeholder="请输入"
               />
@@ -151,35 +209,39 @@
                 placeholder="请输入"
               />
             </el-form-item>
-            <el-form-item label="供应商类别：" prop="producttype">
+            <el-form-item label="邮箱：" prop="emall">
+              <el-input
+                v-model="form.emall"
+                :disabled="isdisable"
+                placeholder="请输入"
+              />
+            </el-form-item>
+            <el-form-item label="供应商类别：" prop="category">
               <el-select
-                v-model="form.producttype"
+                v-model="form.category"
                 :disabled="isdisable"
                 placeholder="请选择"
+                style="width: 100%"
               >
                 <el-option
-                  v-for="item in producttypeoptions"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
+                  v-for="item in categoryoptions"
+                  :key="item.dictValue"
+                  :label="item.dictLabel"
+                  :value="item.dictValue"
                 >
                 </el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="代收款公司：" prop="company">
-              <el-select
-                v-model="form.company"
+            <el-form-item label="供应商地区：" prop="district">
+              <el-input
+                type="textarea"
+                v-model="form.district"
+                placeholder="请输入"
+                :rows="7"
+                maxlength="300"
+                show-word-limit
                 :disabled="isdisable"
-                placeholder="请选择"
-              >
-                <el-option
-                  v-for="item in companyoptions"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                >
-                </el-option>
-              </el-select>
+              />
             </el-form-item>
           </el-col>
         </el-row>
@@ -194,23 +256,34 @@
 
 <script>
 import {
-  listcommodity,
-  addcommodity,
-  updatecommodity,
-  copycommodity,
-  chooseproduct,
-} from "@/api/commodity/commodity";
+  listsupplier,
+  addsupplier,
+  editsupplier,
+  delsupplier,
+} from "@/api/supplier";
 import Editor from "@/components/Editor";
 import selfDirective from "@/utils/selfDirective";
 import FileUpload from "@/components/FileUpload/index";
 
 export default {
-  name: "commodity",
+  name: "supplier",
   components: {
     Editor,
     FileUpload,
   },
   data() {
+    var checkPhone = (rule, value, callback) => {
+      if (!value) {
+        return callback(new Error("手机号不能为空"));
+      } else {
+        const reg = /^1[3|4|5|7|8][0-9]\d{8}$/;
+        if (reg.test(value)) {
+          callback();
+        } else {
+          return callback(new Error("请输入正确的手机号"));
+        }
+      }
+    };
     return {
       // 遮罩层
       loading: false,
@@ -225,26 +298,7 @@ export default {
       // 总条数
       total: 0,
       // 公告表格数据
-      commodityList: [
-        {
-          id: 1,
-          name: "测试小程序",
-          apptb:
-            "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg",
-          xcxtb:
-            "https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpeg",
-          px: 1,
-        },
-        {
-          id: 2,
-          name: "测试小程序",
-          apptb:
-            "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg",
-          xcxtb:
-            "https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpeg",
-          px: 1,
-        },
-      ],
+      supplierList: [],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -257,8 +311,6 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        noticeTitle: "",
-        state: "",
       },
       // 表单参数
       form: {
@@ -268,16 +320,16 @@ export default {
       },
       // 表单校验
       rules: {
-        name: [
+        supplierName: [
           { required: true, message: "供应商名称不能为空", trigger: "change" },
         ],
-        country: [
+        nation: [
           { required: true, message: "供应商国家不能为空", trigger: "change" },
         ],
-        area: [
+        district: [
           { required: true, message: "供应商地区不能为空", trigger: "change" },
         ],
-        managemnet: [
+        userName: [
           {
             required: true,
             message: "供应商负责人不能为空",
@@ -285,48 +337,54 @@ export default {
           },
         ],
         phone: [
-          { required: true, message: "联系方式不能为空", trigger: "change" },
+          {
+            required: true,
+            trigger: "change",
+            validator: checkPhone,
+          },
         ],
-        producttype: [
+        emall: [
+          {
+            required: true,
+            message: "请输入正确的邮箱",
+            trigger: "change",
+            type: "email",
+          },
+        ],
+        category: [
           { required: true, message: "供应商类别不能为空", trigger: "change" },
         ],
         company: [
           { required: true, message: "代收款公司不能为空", trigger: "change" },
         ],
+        state: [
+          { required: true, message: "请选择是否启用", trigger: "change" },
+        ],
       },
-      type: "0",
-      multipleSelection: [],
       limit: 5,
       fileSize: 20,
       isShowTip: false,
       value: [],
-      countryoptions: [],
-      producttypeoptions: [],
+      nationoptions: [],
+      categoryoptions: [],
       companyoptions: [],
+      gysTypeOptions: [],
+      isdisable: false,
     };
   },
   created() {
-    // this.getList();
+    this.getList();
+    this.getDicts("gys_type").then((response) => {
+      this.categoryoptions = response.data;
+    });
+    this.getDicts("gys-gj").then((response) => {
+      this.nationoptions = response.data;
+    });
   },
   methods: {
-    chooseproduct() {
-      if (this.multipleSelection.length == 0) {
-        this.$message.error("请选择一条商品数据");
-        return;
-      }
-      chooseproduct(this.multipleSelection).then((res) => {
-        this.msgSuccess("选品成功");
-        this.multipleSelection = [];
-        this.back();
-      });
-    },
-    handleSelectionChange(val) {
-      console.log(val);
-      this.multipleSelection = val;
-    },
     /** 查询公告列表 */
     handelcopy() {
-      copycommodity().then((res) => {
+      copysupplier().then((res) => {
         this.msgSuccess("复制成功");
       });
     },
@@ -338,26 +396,9 @@ export default {
     /** 查询公告列表 */
     getList() {
       this.loading = true;
-      listcommodity(this.queryParams).then((response) => {
-        var commodityList = response.rows;
-
-        commodityList.map((item) => {
-          var inventoryTotal = 0;
-          if (item.specificationList) {
-            item.specificationList.map((item) => {
-              item.inventoryTotal = item.inventoryTotal
-                ? item.inventoryTotal
-                : 0;
-              item.inventoryUsable = item.inventoryUsable
-                ? item.inventoryUsable
-                : 0;
-
-              inventoryTotal += item.inventoryTotal;
-            });
-          }
-          item.inventoryTotal = inventoryTotal;
-        });
-        this.commodityList = commodityList;
+      listsupplier(this.queryParams).then((response) => {
+        var supplierList = response.rows;
+        this.supplierList = supplierList;
         this.total = response.total;
         this.loading = false;
       });
@@ -379,8 +420,13 @@ export default {
     reset() {
       this.form = {
         id: undefined,
-        noticeTitle: undefined,
-        status: "0",
+        supplierName: undefined,
+        nation: undefined,
+        district: undefined,
+        userName: undefined,
+        phone: undefined,
+        category: undefined,
+        state: 1,
       };
       this.resetForm("form");
     },
@@ -399,13 +445,13 @@ export default {
       this.$refs["form"].validate((valid) => {
         if (valid) {
           if (this.form.id != undefined) {
-            updatecommodity(this.form).then((response) => {
+            editsupplier(this.form).then((response) => {
               this.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
-            addcommodity(this.form).then((response) => {
+            addsupplier(this.form).then((response) => {
               this.msgSuccess("新增成功");
               this.open = false;
               this.getList();
@@ -418,10 +464,12 @@ export default {
       this.reset();
       this.open = true;
       if (type == "edit") {
-         this.form = row;
+        this.form = row;
         this.title = "修改标签";
+        this.isdisable = false;
       } else if (type == "add") {
         this.title = "新增标签";
+        this.isdisable = false;
       } else if (type == "more") {
         this.form = row;
         this.isdisable = true;
@@ -429,6 +477,50 @@ export default {
     },
     handeclose() {
       this.open = false;
+    },
+    getdictlabel(row, nationoptions, name) {
+      let str = "";
+      nationoptions.map((item) => {
+        if (item.dictValue == row[name]) {
+          str = item.dictLabel;
+        }
+      });
+      return str;
+    },
+    /** 删除按钮操作 */
+    handleDelete(row) {
+      const ids = row.id || this.ids;
+      this.$confirm("是否确认删除该仓库?", "警告", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(function () {
+          return delsupplier(ids);
+        })
+        .then(() => {
+          this.getList();
+          this.$message.success("删除成功");
+        })
+        .catch(() => {});
+    },
+    changestate(row) {
+      var that = this;
+      const statestr = row.state == 1 ? "禁用" : "启用";
+      this.$confirm("是否确认" + statestr + "该供应商?", "警告", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      }).then(function () {
+        var obj = {
+          id: row.id,
+          state: row.state == 1 ? 0 : 1,
+        };
+        editsupplier(obj).then((response) => {
+          that.$message.success(statestr + "成功");
+          that.getList();
+        });
+      });
     },
   },
 };

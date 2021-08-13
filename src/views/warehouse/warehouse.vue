@@ -79,8 +79,15 @@
               size="mini"
               type="text"
               icon="el-icon-edit"
-              @click="handleUpdate(scope.row)"
+              @click="handleUpdate('edit', scope.row)"
               >修改</el-button
+            >
+            <el-button
+              type="text"
+              size="mini"
+              icon="el-icon-more"
+              @click="handleUpdate('more', scope.row)"
+              >更多</el-button
             >
             <el-button
               size="mini"
@@ -120,6 +127,7 @@
                 v-model="form.warehouseName"
                 placeholder="请输入"
                 size="small"
+                :disabled="isdisable"
               />
             </el-form-item>
             <el-form-item label="仓库地址:" prop="warehouseLocation">
@@ -131,18 +139,25 @@
                 size="small"
                 maxlength="100"
                 show-word-limit
+                :disabled="isdisable"
               />
             </el-form-item>
             <!--是否对接（0。未对接 1.已对接） -->
             <el-form-item label="是否启用:" prop="state">
-              <el-radio v-model="form.state" :label="0">禁用</el-radio>
-              <el-radio v-model="form.state" :label="1">启用</el-radio>
+              <el-radio v-model="form.state" :disabled="isdisable" :label="0"
+                >禁用</el-radio
+              >
+              <el-radio v-model="form.state" :disabled="isdisable" :label="1"
+                >启用</el-radio
+              >
             </el-form-item>
             <el-form-item label="是否对接:" prop="status">
               <el-select
                 v-model="form.status"
                 size="small"
                 placeholder="请选择"
+                :disabled="isdisable"
+                style="width:100%;"
               >
                 <el-option
                   v-for="item in statusoptions"
@@ -162,6 +177,7 @@
                 size="small"
                 maxlength="1000"
                 show-word-limit
+                :disabled="isdisable"
               />
             </el-form-item>
           </el-col>
@@ -200,6 +216,8 @@ export default {
       multiple: true,
       // 显示搜索条件
       showSearch: true,
+      //是否可编辑
+      isdisable: false,
       // 总条数
       total: 0,
       // 公告表格数据
@@ -240,7 +258,7 @@ export default {
           { required: true, message: "对接参数不能为空", trigger: "change" },
         ],
         state: [
-          { required: true, message: "是否启用不能为空", trigger: "change" },
+          { required: true, message: "请选择是否启用", trigger: "change" },
         ],
       },
       type: "0",
@@ -362,6 +380,7 @@ export default {
       this.reset();
       this.title = "新增仓库管理";
       this.open = true;
+      this.isdisable = false;
     },
     /** 审核按钮操作 */
     handleApproval(row) {
@@ -385,12 +404,17 @@ export default {
         .catch(() => {});
     },
     /** 修改按钮操作 */
-    handleUpdate(row) {
+    handleUpdate(name, row) {
       this.reset();
       this.form = {
         ...row,
-      }
+      };
       this.open = true;
+      if (name == "more") {
+        this.isdisable = true;
+      } else {
+        this.isdisable = false;
+      }
     },
     handleUpdatereject(row) {
       this.reset();
@@ -456,7 +480,7 @@ export default {
         .catch(() => {});
     },
     changestate(row) {
-      var that = this
+      var that = this;
       const statestr = row.state == 1 ? "禁用" : "启用";
       this.$confirm("是否确认" + statestr + "该仓库?", "警告", {
         confirmButtonText: "确定",
